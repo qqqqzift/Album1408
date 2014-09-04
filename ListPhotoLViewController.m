@@ -6,6 +6,7 @@
 //  Copyright (c) 2013年 vincent_guo. All rights reserved.
 //
 #import "ListPhotoTableViewController.h"
+#import "PhotoScrollViewController.h"
 #import "ListPhotoLViewController.h"
 #import "PhotoViewController.h"
 #import "UITableGridViewCell.h"
@@ -24,9 +25,10 @@
 
 -(void)imageItemClick:(UIImageButton *)button{
 
-    PhotoViewController *photoView = [[PhotoViewController alloc]init];
+    PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
     photoView.currentImageId = button.ID;
     [photoView SetPhotos:photos];
+    photoView.islastpageList = NO;
     [self.navigationController pushViewController: photoView animated:NO];
 }
 
@@ -107,7 +109,7 @@
         indent =5;
     }
 //    NSLog(@"indent:%lf",indent);
-    NSMutableArray *btnArray = [NSMutableArray array];
+    NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[photos count]];
     for (int i=0; i<lcnt; i++) {
         if ((row*lcnt +i) >= [photos count]) {
             break;
@@ -205,7 +207,7 @@
         return (([photos count]/elemInLine) + 1);
     }
 }
-//#import "UIImageButton.h"
+
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath{
     NSLog(@"didEnddisplayingCell");
 
@@ -223,6 +225,8 @@
          UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
         if (cellTop == nil) {
             NSLog(@"top:init top cell");
+//            [[cellTop viewWithTag:100] removeFromSuperview];
+            
             cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierT];
             cellTop.selectedBackgroundView = [[UIView alloc] init];
             [self setTopCellByRow:indexPath.row allele:photos cell:cellTop];
@@ -236,10 +240,13 @@
         static NSString *identifierR = @"CellRight";
         //自定义UITableGridViewCell，里面加了个NSArray用于放置里面的4个图片按钮
         
+        
         UITableGridViewCell *cellRight = [tableView dequeueReusableCellWithIdentifier:identifierR];
         cellRight.selectedBackgroundView = [[UIView alloc] init];
         if (cellRight == nil) {
             NSLog(@"right:init right cell");
+            
+//            [[cellRight viewWithTag:100] removeFromSuperview];
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
             
             [self setRightCellByRow:indexPath.row allele:photos cell:cellRight];
@@ -266,37 +273,4 @@
 
 
 
-
-
-//#pragma mark 根据size截取图片中间矩形区域的图片 这里的size是正方形
-//-(UIImage *)cutCenterImage:(UIImage *)image size:(CGSize)size{
-//    CGSize imageSize = image.size;
-//    CGRect rect;
-//    //根据图片的大小计算出图片中间矩形区域的位置与大小
-//    if (imageSize.width > imageSize.height) {
-//        float leftMargin = (imageSize.width - imageSize.height) * 0.5;
-//        rect = CGRectMake(leftMargin, 0, imageSize.height, imageSize.height);
-//    }else{
-//        float topMargin = (imageSize.height - imageSize.width) * 0.5;
-//        rect = CGRectMake(0, topMargin, imageSize.width, imageSize.width);
-//    }
-//    
-//    CGImageRef imageRef = image.CGImage;
-//    //截取中间区域矩形图片
-//    CGImageRef imageRefRect = CGImageCreateWithImageInRect(imageRef, rect);
-//    
-//    UIImage *tmp = [[UIImage alloc] initWithCGImage:imageRefRect];
-//    CGImageRelease(imageRefRect);
-//    
-//    UIGraphicsBeginImageContext(size);
-//    CGRect rectDraw = CGRectMake(0, 0, size.width, size.height);
-//    [tmp drawInRect:rectDraw];
-//    // 从当前context中创建一个改变大小后的图片
-//    tmp = UIGraphicsGetImageFromCurrentImageContext();
-//    
-//    // 使当前的context出堆栈
-//    UIGraphicsEndImageContext();
-//    
-//    return tmp;
-//}
 @end

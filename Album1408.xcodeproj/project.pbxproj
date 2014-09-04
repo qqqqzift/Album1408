@@ -37,6 +37,7 @@
 		AA03482119B8004A00B3DB71 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03481019B8004A00B3DB71 /* UIWebView+AFNetworking.m */; };
 		AA03482619B800BC00B3DB71 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482419B800BC00B3DB71 /* AFXMLRequestOperation.m */; };
 		AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */; };
+		AAA8AE3F19B83E4C00459612 /* PhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */; };
 		AAF7E31D19AB27430058D630 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E31C19AB27430058D630 /* Foundation.framework */; };
 		AAF7E31F19AB27430058D630 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E31E19AB27430058D630 /* CoreGraphics.framework */; };
 		AAF7E32119AB27430058D630 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E32019AB27430058D630 /* UIKit.framework */; };
@@ -133,6 +134,8 @@
 		AA03482519B800BC00B3DB71 /* AFXMLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFXMLRequestOperation.h; sourceTree = "<group>"; };
 		AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageRequestOperation.m; sourceTree = "<group>"; };
 		AA03482819B8024F00B3DB71 /* AFImageRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFImageRequestOperation.h; sourceTree = "<group>"; };
+		AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotoScrollViewController.h; path = src/PhotoScrollViewController.h; sourceTree = "<group>"; };
+		AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhotoScrollViewController.m; path = src/PhotoScrollViewController.m; sourceTree = "<group>"; };
 		AAF7E31919AB27430058D630 /* Album1408.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Album1408.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAF7E31C19AB27430058D630 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AAF7E31E19AB27430058D630 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -401,6 +404,8 @@
 				AAF7E38F19AB29320058D630 /* ErrorViewController.m */,
 				AAF7E3B819AC8D6E0058D630 /* PhotoViewController.h */,
 				AAF7E3B919AC8D6E0058D630 /* PhotoViewController.m */,
+				AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */,
+				AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */,
 			);
 			name = ViewController;
 			path = ..;
@@ -577,6 +582,7 @@
 				AA03481219B8004A00B3DB71 /* AFHTTPRequestOperationManager.m in Sources */,
 				AA03481519B8004A00B3DB71 /* AFSecurityPolicy.m in Sources */,
 				AAF7E32919AB27430058D630 /* main.m in Sources */,
+				AAA8AE3F19B83E4C00459612 /* PhotoScrollViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,8 +705,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Album1408/Album1408-Prefix.pch";
 				INFOPLIST_FILE = "Album1408/Album1408-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -710,11 +718,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: EIJI SUGASAWA (LH56B3Z7SU)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Album1408/Album1408-Prefix.pch";
 				INFOPLIST_FILE = "Album1408/Album1408-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

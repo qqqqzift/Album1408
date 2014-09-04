@@ -7,6 +7,7 @@
 //
 
 #import "ListPhotoTableViewController.h"
+#import "PhotoScrollViewController.h"
 #import "ListPhotoLViewController.h"
 #import "AFImageRequestOperation.h"
 #import "PhotoViewController.h"
@@ -105,6 +106,7 @@
     
     [albumView SetPhotos:photos];
     albumView.sOrientation = sOrientation;
+    
     [self.navigationController pushViewController: albumView animated:NO];
 }
 - (id)initWithStyle:(UITableViewStyle)style
@@ -236,9 +238,10 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
     //NSLog(@"didSelectRowAtIndexPath:%ld",(long)indexPath.row);
     [loadTimer invalidate];
     loadTimer = nil;
-    PhotoViewController *photoView = [[PhotoViewController alloc]init];
+    PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
     photoView.currentImageId = [[photos objectAtIndex:indexPath.row] ID];
     [photoView SetPhotos:photos];
+    photoView.islastpageList = YES;
     [self.navigationController pushViewController: photoView animated:NO];
 }
 

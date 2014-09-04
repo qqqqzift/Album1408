@@ -17,5 +17,5 @@
 @property NSString *author;
 @property bool isLoaded;
 @property EGOImageView *egoImage;
-@property (nonatomic,weak)UIImage *image;
+//@property (nonatomic,weak)UIImage *image;
 @end

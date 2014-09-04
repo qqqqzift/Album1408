@@ -7,10 +7,10 @@
 //
 
 #import "PhotoViewController.h"
-#import "MMCommon.h"
+
 #import "ListPhotoTableViewController.h"
 #import "PhotoEntity.h"
-
+#import "MMCommon.h"
 @interface PhotoViewController ()
 
 @end
@@ -30,11 +30,11 @@
     NSLog(@"flame.size.height:%lf",flame.size.height);
     NSLog(@"photoview.frame.size.width:%lf",photoview.frame.size.width);
     NSLog(@"photoview.frame.size.height:%lf",photoview.frame.size.height);
-    NSLog(@"(AAAAAA:%lf",fabs( flame.size.width -photoview.frame.size.width));
-    NSLog(@"BBBBBBBBBB:%lf",fabs( flame.size.height -photoview.frame.size.height));
+    NSLog(@"(AAAAAA:%lf",fabs( flame.size.width - photoview.frame.size.width));
+    NSLog(@"BBBBBBBBBB:%lf",fabs( flame.size.height - photoview.frame.size.height));
     if (
-        (fabs(flame.size.width -photoview.frame.size.width) <kEPS)&&
-        (fabs(flame.size.height-photoview.frame.size.height) <kEPS)) {
+        (fabs(flame.size.width - photoview.frame.size.width) <kEPS)&&
+        (fabs(flame.size.height - photoview.frame.size.height) <kEPS)) {
         
         isZoomed = NO;
     }else{

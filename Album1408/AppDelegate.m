@@ -7,14 +7,33 @@
 //
 
 #import "AppDelegate.h"
-
+#import "StartViewController.h"
+#import "MMCommon.h"
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [MMCommon MMcleanCache];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    StartViewController *startView = [[StartViewController alloc] init];
+    self.window.rootViewController = startView;
+
+    startView.title = @"ヘッドライン";
+    
+    //self.navController = [[UINavigationController alloc] init];
+    //[self.navController pushViewController:startView animated:YES];
+    UINavigationController *navCtrl = [[UINavigationController alloc] initWithRootViewController:startView];
+    //self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    if ([self.window respondsToSelector:@selector(setRootViewController:)]) {
+        self.window.rootViewController = navCtrl;
+    } else {
+        [self.window addSubview:navCtrl.view];
+    }
+    
+    [self.window addSubview:self.navController.view];
+    
     [self.window makeKeyAndVisible];
     return YES;
 }

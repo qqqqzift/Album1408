@@ -19,6 +19,7 @@
 
 @implementation PhotoScrollViewController
 
+@synthesize sOrientation;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -31,9 +32,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
 	self.view.backgroundColor = [UIColor blackColor];
     self.navigationItem.hidesBackButton = YES;
+//    [[self navigationController] setNavigationBarHidden:YES animated:YES];
     
     UIBarButtonItem *seteiButton;
     
@@ -45,21 +48,43 @@
     self.navigationItem.rightBarButtonItem = seteiButton;
     
     
+    UIImageView *imageView = [[UIImageView alloc]initWithImage:[(PhotoEntity *)[_photos objectAtIndex:0] egoImage].image];
+    
+    oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
+    largeFrameV = CGRectMake(kScreenWidth/2, kScreenHeight/2, 3 * oldFrameV.size.width, 3 * oldFrameV.size.height);
+    
+    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
+    largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
+
+    
 	//初始化UIScrollView及UIPageControl实例，为了给UIPageControl控件流出显示位置，将起点坐标定为(0, 344)
-	scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-	pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, (kScreenWidth+10), kScreenWidth, 36)];
+	scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, oldFrameV.size.width, oldFrameV.size.height)];
+    NSLog(@"imageView.image.size.height*(kScreenWidth/imageView.image.size.width:%f",imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
+    NSLog(@"oldFrameV.size.width:%f",oldFrameV.size.width);
+    NSLog(@"oldFrameV.size.height:%f",oldFrameV.size.height);
+	//pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 0, oldFrameV.size.width, 36)];
 	
 	//将UIScrollView及UIPageControl实例追加到画面中
 	[self.view addSubview:scrollView];
-	[self.view addSubview:pageControl];
+	//[self.view addSubview:pageControl];
+    
+    
+    
+    
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
-    pageControl.hidden = YES;
-    _ishidebar = NO;
-    self.wantsFullScreenLayout = YES;
+    //pageControl.hidden = YES;
+    //_ishidebar = NO;
+    scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+    
+    
 }
 
+- (void)viewDidAppear:(BOOL)animated{
 
+//[[self navigationController] setNavigationBarHidden:NO animated:YES];
+
+}
 #pragma willAnimateRotationToInterfaceOrientation
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
@@ -69,17 +94,16 @@
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
             NSLog(@"UIInterfaceOrientationPortraitUpsideDown or UIInterfaceOrientationPortrait");
-            scrollView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[photos count], [scrollView bounds].size.height)];
-//            pageControl.bounds = CGRectMake(0, (kScreenWidth+10), kScreenWidth, 36);
+            scrollView.frame = oldFrameH;
+            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[_photos count], [scrollView bounds].size.height)];
+            sOrientation = kLandScapeTop;
             break;
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
-            scrollView.frame = CGRectMake(0, 0, kScreenHeight,  kScreenWidth);
-            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[photos count], [scrollView bounds].size.height)];
-//            pageControl.bounds = CGRectMake(0, (kScreenHeight+10), kScreenHeight, 36);
+            scrollView.frame = oldFrameV;
+            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[_photos count], [scrollView bounds].size.height)];
             NSLog(@"UIInterfaceOrientationLandscapeRight or UIInterfaceOrientationLandscapeLeft");
-            
+            sOrientation = kLandScapeRight;
             break;
         default:
             NSLog(@"OrientationNotHandled");
@@ -108,7 +132,8 @@
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
-    [albumView SetPhotos:photos];
+//    [albumView SetPhotos:photos];
+    albumView.photos = _photos;
     [self.navigationController pushViewController: albumView animated:NO];
     
 }
@@ -117,14 +142,17 @@
 {
     ListPhotoLViewController *albumView = [[ListPhotoLViewController alloc]init];
     
-    [albumView SetPhotos:photos];
+//    [albumView SetPhotos:photos];
+    albumView.photos = _photos;
+    albumView.sOrientation = sOrientation;
     [self.navigationController pushViewController: albumView animated:NO];
+    
     
 }
 
--(void) SetPhotos:(NSMutableArray*)photolist{
-    photos = [[NSMutableArray alloc] initWithArray:photolist];
-}
+//-(void) SetPhotos:(NSMutableArray*)photolist{
+//    _photos = [[NSMutableArray alloc] initWithArray:photolist];
+//}
 
 
 - (void)didReceiveMemoryWarning
@@ -132,6 +160,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
 
 /*
 #pragma mark - Navigation
@@ -150,58 +180,57 @@
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
 	scrollView.delegate = self;
-	[scrollView setBackgroundColor:[UIColor blackColor]];
+	[scrollView setBackgroundColor:[UIColor whiteColor]];
 	[scrollView setCanCancelContentTouches:NO];
 	//设置滚动条类型
-	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-	scrollView.clipsToBounds = YES;
+//	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+//	scrollView.clipsToBounds = YES;
 	scrollView.scrollEnabled = YES;
 	//只有pagingEnabled为YES时才可进行画面切换
 	scrollView.pagingEnabled = YES;
-	scrollView.directionalLockEnabled =NO;
+//	scrollView.directionalLockEnabled =NO;
 	//隐藏滚动条设置
-	scrollView.alwaysBounceVertical=NO;
-	scrollView.alwaysBounceHorizontal =NO;
-	scrollView.showsVerticalScrollIndicator=NO;
-	scrollView.showsHorizontalScrollIndicator=NO;
+//	scrollView.alwaysBounceVertical=NO;
+//	scrollView.alwaysBounceHorizontal =NO;
+//	scrollView.showsVerticalScrollIndicator= NO;
+//	scrollView.showsHorizontalScrollIndicator= NO;
     
-	NSUInteger nimages = 0;
+//	NSUInteger nimages = 0;
 	CGFloat cx = 0;
 	//循环导入数值中的图片
-	for (int i = 0; i < [photos count];i++) {
-		UIImageView *imageView = [[UIImageView alloc]initWithImage:[(PhotoEntity *)[photos objectAtIndex:(i)] egoImage].image];
-		//设置背景
-		[imageView setBackgroundColor:[UIColor blackColor]];
+	for (int i = 0; i < [_photos count];i++) {
+		//初始化图片的UIImageView实例
         
-		//导入图片
-		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
-		CGRect rect = scrollView.frame;
-		rect.size.height = scrollView.frame.size.height;
-		rect.size.width = scrollView.frame.size.width;
-		rect.origin.x = cx;
-		rect.origin.y = 0;
-		[(PhotoEntity *)[photos objectAtIndex:(i)] egoImage].frame = rect;
-		//将图片内容的显示模式设置为自适应模式
-		imageView.contentMode = UIViewContentModeScaleAspectFit;
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+		[imageView setImage:[(PhotoEntity *)[_photos objectAtIndex:(i)] egoImage].image];
+        //设置背景
+		[imageView setBackgroundColor:[UIColor blackColor]];
 		
+        
+		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
+        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height );
+		//将图片内容的显示模式设置为自适应模式
+//		imageView.contentMode = UIViewContentModeScaleAspectFill;
+		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
 		[scrollView addSubview:imageView];
 		//移动左边准备导入下一图片
-		cx += scrollView.frame.size.width;
-		nimages++;
+//		cx += scrollView.frame.size.width;
+//		nimages++;
 	}
-//	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-//	[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
-//	//设置总页数
-//	pageControl.numberOfPages = nimages;
-//	//默认当前页为第1页
-//	pageControl.currentPage =_currentImageId;
-//	pageControl.tag=_currentImageId;
-    
+	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
+	//[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
+	//设置总页数
+	//pageControl.numberOfPages = nimages;
+	//默认当前页为第_currentImageId页
+	//pageControl.currentPage =_currentImageId;
+	//pageControl.tag=0;
 	//重置UIScrollView的尺寸
-	[scrollView setContentSize:CGSizeMake(cx, [scrollView bounds].size.height)];
-    CGRect frame = scrollView.frame;
-    frame.origin.x = frame.size.width * (_currentImageId-1);
+	[scrollView setContentSize:CGSizeMake(cx,  scrollView.frame.size.height)];
+    
+	CGRect frame = scrollView.frame;
+    frame.origin.x = frame.size.width *( _currentImageId-1);
     [scrollView scrollRectToVisible:frame animated:YES];
+    
 }
 
 //实现UIScrollViewDelegate 中定义的方法
@@ -216,15 +245,15 @@
 //	 */
 //    CGFloat pageWidth = _scrollView.frame.size.width;
 //    int page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-////    pageControl.currentPage = page;
+//    pageControl.currentPage = page;
 //}
-////滚动完成时调用的方法
-//- (void)scrollViewDidEndDecelerating:(UIScrollView *)_scrollView
-//{
+//滚动完成时调用的方法
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)_scrollView
+{
 //    pageControlIsChangingPage = NO;
-//}
+}
 
-////UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
+//UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
 //- (void)changePage:(id)sender
 //{
 //	/*
@@ -241,5 +270,11 @@
 //	 */
 //    pageControlIsChangingPage = YES;
 //}
+
+
+
+
+
+
 
 @end

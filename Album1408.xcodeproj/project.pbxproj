@@ -37,6 +37,8 @@
 		AA03482119B8004A00B3DB71 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03481019B8004A00B3DB71 /* UIWebView+AFNetworking.m */; };
 		AA03482619B800BC00B3DB71 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482419B800BC00B3DB71 /* AFXMLRequestOperation.m */; };
 		AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */; };
+		AA65E9B819B9AF5900BB71D5 /* MydrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA65E9B719B9AF5900BB71D5 /* MydrawView.m */; };
+		AA65E9BB19B9B10400BB71D5 /* MyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA65E9BA19B9B10400BB71D5 /* MyViewController.m */; };
 		AAA8AE3F19B83E4C00459612 /* PhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */; };
 		AAA8AE4519B95B1D00459612 /* MMCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE4419B95B1D00459612 /* MMCommon.m */; };
 		AAF7E31D19AB27430058D630 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E31C19AB27430058D630 /* Foundation.framework */; };
@@ -133,6 +135,10 @@
 		AA03482519B800BC00B3DB71 /* AFXMLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFXMLRequestOperation.h; sourceTree = "<group>"; };
 		AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageRequestOperation.m; sourceTree = "<group>"; };
 		AA03482819B8024F00B3DB71 /* AFImageRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFImageRequestOperation.h; sourceTree = "<group>"; };
+		AA65E9B619B9AF5900BB71D5 /* MydrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MydrawView.h; path = src/MydrawView.h; sourceTree = "<group>"; };
+		AA65E9B719B9AF5900BB71D5 /* MydrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MydrawView.m; path = src/MydrawView.m; sourceTree = "<group>"; };
+		AA65E9B919B9B10400BB71D5 /* MyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyViewController.h; path = src/MyViewController.h; sourceTree = "<group>"; };
+		AA65E9BA19B9B10400BB71D5 /* MyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyViewController.m; path = src/MyViewController.m; sourceTree = "<group>"; };
 		AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotoScrollViewController.h; path = src/PhotoScrollViewController.h; sourceTree = "<group>"; };
 		AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhotoScrollViewController.m; path = src/PhotoScrollViewController.m; sourceTree = "<group>"; };
 		AAA8AE4319B95B1D00459612 /* MMCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMCommon.h; sourceTree = "<group>"; };
@@ -401,6 +407,8 @@
 				AAF7E3B919AC8D6E0058D630 /* PhotoViewController.m */,
 				AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */,
 				AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */,
+				AA65E9B919B9B10400BB71D5 /* MyViewController.h */,
+				AA65E9BA19B9B10400BB71D5 /* MyViewController.m */,
 			);
 			name = ViewController;
 			path = ..;
@@ -409,6 +417,8 @@
 		AAF7E3AC19AC49850058D630 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
+				AA65E9B619B9AF5900BB71D5 /* MydrawView.h */,
+				AA65E9B719B9AF5900BB71D5 /* MydrawView.m */,
 				AA0347D219AF0C1F00B3DB71 /* UITableGridViewCell.h */,
 				AA0347D319AF0C1F00B3DB71 /* UITableGridViewCell.m */,
 				AA0347D419AF0C1F00B3DB71 /* UIImageButton.h */,
@@ -556,8 +566,10 @@
 				AAF7E3B719AC68790058D630 /* MBProgressHUD.m in Sources */,
 				AA03481C19B8004A00B3DB71 /* UIAlertView+AFNetworking.m in Sources */,
 				AAF7E32D19AB27430058D630 /* AppDelegate.m in Sources */,
+				AA65E9B819B9AF5900BB71D5 /* MydrawView.m in Sources */,
 				AA03481419B8004A00B3DB71 /* AFNetworkReachabilityManager.m in Sources */,
 				AA03481919B8004A00B3DB71 /* AFURLSessionManager.m in Sources */,
+				AA65E9BB19B9B10400BB71D5 /* MyViewController.m in Sources */,
 				AA0347D719AF0C1F00B3DB71 /* UIImageButton.m in Sources */,
 				AAF7E3AF19AC49EE0058D630 /* PhotoEntity.m in Sources */,
 				AA03481619B8004A00B3DB71 /* AFURLConnectionOperation.m in Sources */,

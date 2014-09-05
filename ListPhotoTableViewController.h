@@ -10,13 +10,15 @@
 static bool loadImageDone;
 @interface ListPhotoTableViewController : UITableViewController{
     
-    NSMutableArray *photos;  //用于存储一组photo
+//    NSMutableArray *photos;  //用于存储一组photo
     NSTimer *loadTimer;   //用于读取图片
 }
 
 @property int sOrientation;
 
--(void) SetPhotos:(NSMutableArray*)photolist;
+//-(void) SetPhotos:(NSMutableArray*)photolist;
+
+@property NSMutableArray *photos;  //用于存储一组photo
 
 
 @end

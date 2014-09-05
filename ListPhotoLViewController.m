@@ -27,9 +27,10 @@
 
     PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
     photoView.currentImageId = button.ID;
-    [photoView SetPhotos:photos];
+    photoView.photos = [self photos];
     photoView.islastpageList = NO;
-    [self.navigationController pushViewController: photoView animated:NO];
+    photoView.sOrientation = [self sOrientation];
+    [self.navigationController pushViewController: photoView animated:YES];
 }
 
 
@@ -37,7 +38,7 @@
 
 
 -(void) SetPhotos:(NSMutableArray*)photolist{
-    photos = [[NSMutableArray alloc] initWithArray:photolist];
+    _photos = [[NSMutableArray alloc] initWithArray:photolist];
 }
 
 
@@ -109,21 +110,22 @@
         indent =5;
     }
 //    NSLog(@"indent:%lf",indent);
-    NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[photos count]];
+    NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[_photos count]];
     for (int i=0; i<lcnt; i++) {
-        if ((row*lcnt +i) >= [photos count]) {
+        if ((row*lcnt +i) >= [_photos count]) {
             break;
         }
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
         UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
+        //[button.tag ]
         button.bounds = CGRectMake(0, 0, kImageWidth, kImageHeight);
         button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + kImageHeight * 0.5);
         //button.column = i;
-        [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
+        [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         
         
-        UIImageView * timage = [(PhotoEntity *)[photos objectAtIndex:(row*lcnt +i)] egoImage];
+        UIImageView * timage = [(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] egoImage];
         
         [button setBackgroundImage:timage.image forState:UIControlStateNormal];
         
@@ -190,8 +192,9 @@
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
-    [albumView SetPhotos:photos];
-    [self.navigationController pushViewController: albumView animated:NO];
+//    [albumView SetPhotos:photos];
+    albumView.photos = _photos;
+    [self.navigationController pushViewController: albumView animated:YES];
     
 }
 
@@ -201,10 +204,10 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (([photos count]%elemInLine) == 0) {
-        return ([photos count]/elemInLine);
+    if (([_photos count]%elemInLine) == 0) {
+        return ([_photos count]/elemInLine);
     }else{
-        return (([photos count]/elemInLine) + 1);
+        return (([_photos count]/elemInLine) + 1);
     }
 }
 
@@ -229,7 +232,7 @@
             
             cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierT];
             cellTop.selectedBackgroundView = [[UIView alloc] init];
-            [self setTopCellByRow:indexPath.row allele:photos cell:cellTop];
+            [self setTopCellByRow:indexPath.row allele:_photos cell:cellTop];
             
             
         }
@@ -249,7 +252,7 @@
 //            [[cellRight viewWithTag:100] removeFromSuperview];
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
             
-            [self setRightCellByRow:indexPath.row allele:photos cell:cellRight];
+            [self setRightCellByRow:indexPath.row allele:_photos cell:cellRight];
             
             
             

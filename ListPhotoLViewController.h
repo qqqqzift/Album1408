@@ -12,14 +12,14 @@
 
 @interface ListPhotoLViewController : UITableViewController{
     
-    NSMutableArray *photos;  //用于存储一组photo
+    
     int elemInLine;            //每行元素个数
 
 }
 
 @property  int sOrientation;
 
-
--(void) SetPhotos:(NSMutableArray*)photolist;
+@property NSMutableArray *photos;  //用于存储一组photo
+//-(void) SetPhotos:(NSMutableArray*)photolist;
 
 @end

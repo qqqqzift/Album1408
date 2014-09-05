@@ -20,8 +20,6 @@
 @synthesize currentImageId = _currentImageId;
 -(void) SetPhotos:(NSMutableArray*)photolist{
     photos = [[NSMutableArray alloc] initWithArray:photolist];
-
-    
 }
 
 
@@ -283,14 +281,9 @@
     
     oldFrameV = CGRectMake(0, 0, kScreenWidth,   tmpImage.size.height*(kScreenWidth/tmpImage.size.width));
     largeFrameV = CGRectMake(kScreenWidth/2, kScreenHeight/2, 3 * oldFrameV.size.width, 3 * oldFrameV.size.height);
-//    NSLog(@"tmpImage.size.width:%lf",tmpImage.size.width);
-//    NSLog(@"tmpImage.size.height:%lf",tmpImage.size.width);
-//    NSLog(@"kScreenWidth:%lf",kScreenWidth);
-//    NSLog(@"kScreenHeight:%lf",kScreenHeight);
-//    NSLog(@"kScreenWidth/tmpImage.size.height:%lf",(kScreenWidth/tmpImage.size.height));
-    //NSlog(@"tmpImage.size.height:%lf",tmpImage.size.width);
+
     oldFrameH = CGRectMake(0, 0, tmpImage.size.width*(kScreenWidth/tmpImage.size.height),kScreenWidth);
-    largeFrameV = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
+    largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
     
     isZoomed = NO;
     isVertical = YES;
@@ -347,7 +340,8 @@
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
-    [albumView SetPhotos:photos];
+//    [albumView SetPhotos:photos];
+    albumView.photos = photos;
     [self.navigationController pushViewController: albumView animated:NO];
     
 }

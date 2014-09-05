@@ -10,6 +10,7 @@
 #import "PhotoScrollViewController.h"
 #import "ListPhotoLViewController.h"
 #import "AFImageRequestOperation.h"
+#import "MyViewController.h"
 #import "PhotoViewController.h"
 #import "AFNetworking.h"
 #import "PhotoEntity.h"
@@ -22,9 +23,10 @@
 
 
 @synthesize  sOrientation;
--(void) SetPhotos:(NSMutableArray*)photolist{
-    photos = [[NSMutableArray alloc] initWithArray:photolist];
-}
+
+//-(void) SetPhotos:(NSMutableArray*)photolist{
+//    photos = [[NSMutableArray alloc] initWithArray:photolist];
+//}
 
 /*
 -(void) SendLoadImageRequest{
@@ -104,10 +106,11 @@
     loadTimer = nil;
     ListPhotoLViewController *albumView = [[ListPhotoLViewController alloc]init];
     
-    [albumView SetPhotos:photos];
+//    [albumView SetPhotos:_photos];
+    albumView.photos = [self photos];
     albumView.sOrientation = sOrientation;
     
-    [self.navigationController pushViewController: albumView animated:NO];
+    [self.navigationController pushViewController: albumView animated:YES];
 }
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -129,7 +132,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.navigationItem.titleView setBackgroundColor:[UIColor blackColor]];
     self.navigationItem.hidesBackButton = YES;
-    NSLog(@"%lu",(unsigned long)[photos count]);
+    NSLog(@"%lu",(unsigned long)[_photos count]);
     
     [self setTitle:@"アルバム"];
     [[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
@@ -151,7 +154,7 @@
 
 -(void)loadPicture:(NSTimer *)timer{
     
-    if ([photos count] >=  kPhotoCnt) {
+    if ([_photos count] >=  kPhotoCnt) {
         [self.tableView reloadData];
     }else{
     
@@ -184,7 +187,7 @@
 {
 //#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return [photos count];
+    return [_photos count];
 }
 
 //
@@ -197,12 +200,12 @@
     }
     // Configure the cell...
     //dataSource_中保存有各单元显示用字符串
-    cell.textLabel.text = [[photos objectAtIndex:indexPath.row] title];
+    cell.textLabel.text = [[_photos objectAtIndex:indexPath.row] title];
     cell.textLabel.frame = CGRectMake(60, 60, 100, 40);
-    [[photos objectAtIndex:indexPath.row] url];
+    [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
     //UIImageView * timage =[[UIImageView alloc]initWithImage: [[EGOImageLoader sharedImageLoader]imageForURL:[NSURL URLWithString:[(PhotoEntity *)[photos objectAtIndex:indexPath.row] url]] shouldLoadWithObserver:nil]];
-    UIImageView * timage = [(PhotoEntity *)[photos objectAtIndex:indexPath.row] egoImage];
+    UIImageView * timage = [(PhotoEntity *)[_photos objectAtIndex:indexPath.row] egoImage];
     [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
     [cell.contentView addSubview:timage];
     
@@ -239,10 +242,11 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
     [loadTimer invalidate];
     loadTimer = nil;
     PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
-    photoView.currentImageId = [[photos objectAtIndex:indexPath.row] ID];
-    [photoView SetPhotos:photos];
+    photoView.currentImageId = [[_photos objectAtIndex:indexPath.row] ID];
+    photoView.photos = [self photos];
     photoView.islastpageList = YES;
-    [self.navigationController pushViewController: photoView animated:NO];
+    photoView.sOrientation = [self sOrientation];
+    [self.navigationController pushViewController: photoView animated:YES];
 }
 
 //

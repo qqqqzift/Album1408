@@ -16,15 +16,20 @@
 	UIPageControl* pageControl;
 	//定义滚动标志
     BOOL pageControlIsChangingPage;
-    
+    CGRect oldFrameV;    //保存图片原来的大小
+    CGRect largeFrameV;  //确定图片放大最大的程度
+    CGRect oldFrameH;    //保存图片原来的大小
+    CGRect largeFrameH;  //确定图片放大最大的程度
 	//定义图片文件名数组
-	NSMutableArray  *photos;  //用于存储一组photo
+	
     
 }
 
 @property long currentImageId;
 @property BOOL islastpageList;
 @property bool ishidebar;
+@property int sOrientation;
+@property NSMutableArray  *photos;  //用于存储一组photo
 
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;
@@ -34,5 +39,5 @@
 /* 内部方法，导入图片并进行UIScrollView的相关设置 */
 - (void)setupPage;
 
--(void) SetPhotos:(NSMutableArray*)photolist;
+//-(void) SetPhotos:(NSMutableArray*)photolist;
 @end

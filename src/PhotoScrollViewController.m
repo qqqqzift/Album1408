@@ -171,7 +171,8 @@
 	for (int i = 0; i < [photos count];i++) {
 		UIImageView *imageView = [[UIImageView alloc]initWithImage:[(PhotoEntity *)[photos objectAtIndex:(i)] egoImage].image];
 		//设置背景
-		[imageView setBackgroundColor:[UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1.0]];
+		[imageView setBackgroundColor:[UIColor blackColor]];
+        
 		//导入图片
 		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
 		CGRect rect = scrollView.frame;
@@ -179,7 +180,7 @@
 		rect.size.width = scrollView.frame.size.width;
 		rect.origin.x = cx;
 		rect.origin.y = 0;
-		imageView.frame = rect;
+		[(PhotoEntity *)[photos objectAtIndex:(i)] egoImage].frame = rect;
 		//将图片内容的显示模式设置为自适应模式
 		imageView.contentMode = UIViewContentModeScaleAspectFit;
 		

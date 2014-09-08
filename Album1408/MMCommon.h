@@ -30,6 +30,7 @@
 #define kLandScapeBottom                        4
 #define kEPS                                    0.001
 #define kPhotoCnt                               21
+#define kToolbarHeight                          50
 
 //缩略图画面
 

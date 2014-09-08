@@ -16,6 +16,21 @@
 @interface PhotoScrollViewController ()
 
 @end
+@implementation TranslucentToolbar
+
+- (void)drawRect:(CGRect)rect {
+    // do nothing
+}
+
+- (id)initWithFrame:(CGRect)aRect {
+    if ((self = [super initWithFrame:aRect])) {
+        self.opaque = NO;
+        self.backgroundColor = [UIColor clearColor];
+        self.clearsContextBeforeDrawing = YES;
+    }
+    return self;
+}
+@end
 
 @implementation PhotoScrollViewController
 
@@ -29,15 +44,17 @@
     return self;
 }
 
+
+
 - (void)viewDidLoad
 {;
     [super viewDidLoad];
-//    self.wantsFullScreenLayout = YES;
+    self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
 	self.view.backgroundColor = [UIColor blackColor];
     [self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
-    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    
     
     UIBarButtonItem *seteiButton;
     
@@ -60,7 +77,7 @@
     
 	
     
-    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
+//    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
 	scrollView = [[UIScrollView alloc] initWithFrame:oldFrameV];
     scrollView.contentMode = UIViewContentModeCenter;
     
@@ -73,12 +90,29 @@
     
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
-    pageControl.hidden = YES;
+//    pageControl.hidden = YES;
     //_ishidebar = NO;
     
 //    vView = [[UIView alloc]initWithFrame: CGRectMake(0, 0,kScreenWidth , kScreenHeight)];
 //    [self.view addSubview:vView];
     [self.view addSubview:scrollView];
+    self.ishidebar = NO;
+    self.isPlaying = NO;
+    self.isShowingAlter = NO;
+    scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, kScreenHeight - kToolbarHeight, kScreenWidth,kToolbarHeight)];
+    playbtn = [[UIBarButtonItem alloc]
+               initWithTitle:@"Play" style:UIBarButtonItemStylePlain target:self action:@selector(playbtnClick:)];
+    NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:playbtn, nil];
+    
+    
+    
+    [scrollTools setItems:scrollToolBarItems animated:YES];
+    [self.navigationController.view addSubview:scrollTools];
+    [self setToolbarItems:[NSArray arrayWithObjects:playbtn, nil]];
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    [self.navigationController setToolbarHidden:NO animated:YES];
+    
+    [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(setFullScreenAction:) userInfo:nil repeats:NO];
     
     
 }
@@ -91,7 +125,7 @@
 #pragma willAnimateRotationToInterfaceOrientation
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
-    
+    pageControlIsChangingPage = YES;
     NSLog(@"willAnimateRotationToInterfaceOrientation");
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
@@ -107,7 +141,7 @@
         case UIInterfaceOrientationLandscapeRight:
             NSLog(@"UIInterfaceOrientationLandscapeRight or UIInterfaceOrientationLandscapeLeft");
             scrollView.frame = oldFrameH;
-            [scrollView setContentSize:CGSizeMake([[self photos] count]*kScreenWidth,  CGRectGetHeight(scrollView.frame))];
+            [scrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(scrollView.frame),  CGRectGetHeight(scrollView.frame))];
             scrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
             [self resetImageFrame];
             sOrientation = kLandScapeRight;
@@ -141,6 +175,7 @@
     
 //    [albumView SetPhotos:photos];
     albumView.photos = _photos;
+    [playTimer invalidate];
     [self.navigationController pushViewController: albumView animated:NO];
     
 }
@@ -152,6 +187,7 @@
 //    [albumView SetPhotos:photos];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
+    [playTimer invalidate];
     [self.navigationController pushViewController: albumView animated:NO];
     
     
@@ -187,24 +223,17 @@
         UIImageView *imageView = [imagelist objectAtIndex:i];
         
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height -scrollView.contentOffset.y);
+        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height );
         
     }
-    if(sOrientation == kLandScapeTop){
-        
-    
-    }else if(sOrientation == kLandScapeRight){
-        
-    
-    }else{
-        NSLog(@"unhandled type orentation in #resetImageFrame#");
-    }
-    NSLog(@"scrollView.frame.size.width:%fl",scrollView.frame.size.width);
-    NSLog(@"scrollView.frame.size.height:%fl",scrollView.frame.size.height);
+    [self rollTothePage:[self currentImageId]];
+}
+
+
+-(void)rollTothePage:(int)thePage{
     CGRect frame = scrollView.frame;
-    frame.origin.x = frame.size.width *( _currentImageId);
-    [scrollView scrollRectToVisible:frame animated:YES];
-    NSLog(@"pageControl.currentPage:%ldl",(long)pageControl.currentPage);
+    frame.origin.x = frame.size.width *thePage;
+    [scrollView scrollRectToVisible:frame animated:NO];
 
 }
 
@@ -232,8 +261,13 @@
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
         
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-		[imageView setImage:[(PhotoEntity *)[_photos objectAtIndex:(i)] egoImage].image];
+        UIButton *imageView = [[UIButton alloc] initWithFrame:CGRectZero];
+        
+        [imageView setImage:[(PhotoEntity *)[_photos objectAtIndex:(i)] egoImage].image forState:UIControlStateNormal ];
+        
+        
+        [imageView addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
+        
         //设置背景
 		[imageView setBackgroundColor:[UIColor blackColor]];
 		
@@ -245,16 +279,17 @@
 		imageView.contentMode = UIViewContentModeRedraw;
         
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
+        
         [imagelist addObject:imageView];
 		[scrollView addSubview:imageView];
 		
 	}
 	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-	[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
+//	[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
 	//设置总页数
 	//pageControl.numberOfPages = nimages;
 	//默认当前页为第_currentImageId页
-	pageControl.currentPage =_currentImageId;
+//	pageControl.currentPage =_currentImageId;
 	//pageControl.tag=0;
 	//重置UIScrollView的尺寸
 	
@@ -279,9 +314,31 @@
     CGFloat pageWidth = _scrollView.frame.size.width;
     int page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     NSLog(@"page%d",page);
-    pageControl.currentPage = page;
-    _currentImageId = page;
-    NSLog(@"pageControl.currentPage:%d",pageControl.currentPage);
+//    pageControl.currentPage = page;
+    self.lastpage = self.currentImageId;
+    self.currentImageId = page;
+    NSLog(@"_scrollView.contentOffset.x:%f",_scrollView.contentOffset.x);
+     NSLog(@"_scrollView.contentSize.width:%f",_scrollView.contentSize.width);
+    if(self.currentImageId == self.lastpage){
+        if (((page+1) == [[self photos] count] )&&(_scrollView.contentOffset.x+_scrollView.frame.size.width >_scrollView.contentSize.width)){
+            [self showNopageMessage:@"最後の画像です"];
+        
+        
+        }
+        
+        if((page == 0)&&(_scrollView.contentOffset.x < 0))
+        {
+            [self showNopageMessage:@"最初の画像です"];
+                
+        }
+        
+    
+    
+    }
+    
+    
+    
+//    NSLog(@"pageControl.currentPage:%d",pageControl.currentPage);
 }
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)_scrollView
@@ -290,27 +347,100 @@
 }
 
 //UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-- (void)changePage:(id)sender
+//- (void)changePage:(id)sender
+//{
+//	/*
+//	 *	改变页面
+//	 */
+//    CGRect frame = scrollView.frame;
+//    frame.origin.x = frame.size.width * pageControl.currentPage;
+//    frame.origin.y = 0;
+//	
+//    [scrollView scrollRectToVisible:frame animated:YES];
+//	
+//	/*
+//	 *	设置滚动标志，滚动（或称页面改变）完成时，会调用scrollViewDidEndDecelerating 方法，其中会将其置为off的
+//	 */
+//    pageControlIsChangingPage = YES;
+//}
+
+- (void)imageItemClick:(id)sender
 {
-	/*
-	 *	改变页面
-	 */
-    CGRect frame = scrollView.frame;
-    frame.origin.x = frame.size.width * pageControl.currentPage;
-    frame.origin.y = 0;
-	
-    [scrollView scrollRectToVisible:frame animated:YES];
-	
-	/*
-	 *	设置滚动标志，滚动（或称页面改变）完成时，会调用scrollViewDidEndDecelerating 方法，其中会将其置为off的
-	 */
-    pageControlIsChangingPage = YES;
+	NSLog(@"BUTTON CLICKED");
+    if([self ishidebar] == NO){
+        [[self navigationController] setNavigationBarHidden:YES animated:YES];
+        [[self navigationController] setToolbarHidden:YES animated:YES];
+        self.ishidebar = YES;
+    }else{
+        
+        [[self navigationController] setNavigationBarHidden:NO animated:YES];
+        [[self navigationController] setToolbarHidden:NO animated:YES];
+        self.ishidebar = NO;
+    }
+}
+
+- (void)playbtnClick:(id)sender
+{
+    if([self isPlaying] == NO){
+        self.isPlaying = YES;
+        [playbtn setTitle:@"Stop"];
+         playTimer = [NSTimer scheduledTimerWithTimeInterval:4.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
+        
+        
+    }else{
+        self.isPlaying = NO;
+        [playbtn setTitle:@"Play"];
+        [playTimer invalidate];
+        
+    }
+}
+-(void) dismissAction:(NSTimer *)timer{
+    [pageMessage dismissWithClickedButtonIndex:0 animated:NO];//important
+    pageMessage = nil;
+    self.isShowingAlter = NO;
+}
+-(void)showNopageMessage:(NSString *)message{
+    if (self.isShowingAlter == YES) {
+        return ;
+    }
+    self.isShowingAlter = YES;
+    pageMessage = [[UIAlertView alloc]
+                          initWithTitle:@"メーセージ"
+                          message:message
+                          delegate:self
+                          cancelButtonTitle:nil
+                          otherButtonTitles:nil];
+    [pageMessage show];
+    [NSTimer scheduledTimerWithTimeInterval:0.8f target:self selector: @selector(dismissAction:)  userInfo:nil repeats:NO];
+}
+
+-(void)playPhotoAction:(NSTimer *)timer{
+    
+    if (self.currentImageId < [[self photos] count]) {
+        self.currentImageId++;
+        [self rollTothePage:[self currentImageId]];
+    }else{
+        [playbtn setTitle:@"Play"];
+        self.isPlaying = NO;
+        [self stopPlaying];
+        [self showNopageMessage:@"最後の画像です" ];
+    
+    }
+    
+}
+
+-(void)setFullScreenAction:(NSTimer *)timer{
+    [[self navigationController] setNavigationBarHidden:YES animated:YES];
+    [[self navigationController] setToolbarHidden:YES animated:YES];
+    self.ishidebar = YES;
+    
+    
 }
 
 
-
-
-
+-(void)stopPlaying{
+    [playTimer invalidate];
+}
 
 
 @end

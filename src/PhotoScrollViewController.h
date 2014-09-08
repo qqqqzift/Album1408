@@ -8,12 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@interface TranslucentToolbar : UIToolbar
+
+@end
+
+
 @interface PhotoScrollViewController : UIViewController
-<UIScrollViewDelegate>
+<UIScrollViewDelegate,UIAlertViewDelegate>
 {
 	//定义UIScrollView与UIPageControl实例变量
 	UIScrollView* scrollView;
-	UIPageControl* pageControl;
+    TranslucentToolbar *scrollTools;
+//	UIPageControl* pageControl;
 	//定义滚动标志
     BOOL pageControlIsChangingPage;
     CGRect oldFrameV;    //保存图片原来的大小
@@ -24,17 +30,22 @@
     UIView *portrait;
     UIView *landscape;
     NSMutableArray *imagelist;
-    
+    UIBarButtonItem *playbtn;
     BOOL isVertical;    //横屏竖屏判断
+    NSTimer *playTimer;
+    NSTimer *fullScreenTimer;
+    UIAlertView *pageMessage;
     
 }
 
 @property long currentImageId;
 @property BOOL islastpageList;
 @property bool ishidebar;
+@property BOOL isPlaying;    //播放状态
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
-
+@property  int lastpage;
+@property bool isShowingAlter;
 
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;

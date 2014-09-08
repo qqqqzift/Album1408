@@ -20,6 +20,5 @@ static bool loadImageDone;
 
 @property NSMutableArray *photos;  //用于存储一组photo
 @property NSString * test;
-@property int test2;
 
 @end

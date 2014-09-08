@@ -10,7 +10,6 @@
 #import "PhotoScrollViewController.h"
 #import "ListPhotoLViewController.h"
 #import "AFImageRequestOperation.h"
-#import "MyViewController.h"
 #import "PhotoViewController.h"
 #import "AFNetworking.h"
 #import "PhotoEntity.h"

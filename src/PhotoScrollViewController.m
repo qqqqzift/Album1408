@@ -30,13 +30,14 @@
 }
 
 - (void)viewDidLoad
-{
+{;
     [super viewDidLoad];
-    self.wantsFullScreenLayout = YES;
+//    self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
 	self.view.backgroundColor = [UIColor blackColor];
+    [self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
-//    [[self navigationController] setNavigationBarHidden:YES animated:YES];
+    [[self navigationController] setNavigationBarHidden:YES animated:YES];
     
     UIBarButtonItem *seteiButton;
     
@@ -57,25 +58,27 @@
     largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
 
     
-	//初始化UIScrollView及UIPageControl实例，为了给UIPageControl控件流出显示位置，将起点坐标定为(0, 344)
-	scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, oldFrameV.size.width, oldFrameV.size.height)];
-    NSLog(@"imageView.image.size.height*(kScreenWidth/imageView.image.size.width:%f",imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
-    NSLog(@"oldFrameV.size.width:%f",oldFrameV.size.width);
-    NSLog(@"oldFrameV.size.height:%f",oldFrameV.size.height);
-	//pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 0, oldFrameV.size.width, 36)];
 	
-	//将UIScrollView及UIPageControl实例追加到画面中
-	[self.view addSubview:scrollView];
-	//[self.view addSubview:pageControl];
     
     
+	scrollView = [[UIScrollView alloc] initWithFrame:oldFrameV];
+    scrollView.contentMode = UIViewContentModeCenter;
     
+
+    [scrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(scrollView.frame),  CGRectGetHeight(scrollView.frame))];
+
+    
+    
+    scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
     
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
     //pageControl.hidden = YES;
     //_ishidebar = NO;
-    scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+    
+//    vView = [[UIView alloc]initWithFrame: CGRectMake(0, 0,kScreenWidth , kScreenHeight)];
+//    [self.view addSubview:vView];
+    [self.view addSubview:scrollView];
     
     
 }
@@ -94,15 +97,18 @@
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
             NSLog(@"UIInterfaceOrientationPortraitUpsideDown or UIInterfaceOrientationPortrait");
-            scrollView.frame = oldFrameH;
-            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[_photos count], [scrollView bounds].size.height)];
+            scrollView.frame = oldFrameV;
+            [scrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(scrollView.frame),  CGRectGetHeight(scrollView.frame))];
+             scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
             sOrientation = kLandScapeTop;
             break;
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
-            scrollView.frame = oldFrameV;
-            [scrollView setContentSize:CGSizeMake(scrollView.frame.size.width*[_photos count], [scrollView bounds].size.height)];
             NSLog(@"UIInterfaceOrientationLandscapeRight or UIInterfaceOrientationLandscapeLeft");
+            scrollView.frame = oldFrameH;
+            [scrollView setContentSize:CGSizeMake([[self photos] count]*kScreenWidth,  CGRectGetHeight(scrollView.frame))];
+            scrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
+            
             sOrientation = kLandScapeRight;
             break;
         default:
@@ -185,7 +191,7 @@
 	//设置滚动条类型
 //	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
 //	scrollView.clipsToBounds = YES;
-	scrollView.scrollEnabled = YES;
+//	scrollView.scrollEnabled = YES;
 	//只有pagingEnabled为YES时才可进行画面切换
 	scrollView.pagingEnabled = YES;
 //	scrollView.directionalLockEnabled =NO;
@@ -194,9 +200,7 @@
 //	scrollView.alwaysBounceHorizontal =NO;
 //	scrollView.showsVerticalScrollIndicator= NO;
 //	scrollView.showsHorizontalScrollIndicator= NO;
-    
-//	NSUInteger nimages = 0;
-	CGFloat cx = 0;
+
 	//循环导入数值中的图片
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
@@ -208,14 +212,13 @@
 		
         
 		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height );
+        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height -scrollView.contentOffset.y);
 		//将图片内容的显示模式设置为自适应模式
-//		imageView.contentMode = UIViewContentModeScaleAspectFill;
+		imageView.contentMode = UIViewContentModeRedraw;
+        
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
 		[scrollView addSubview:imageView];
-		//移动左边准备导入下一图片
-//		cx += scrollView.frame.size.width;
-//		nimages++;
+		
 	}
 	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
 	//[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
@@ -225,7 +228,7 @@
 	//pageControl.currentPage =_currentImageId;
 	//pageControl.tag=0;
 	//重置UIScrollView的尺寸
-	[scrollView setContentSize:CGSizeMake(cx,  scrollView.frame.size.height)];
+	
     
 	CGRect frame = scrollView.frame;
     frame.origin.x = frame.size.width *( _currentImageId-1);

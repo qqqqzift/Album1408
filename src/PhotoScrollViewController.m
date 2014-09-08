@@ -37,7 +37,7 @@
 	self.view.backgroundColor = [UIColor blackColor];
     [self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
-    [[self navigationController] setNavigationBarHidden:YES animated:YES];
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
     
     UIBarButtonItem *seteiButton;
     
@@ -56,11 +56,11 @@
     
     oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
     largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
-
+    imagelist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
 	
     
-    
+    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
 	scrollView = [[UIScrollView alloc] initWithFrame:oldFrameV];
     scrollView.contentMode = UIViewContentModeCenter;
     
@@ -73,7 +73,7 @@
     
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
-    //pageControl.hidden = YES;
+    pageControl.hidden = YES;
     //_ishidebar = NO;
     
 //    vView = [[UIView alloc]initWithFrame: CGRectMake(0, 0,kScreenWidth , kScreenHeight)];
@@ -100,6 +100,7 @@
             scrollView.frame = oldFrameV;
             [scrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(scrollView.frame),  CGRectGetHeight(scrollView.frame))];
              scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+            [self resetImageFrame];
             sOrientation = kLandScapeTop;
             break;
         case UIInterfaceOrientationLandscapeLeft:
@@ -108,7 +109,7 @@
             scrollView.frame = oldFrameH;
             [scrollView setContentSize:CGSizeMake([[self photos] count]*kScreenWidth,  CGRectGetHeight(scrollView.frame))];
             scrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
-            
+            [self resetImageFrame];
             sOrientation = kLandScapeRight;
             break;
         default:
@@ -179,7 +180,33 @@
     // Pass the selected object to the new view controller.
 }
 */
+-(void)resetImageFrame{
+    for (int i = 0; i < [_photos count];i++) {
+        //初始化图片的UIImageView实例
+        
+        UIImageView *imageView = [imagelist objectAtIndex:i];
+        
+        //设置各UIImageView实例位置，及UIImageView实例的frame属性值
+        imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height -scrollView.contentOffset.y);
+        
+    }
+    if(sOrientation == kLandScapeTop){
+        
+    
+    }else if(sOrientation == kLandScapeRight){
+        
+    
+    }else{
+        NSLog(@"unhandled type orentation in #resetImageFrame#");
+    }
+    NSLog(@"scrollView.frame.size.width:%fl",scrollView.frame.size.width);
+    NSLog(@"scrollView.frame.size.height:%fl",scrollView.frame.size.height);
+    CGRect frame = scrollView.frame;
+    frame.origin.x = frame.size.width *( _currentImageId);
+    [scrollView scrollRectToVisible:frame animated:YES];
+    NSLog(@"pageControl.currentPage:%ldl",(long)pageControl.currentPage);
 
+}
 
 - (void)setupPage
 {
@@ -213,19 +240,21 @@
         
 		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
         imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height -scrollView.contentOffset.y);
+        
 		//将图片内容的显示模式设置为自适应模式
 		imageView.contentMode = UIViewContentModeRedraw;
         
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
+        [imagelist addObject:imageView];
 		[scrollView addSubview:imageView];
 		
 	}
 	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-	//[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
+	[pageControl addTarget:self action:@selector(changePage:) forControlEvents:UIControlEventValueChanged];
 	//设置总页数
 	//pageControl.numberOfPages = nimages;
 	//默认当前页为第_currentImageId页
-	//pageControl.currentPage =_currentImageId;
+	pageControl.currentPage =_currentImageId;
 	//pageControl.tag=0;
 	//重置UIScrollView的尺寸
 	
@@ -238,41 +267,45 @@
 
 //实现UIScrollViewDelegate 中定义的方法
 //滚动时调用的方法，其中判断画面滚动时机
-//- (void)scrollViewDidScroll:(UIScrollView *)_scrollView
-//{
-//    if (pageControlIsChangingPage) {
-//        return;
-//    }
-//	/*
-//	 *	下一画面拖动到超过50%时，进行切换
-//	 */
-//    CGFloat pageWidth = _scrollView.frame.size.width;
-//    int page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-//    pageControl.currentPage = page;
-//}
+- (void)scrollViewDidScroll:(UIScrollView *)_scrollView
+{
+    NSLog(@"scrollViewDidScroll");
+    if (pageControlIsChangingPage) {
+        return;
+    }
+	/*
+	 *	下一画面拖动到超过50%时，进行切换
+	 */
+    CGFloat pageWidth = _scrollView.frame.size.width;
+    int page = floor((_scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+    NSLog(@"page%d",page);
+    pageControl.currentPage = page;
+    _currentImageId = page;
+    NSLog(@"pageControl.currentPage:%d",pageControl.currentPage);
+}
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)_scrollView
 {
-//    pageControlIsChangingPage = NO;
+    pageControlIsChangingPage = NO;
 }
 
 //UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-//- (void)changePage:(id)sender
-//{
-//	/*
-//	 *	改变页面
-//	 */
-//    CGRect frame = scrollView.frame;
-//    frame.origin.x = frame.size.width * pageControl.currentPage;
-//    frame.origin.y = 0;
-//	
-//    [scrollView scrollRectToVisible:frame animated:YES];
-//	
-//	/*
-//	 *	设置滚动标志，滚动（或称页面改变）完成时，会调用scrollViewDidEndDecelerating 方法，其中会将其置为off的
-//	 */
-//    pageControlIsChangingPage = YES;
-//}
+- (void)changePage:(id)sender
+{
+	/*
+	 *	改变页面
+	 */
+    CGRect frame = scrollView.frame;
+    frame.origin.x = frame.size.width * pageControl.currentPage;
+    frame.origin.y = 0;
+	
+    [scrollView scrollRectToVisible:frame animated:YES];
+	
+	/*
+	 *	设置滚动标志，滚动（或称页面改变）完成时，会调用scrollViewDidEndDecelerating 方法，其中会将其置为off的
+	 */
+    pageControlIsChangingPage = YES;
+}
 
 
 

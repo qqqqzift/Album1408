@@ -13,7 +13,7 @@
 {
 	//定义UIScrollView与UIPageControl实例变量
 	UIScrollView* scrollView;
-//	UIPageControl* pageControl;
+	UIPageControl* pageControl;
 	//定义滚动标志
     BOOL pageControlIsChangingPage;
     CGRect oldFrameV;    //保存图片原来的大小
@@ -21,11 +21,11 @@
     CGRect oldFrameH;    //保存图片原来的大小
     CGRect largeFrameH;  //确定图片放大最大的程度
 
-//    UIView *vView;
-//    UIView *hView;
+    UIView *portrait;
+    UIView *landscape;
+    NSMutableArray *imagelist;
     
-    
-	
+    BOOL isVertical;    //横屏竖屏判断
     
 }
 
@@ -34,6 +34,7 @@
 @property bool ishidebar;
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
+
 
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;

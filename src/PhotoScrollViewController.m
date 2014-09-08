@@ -71,7 +71,7 @@
     oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
     largeFrameV = CGRectMake(kScreenWidth/2, kScreenHeight/2, 3 * oldFrameV.size.width, 3 * oldFrameV.size.height);
     
-    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height)-1,kScreenWidth);
+    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
     largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
     imagelist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
@@ -113,16 +113,9 @@
     [self.navigationController setToolbarHidden:NO animated:YES];
     
     [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(setFullScreenAction:) userInfo:nil repeats:NO];
-//    scrollView.minimumZoomScale = 1.0;
-//    scrollView.maximumZoomScale = 3.0;
+    
     
 }
-
-
-// 扩大/縮小功能
-//- (UIView*)viewForZoomingInScrollView:(UIScrollView*)scrView {
-//    return [imagelist objectAtIndex:_currentImageId];
-//}
 
 - (void)viewDidAppear:(BOOL)animated{
 

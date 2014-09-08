@@ -31,7 +31,6 @@
     photoView.islastpageList = NO;
     photoView.sOrientation = [self sOrientation];
     [self.navigationController pushViewController: photoView animated:YES];
-    [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
 
@@ -162,7 +161,7 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.hidesBackButton = YES;
     //self.image = [self cutCenterImage:[UIImage imageNamed:@"macbook_pro.jpg"]  size:CGSizeMake(100, 100)];
-    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    
     
     
     

@@ -38,7 +38,7 @@
     
 }
 
-@property int currentImageId;
+@property long currentImageId;
 @property BOOL islastpageList;
 @property bool ishidebar;
 @property BOOL isPlaying;    //播放状态

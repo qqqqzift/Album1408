@@ -13,7 +13,7 @@ static bool loadImageDone;
 //    NSMutableArray *photos;  //用于存储一组photo
     NSTimer *loadTimer;   //用于读取图片
 }
-
+  
 @property int sOrientation;
 
 //-(void) SetPhotos:(NSMutableArray*)photolist;

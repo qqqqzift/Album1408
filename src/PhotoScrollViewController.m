@@ -136,6 +136,8 @@
              scrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
             
             sOrientation = kLandScapeTop;
+            pageControlIsChangingPage = NO;
+
             [self resetImageFrame];
             break;
         case UIInterfaceOrientationLandscapeLeft:
@@ -146,6 +148,7 @@
             scrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
             
             sOrientation = kLandScapeRight;
+            pageControlIsChangingPage = NO;
             [self resetImageFrame];
             break;
         default:
@@ -155,6 +158,7 @@
             
             
     }
+    
 }
 
 // 手指从画面离开时
@@ -228,23 +232,14 @@
         imageView.frame = CGRectMake( scrollView.frame.size.width * i, 0, scrollView.frame.size.width, scrollView.frame.size.height );
         
     }
-    
-    [self rollTothePage:([self currentImageId ] ) ];
+    [self rollTothePage:[self currentImageId] ];
 }
 
 
 -(void)rollTothePage:(int)thePage{
     CGRect frame = scrollView.frame;
-    if (sOrientation == kLandScapeTop) {
-        
-        frame.origin.x = kScreenWidth *thePage;
-        
-    }else if(sOrientation == kLandScapeRight){
-    
-        frame.origin.x = kScreenHeight *thePage;
-    }else{
-        NSLog(@"unhandled screen orientation");
-    }
+    NSLog(@"thePage:%d",thePage);
+    frame.origin.x = frame.size.width *thePage;
     [scrollView scrollRectToVisible:frame animated:NO];
     
 

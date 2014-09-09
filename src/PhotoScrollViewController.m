@@ -52,7 +52,7 @@
     self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
 	self.view.backgroundColor = [UIColor blackColor];
-    [self setAutomaticallyAdjustsScrollViewInsets:NO];
+    //[self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
     
     [UIApplication sharedApplication].statusBarHidden = YES;
@@ -138,6 +138,7 @@
     pageControlIsChangingPage = NO;
     
     [self resetImageFrame];
+    [self rollTothePage:[self currentImageId] ];
 }
 
 -(void)rolltoLandscape{
@@ -149,6 +150,7 @@
     sOrientation = kLandScapeRight;
     pageControlIsChangingPage = NO;
     [self resetImageFrame];
+    [self rollTothePage:[self currentImageId] ];
 
 
 }
@@ -233,7 +235,7 @@
         
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
         photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
-        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
+//        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
         
         for (UIButton *imv in photobtn.subviews){
             if ([imv isKindOfClass:[UIButton class]]){
@@ -256,15 +258,15 @@
     }
     
 
-    [self rollTothePage:[self currentImageId] ];
+//    [self rollTothePage:[self currentImageId] ];
 }
 
 
 -(void)rollTothePage:(int)thePage{
     CGRect frame = mainscrollView.frame;
-    NSLog(@"thePage:%d",thePage);
+//    NSLog(@"thePage:%d",thePage);
     frame.origin.x = frame.size.width *thePage;
-    NSLog(@"frame.origin.x:%f",frame.origin.x);
+//    NSLog(@"frame.origin.x:%f",frame.origin.x);
     [mainscrollView scrollRectToVisible:frame animated:NO];
 }
 
@@ -296,7 +298,7 @@
         UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
     
         s.backgroundColor = [UIColor whiteColor];
-        s.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+        s.contentSize = CGSizeMake(mainscrollView.frame.size.width, 0);
         s.delegate = self;
         s.minimumZoomScale = 1.0;
         s.maximumZoomScale = 3.0;
@@ -362,28 +364,30 @@
     if (scrollView == mainscrollView){
         CGFloat pageWidth = scrollView.frame.size.width;
         int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-        NSLog(@"changing page to:%d",page);
+//        NSLog(@"changing page to:%d",page);
         //    pageControl.currentPage = page;
-        self.lastpage = self.currentImageId;
         self.currentImageId = page;
-        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
-        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
-        if(self.currentImageId == self.lastpage){
-            if (((page+1) == [[self photos] count] )&&(scrollView.contentOffset.x+scrollView.frame.size.width >scrollView.contentSize.width)){
+//        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
+//        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
+        CGFloat x = scrollView.contentOffset.x;
+        if (x==offset){
+            offset = x;
+            if ((page+1) == [[self photos] count] ){
                 [self showNopageMessage:@"最後の画像です"];
                 
                 
             }
             
-            if((page == 0)&&(scrollView.contentOffset.x < 0))
+            if(page == 0)
             {
                 [self showNopageMessage:@"最初の画像です"];
                 
             }
-            
-            
+        }
+        else {
             
         }
+        
     }
     
     
@@ -400,7 +404,20 @@
 {
     NSLog(@"scrollViewDidEndDecelerating");
     pageControlIsChangingPage = NO;
-//    翻页时重置缩放
+    self.isZooming = NO;
+    
+    //not a good ideal
+    if (sOrientation == kLandScapeRight) {
+        [self rolltoLandscape];
+    }else if (sOrientation == kLandScapeTop){
+        [self rolltoPotrait];
+    }
+}
+
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+
+    //翻页时重置缩放
     if (scrollView == mainscrollView){
         CGFloat x = scrollView.contentOffset.x;
         if (x==offset){
@@ -412,13 +429,13 @@
                 if ([s isKindOfClass:[UIScrollView class]]){
                     [s setZoomScale:1.0];
                     
+                    
                 }
             }
         }
     }
-    self.isZooming = NO;
-}
 
+}
 
 
 - (void)imageItemClick:(id)sender

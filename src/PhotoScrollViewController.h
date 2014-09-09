@@ -43,7 +43,7 @@
 @property BOOL isPlaying;    //播放状态
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
-@property  int lastpage;
+
 @property bool isShowingAlter;
 @property bool isZooming;           //
 /* UIPageControll的响应方法 */

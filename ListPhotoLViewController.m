@@ -47,6 +47,7 @@
     NSLog(@"willAnimateRotationToInterfaceOrientation");
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
             NSLog(@"UIInterfaceOrientationPortrait");
             elemInLine = kVLineCnt;
             sOrientation = kLandScapeTop;
@@ -54,33 +55,34 @@
             //loadingview.frame=CGRectMake(284, 402, 200, 200);
             //[self.viewaddSubview:loadingview];
             break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            NSLog(@"UIInterfaceOrientationPortraitUpsideDown");
-            sOrientation = kLandScapeBottom;
-            elemInLine = kVLineCnt;
-            //home健在上
-            //loadingview.frame=CGRectMake(284, 402, 200, 200);
-            //[self.viewaddSubview:loadingview];
-            break;
+        
+//            NSLog(@"UIInterfaceOrientationPortraitUpsideDown");
+//            sOrientation = kLandScapeBottom;
+//            elemInLine = kVLineCnt;
+//            //home健在上
+//            //loadingview.frame=CGRectMake(284, 402, 200, 200);
+//            //[self.viewaddSubview:loadingview];
+//            break;
         case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
             NSLog(@"UIInterfaceOrientationLandscapeLeft");
             elemInLine = [MMCommon kHLineCnt];
             //home健在左
-            sOrientation = kLandScapeLeft;
-            
-            
-//            loadingview.frame=CGRectMake(412, 264, 200, 200);
-//            [self.viewaddSubview:loadingview];
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            NSLog(@"UIInterfaceOrientationLandscapeRight");
-            //home健在右
-            elemInLine = [MMCommon kHLineCnt];
             sOrientation = kLandScapeRight;
             
+            
 //            loadingview.frame=CGRectMake(412, 264, 200, 200);
 //            [self.viewaddSubview:loadingview];
             break;
+        
+//            NSLog(@"UIInterfaceOrientationLandscapeRight");
+//            //home健在右
+//            elemInLine = [MMCommon kHLineCnt];
+//            sOrientation = kLandScapeRight;
+//            
+////            loadingview.frame=CGRectMake(412, 264, 200, 200);
+////            [self.viewaddSubview:loadingview];
+//            break;
         default:
             NSLog(@"OrientationNotHandled");
             elemInLine = kVLineCnt;
@@ -161,6 +163,7 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.hidesBackButton = YES;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.wantsFullScreenLayout = YES;
     //self.image = [self cutCenterImage:[UIImage imageNamed:@"macbook_pro.jpg"]  size:CGSizeMake(100, 100)];
     
     
@@ -196,6 +199,7 @@
     
 //    [albumView SetPhotos:photos];
     albumView.photos = _photos;
+    albumView.sOrientation = sOrientation;
     [self.navigationController pushViewController: albumView animated:YES];
     
 }

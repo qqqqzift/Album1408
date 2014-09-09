@@ -160,7 +160,9 @@
     self.title = @"アルバム";
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.hidesBackButton = YES;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //self.image = [self cutCenterImage:[UIImage imageNamed:@"macbook_pro.jpg"]  size:CGSizeMake(100, 100)];
+    
     
     
     
@@ -262,9 +264,7 @@
 
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return kImageHeight + 5;
-}
+
 
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -274,6 +274,14 @@
 
 
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [[self navigationController] setToolbarHidden:YES animated:NO];
+    
+}
 
-
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return kImageHeight+5;
+}
 @end

@@ -19,6 +19,7 @@
 
 @property  int sOrientation;
 
+
 @property NSMutableArray *photos;  //用于存储一组photo
 //-(void) SetPhotos:(NSMutableArray*)photolist;
 

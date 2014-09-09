@@ -17,7 +17,7 @@
 <UIScrollViewDelegate,UIAlertViewDelegate>
 {
 	//定义UIScrollView与UIPageControl实例变量
-	UIScrollView* scrollView;
+	UIScrollView* mainscrollView;
     TranslucentToolbar *scrollTools;
 //	UIPageControl* pageControl;
 	//定义滚动标志
@@ -29,7 +29,8 @@
 
     UIView *portrait;
     UIView *landscape;
-    NSMutableArray *imagelist;
+    NSMutableArray *photolist;      //list of scrollview
+    NSMutableArray *imagelist;      //list of uibutton in scrollview
     UIBarButtonItem *playbtn;
     BOOL isVertical;    //横屏竖屏判断
     NSTimer *playTimer;

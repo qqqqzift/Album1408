@@ -116,6 +116,10 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
+        if (kLandScapeNone == sOrientation) {
+            sOrientation = kLandScapeTop;
+        }
+        
     }
     
     return self;
@@ -132,7 +136,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.navigationItem.titleView setBackgroundColor:[UIColor blackColor]];
     self.navigationItem.hidesBackButton = YES;
-    NSLog(@"%lu",(unsigned long)[_photos count]);
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     
     [self setTitle:@"アルバム"];
     [[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
@@ -143,7 +147,7 @@
     UIBarButtonItem *seteiButton = [[UIBarButtonItem alloc] initWithTitle:@"縮略図" style:UIBarButtonItemStylePlain target:self action:@selector(selectRightAction:)];
     self.navigationItem.rightBarButtonItem = seteiButton;
     
-    sOrientation = kLandScapeTop;
+    
     
     self.wantsFullScreenLayout = YES;
     
@@ -200,7 +204,10 @@
     }
     // Configure the cell...
     //dataSource_中保存有各单元显示用字符串
-    cell.textLabel.text = [[_photos objectAtIndex:indexPath.row] title];
+    cell.textLabel.text = [@"      " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
+    
+    
+    ;
     cell.textLabel.frame = CGRectMake(60, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
@@ -299,5 +306,14 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
     // Pass the selected object to the new view controller.
 }
 */
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return kListImageHeight+1;
+}
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [[self navigationController] setToolbarHidden:YES animated:NO];
+    [[self navigationController] setNavigationBarHidden:NO animated:NO];
+}
 @end

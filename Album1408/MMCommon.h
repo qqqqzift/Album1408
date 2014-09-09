@@ -18,12 +18,13 @@
 
 #define kVLineCnt                            4
 
-#define kListImageWidth                   44
-#define kListImageHeight                  44
+#define kListImageWidth                   66
+#define kListImageHeight                  66
 #define kImageWidth                         70 //UITableViewCell里面图片的宽度
 #define kImageHeight                        70 //UITableViewCell里面图片的高度
 #define IS_IPHONE5 (([[UIScreen mainScreen] bounds].size.height-568)?NO:YES)
 
+#define kLandScapeNone                          0
 #define kLandScapeLeft                          1
 #define kLandScapeRight                         2
 #define kLandScapeTop                           3

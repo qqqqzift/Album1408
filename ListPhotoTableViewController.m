@@ -78,14 +78,10 @@
     
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
             sOrientation = kLandScapeTop;
             break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            sOrientation = kLandScapeBottom;
-            break;
         case UIInterfaceOrientationLandscapeLeft:
-            sOrientation = kLandScapeLeft;
-            break;
         case UIInterfaceOrientationLandscapeRight:
             sOrientation = kLandScapeRight;
             break;

@@ -27,19 +27,17 @@
     CGRect oldFrameH;    //保存图片原来的大小
     CGRect largeFrameH;  //确定图片放大最大的程度
 
-    UIView *portrait;
-    UIView *landscape;
-    NSMutableArray *photolist;      //list of scrollview
-    NSMutableArray *imagelist;      //list of uibutton in scrollview
+    NSMutableArray *photolist;          //list of scrollview
+    NSMutableArray *imagelist;          //list of uibutton in scrollview
     UIBarButtonItem *playbtn;
-    BOOL isVertical;    //横屏竖屏判断
-    NSTimer *playTimer;
-    NSTimer *fullScreenTimer;
-    UIAlertView *pageMessage;
-    
+    BOOL isVertical;                    //横屏竖屏判断
+    NSTimer *playTimer;                 //播放计时器
+    NSTimer *fullScreenTimer;           //隐藏导航栏计时器
+    UIAlertView *pageMessage;           //首页末页提示
+    bool offset;
 }
 
-@property long currentImageId;
+@property int currentImageId;
 @property BOOL islastpageList;
 @property bool ishidebar;
 @property BOOL isPlaying;    //播放状态
@@ -47,7 +45,7 @@
 @property NSMutableArray  *photos;  //用于存储一组photo
 @property  int lastpage;
 @property bool isShowingAlter;
-
+@property bool isZooming;           //
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;
 

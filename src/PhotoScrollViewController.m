@@ -176,19 +176,7 @@
     
 }
 
-// 手指从画面离开时
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
-//    if (_ishidebar == YES) {
-//        NSLog(@"A");
-//        [self.navigationController setNavigationBarHidden:NO];
-//        _ishidebar = YES;
-//    }else{
-//        NSLog(@"B");
-//        [self.navigationController setNavigationBarHidden:YES];
-//        _ishidebar = NO;
-//    }
-    
-}
+
 
 -(void)backTolistAction:(id)sender
 {
@@ -246,6 +234,7 @@
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
         photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
         NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
+        
         for (UIButton *imv in photobtn.subviews){
             if ([imv isKindOfClass:[UIButton class]]){
                 
@@ -377,7 +366,6 @@
         //    pageControl.currentPage = page;
         self.lastpage = self.currentImageId;
         self.currentImageId = page;
-        self.isZooming = NO;
         NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
         NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
         if(self.currentImageId == self.lastpage){
@@ -410,6 +398,7 @@
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    NSLog(@"scrollViewDidEndDecelerating");
     pageControlIsChangingPage = NO;
 //    翻页时重置缩放
     if (scrollView == mainscrollView){
@@ -422,29 +411,15 @@
             for (UIScrollView *s in scrollView.subviews){
                 if ([s isKindOfClass:[UIScrollView class]]){
                     [s setZoomScale:1.0];
+                    
                 }
             }
         }
     }
+    self.isZooming = NO;
 }
 
-//UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
-//- (void)changePage:(id)sender
-//{
-//	/*
-//	 *	改变页面
-//	 */
-//    CGRect frame = scrollView.frame;
-//    frame.origin.x = frame.size.width * pageControl.currentPage;
-//    frame.origin.y = 0;
-//	
-//    [scrollView scrollRectToVisible:frame animated:YES];
-//	
-//	/*
-//	 *	设置滚动标志，滚动（或称页面改变）完成时，会调用scrollViewDidEndDecelerating 方法，其中会将其置为off的
-//	 */
-//    pageControlIsChangingPage = YES;
-//}
+
 
 - (void)imageItemClick:(id)sender
 {
@@ -466,7 +441,7 @@
     if([self isPlaying] == NO){
         self.isPlaying = YES;
         [playbtn setTitle:@"Stop"];
-         playTimer = [NSTimer scheduledTimerWithTimeInterval:4.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
+         playTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
         
         
     }else{

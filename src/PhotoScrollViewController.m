@@ -26,7 +26,7 @@
     if ((self = [super initWithFrame:aRect])) {
         self.opaque = NO;
         self.backgroundColor = [UIColor clearColor];
-        self.clearsContextBeforeDrawing = YES;
+//        self.clearsContextBeforeDrawing = YES;
     }
     return self;
 }
@@ -41,6 +41,7 @@
     if (self) {
         // Custom initialization
         offset = -1;
+        self.lastpage = -1;
     }
     return self;
 }
@@ -202,7 +203,7 @@
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
 
-    [self.navigationController pushViewController: albumView animated:NO];
+    [self.navigationController pushViewController: albumView animated:YES];
     
     
 }
@@ -277,12 +278,12 @@
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
 	mainscrollView.delegate = self;
-	[mainscrollView setBackgroundColor:[UIColor clearColor]];
+	[mainscrollView setBackgroundColor:[UIColor redColor]];
 	[mainscrollView setCanCancelContentTouches:NO];
     
 	//设置滚动条类型
 //	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-//	scrollView.clipsToBounds = YES;
+	mainscrollView.clipsToBounds = YES;
 	mainscrollView.scrollEnabled = YES;
 	//只有pagingEnabled为YES时才可进行画面切换
 	mainscrollView.pagingEnabled = YES;
@@ -297,13 +298,18 @@
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
         
-        UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
+        UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height-mainscrollView.contentOffset.y)];
     
         s.backgroundColor = [UIColor whiteColor];
         s.contentSize = CGSizeMake(mainscrollView.frame.size.width, 0);
         s.delegate = self;
         s.minimumZoomScale = 1.0;
         s.maximumZoomScale = 3.0;
+        s.alwaysBounceVertical=NO;
+        s.alwaysBounceHorizontal =NO;
+        s.showsVerticalScrollIndicator= NO;
+        s.showsHorizontalScrollIndicator= NO;
+        s.clipsToBounds = YES;
         //        s.tag = i+1;
         [s setZoomScale:1.0];
         
@@ -312,7 +318,7 @@
         
         [photobtn setImage:[(PhotoEntity *)[_photos objectAtIndex:(i)] egoImage].image forState:UIControlStateNormal ];
         
-        
+        [photobtn setAdjustsImageWhenHighlighted:NO];
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
         //设置背景
@@ -362,63 +368,48 @@
 	/*
 	 *	下一画面拖动到超过50%时，进行切换
 	 */
+    int a = scrollView.contentOffset.x;
+    int b = scrollView.frame.size.width;
+    int c = self.lastpage;
     
     if (scrollView == mainscrollView){
         CGFloat pageWidth = scrollView.frame.size.width;
         int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-//        NSLog(@"changing page to:%d",page);
+        if ((page == self.lastpage)&&
+            (page != (self.photos.count-1))&&
+            (page != 0)) {
+            return ;
+        }
+        NSLog(@"changing page to:%d",page);
+        //        NSLog(@"changing page to:%d",page);
         //    pageControl.currentPage = page;
+        self.lastpage = self.currentImageId;
         self.currentImageId = page;
-//        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
-//        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
-        CGFloat x = scrollView.contentOffset.x;
-        if (x==offset){
-            
-            if ((page+1) == [[self photos] count] ){
+        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
+        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
+        if(self.currentImageId == self.lastpage){
+            if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
                 [self showNopageMessage:@"最後の画像です"];
                 
                 
             }
             
-            if(page == 0)
+            if((page == 0)&&(scrollView.contentOffset.x < 0))
             {
                 [self showNopageMessage:@"最初の画像です"];
-                
             }
         }
-        else {
-            offset = x;
-        }
-        
     }
     
     
-    
-    
-    
-    
-    
-    
-//    NSLog(@"pageControl.currentPage:%d",pageControl.currentPage);
 }
+
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     NSLog(@"scrollViewDidEndDecelerating");
     pageControlIsChangingPage = NO;
     self.isZooming = NO;
-    
-    //not a good ideal
-    if (sOrientation == kLandScapeRight) {
-        [self rolltoLandscape];
-    }else if (sOrientation == kLandScapeTop){
-        [self rolltoPotrait];
-    }
-}
-
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
-
     //翻页时重置缩放
     if (scrollView == mainscrollView){
         CGFloat x = scrollView.contentOffset.x;
@@ -436,6 +427,18 @@
             }
         }
     }
+    //not a good ideal
+    if (sOrientation == kLandScapeRight) {
+        [self rolltoLandscape];
+    }else if (sOrientation == kLandScapeTop){
+        [self rolltoPotrait];
+    }
+}
+
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+
+   
 
 }
 
@@ -457,6 +460,7 @@
 
 - (void)playbtnClick:(id)sender
 {
+    [self stopAutoFullScreen];
     if([self isPlaying] == NO){
         self.isPlaying = YES;
         [playbtn setTitle:@"Stop"];
@@ -536,11 +540,17 @@
 {
     [playTimer invalidate];
     playTimer = nil;
-    [fullScreenTimer invalidate];
-    fullScreenTimer = nil;
+    [self stopAutoFullScreen];
 }
 
 
+
+-(void)stopAutoFullScreen{
+    if(fullScreenTimer != nil){
+        [fullScreenTimer invalidate];
+        fullScreenTimer = nil;
+    }
+}
 // 扩大/縮小功能
 #pragma mark - ScrollView delegate
 -(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView{

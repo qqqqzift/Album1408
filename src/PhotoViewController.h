@@ -24,6 +24,6 @@
 
 }
 
-@property long currentImageId;
+@property int currentImageId;
 -(void) SetPhotos:(NSMutableArray*)photolist;
 @end

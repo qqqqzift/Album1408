@@ -40,6 +40,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        offset = -1;
     }
     return self;
 }
@@ -90,6 +91,7 @@
     
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
+    
 //    pageControl.hidden = YES;
     //_ishidebar = NO;
     
@@ -286,10 +288,10 @@
 	mainscrollView.pagingEnabled = YES;
 //	scrollView.directionalLockEnabled =NO;
 	//隐藏滚动条设置
-//	scrollView.alwaysBounceVertical=NO;
-//	scrollView.alwaysBounceHorizontal =NO;
-//	scrollView.showsVerticalScrollIndicator= NO;
-//	scrollView.showsHorizontalScrollIndicator= NO;
+	mainscrollView.alwaysBounceVertical=NO;
+	mainscrollView.alwaysBounceHorizontal =NO;
+	mainscrollView.showsVerticalScrollIndicator= NO;
+	mainscrollView.showsHorizontalScrollIndicator= NO;
 
 	//循环导入数值中的图片
 	for (int i = 0; i < [_photos count];i++) {
@@ -371,7 +373,7 @@
 //        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
         CGFloat x = scrollView.contentOffset.x;
         if (x==offset){
-            offset = x;
+            
             if ((page+1) == [[self photos] count] ){
                 [self showNopageMessage:@"最後の画像です"];
                 
@@ -385,7 +387,7 @@
             }
         }
         else {
-            
+            offset = x;
         }
         
     }
@@ -459,7 +461,9 @@
         self.isPlaying = YES;
         [playbtn setTitle:@"Stop"];
          playTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
-        
+        [[self navigationController] setNavigationBarHidden:YES animated:YES];
+        [[self navigationController] setToolbarHidden:YES animated:YES];
+        self.ishidebar = YES;
         
     }else{
         self.isPlaying = NO;
@@ -520,7 +524,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     fullScreenTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(setFullScreenAction:) userInfo:nil repeats:NO];
-    offset = mainscrollView.contentOffset.x;
+    
     self.isZooming = NO;
     self.ishidebar = NO;
     self.isPlaying = NO;

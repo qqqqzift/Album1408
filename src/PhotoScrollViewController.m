@@ -53,7 +53,7 @@
     [super viewDidLoad];
     self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [UIColor clearColor];
     //[self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
     
@@ -81,7 +81,7 @@
     
 //    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
 	mainscrollView = [[UIScrollView alloc] initWithFrame:CGRectMake( 0, 0,kScreenWidth, kScreenHeight )];
-    mainscrollView.contentMode = UIViewContentModeCenter;
+//    mainscrollView.contentMode = UIViewContentModeCenter;
     
 
     [mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(mainscrollView.frame),  CGRectGetHeight(mainscrollView.frame))];
@@ -116,10 +116,7 @@
     [self setToolbarItems:[NSArray arrayWithObjects:playbtn, nil]];
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:YES];
-    if((sOrientation == kLandScapeRight)||
-       (sOrientation == kLandScapeLeft)){
-        [self rolltoLandscape];
-    }
+    
     
     
     
@@ -202,8 +199,6 @@
     albumView.sOrientation = sOrientation;
 
     [self.navigationController pushViewController: albumView animated:YES];
-    
-    
 }
 
 //-(void) SetPhotos:(NSMutableArray*)photolist{
@@ -243,21 +238,35 @@
             if ([imv isKindOfClass:[UIButton class]]){
                 
                 if (sOrientation == kLandScapeTop) {
-                    imv.frame = oldFrameV;
+                    if (saveForZooming - 1.0f < kEPS) {
+                        imv.frame = oldFrameV;
+                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                    }else{
+                        
+                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+                    }
                     
                     
-                    imv.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+                    
+                    
                 }else if(sOrientation == kLandScapeRight){
-                    imv.frame = oldFrameH;
+                    
+                    if (saveForZooming - 1.0f < kEPS) {
+                       imv.frame = oldFrameH;
+                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                        
+                    }else{
+                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+                    }
                     
                     
-                    imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                 }
             }
+//            if (saveForZooming - 1.0f > kEPS) {
+//                [photobtn setZoomScale:saveForZooming];
+//            }
         }
-        if (saveForZooming - 1.0f > kEPS) {
-            [photobtn setZoomScale:3.0];
-        }
+        
     }
     
 
@@ -278,7 +287,7 @@
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
 	mainscrollView.delegate = self;
-	[mainscrollView setBackgroundColor:[UIColor redColor]];
+	[mainscrollView setBackgroundColor:[UIColor clearColor]];
 	[mainscrollView setCanCancelContentTouches:NO];
     
 	//设置滚动条类型
@@ -399,6 +408,11 @@
         }else{
             self.lastpage = self.currentImageId;
 //            self.isZooming = NO;
+               if (sOrientation == kLandScapeRight) {
+                   [self rolltoLandscape];
+                }else if (sOrientation == kLandScapeTop){
+                    [self rolltoPotrait];
+                }
         
         }
     }
@@ -445,15 +459,13 @@
 {
 	NSLog(@"BUTTON CLICKED");
     if([self ishidebar] == NO){
-        [[self navigationController] setNavigationBarHidden:YES animated:YES];
-        [[self navigationController] setToolbarHidden:YES animated:YES];
-        self.ishidebar = YES;
+        [self setFullScreen];
     }else{
         
-        [[self navigationController] setNavigationBarHidden:NO animated:YES];
-        [[self navigationController] setToolbarHidden:NO animated:YES];
-        self.ishidebar = NO;
+        [self setShowNavibar];
     }
+//    UINavigationBar *navBar = self.navigationController.navigationBar;
+//    bool a = navBar.isTranslucent;
 }
 
 - (void)playbtnClick:(id)sender
@@ -510,13 +522,30 @@
 }
 
 -(void)setFullScreenAction:(NSTimer *)timer{
-    [[self navigationController] setNavigationBarHidden:YES animated:YES];
-    [[self navigationController] setToolbarHidden:YES animated:YES];
-    self.ishidebar = YES;
+    [self setFullScreen];
     
     
 }
 
+-(void)setFullScreen{
+    [[self navigationController] setNavigationBarHidden:YES animated:YES];
+    [[self navigationController] setToolbarHidden:YES animated:YES];
+    
+    
+    
+    self.ishidebar = YES;
+}
+
+-(void)setShowNavibar{
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    [[self navigationController] setToolbarHidden:NO animated:YES];
+//    UINavigationBar *navBar = self.navigationController.navigationBar;
+//    [navBar setTranslucent:YES];
+    
+//    self.wantsFullScreenLayout = YES;
+    self.ishidebar = NO;
+
+}
 
 -(void)stopPlaying{
     [playTimer invalidate];
@@ -531,6 +560,11 @@
     self.ishidebar = NO;
     self.isPlaying = NO;
     self.isShowingAlter = NO;
+    //mainscrollView.contentOffset = CGPointMake(0, 0);
+    if((sOrientation == kLandScapeRight)||
+       (sOrientation == kLandScapeLeft)){
+        [self rolltoLandscape];
+    }
 }
 
 
@@ -539,6 +573,7 @@
     [playTimer invalidate];
     playTimer = nil;
     [self stopAutoFullScreen];
+    [scrollTools removeFromSuperview];
 }
 
 
@@ -549,6 +584,20 @@
         fullScreenTimer = nil;
     }
 }
+
+//- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
+//    [self setFullScreen];
+//}
+//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+//    
+//
+//}
+//
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    
+    [self resetImageFrame];
+}
+
 // 扩大/縮小功能
 #pragma mark - ScrollView delegate
 -(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView{
@@ -556,11 +605,16 @@
     for (UIView *v in scrollView.subviews){
         NSLog(@"Zooming");
 //        self.isZooming = YES;
+        
         return v;
     }
     return nil;
 }
 
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
+    [self resetImageFrame];
+
+}
 
 
 

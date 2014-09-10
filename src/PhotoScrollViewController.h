@@ -45,7 +45,7 @@
 @property NSMutableArray  *photos;  //用于存储一组photo
 
 @property bool isShowingAlter;
-@property bool isZooming;           //
+//@property bool isZooming;           //
 @property int lastpage;
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;

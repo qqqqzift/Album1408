@@ -42,6 +42,8 @@
         // Custom initialization
         offset = -1;
         self.lastpage = -1;
+        self.ispagechanged = NO;
+        saveForZooming = 1.0f;
     }
     return self;
 }
@@ -230,7 +232,9 @@
          UIScrollView *photobtn = [photolist objectAtIndex:i];
         
        
-        CGFloat saveForZooming =  photobtn.zoomScale;
+        saveForZooming =  photobtn.zoomScale;
+        
+        
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
         photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
 //        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
@@ -258,6 +262,7 @@
                         imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                         
                     }else{
+                        
                         imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
                     }
                     
@@ -512,12 +517,15 @@
 //
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     
-    //[self resetImageFrame];
+    
 }
 
 
 
 #pragma scrollMethod
+
+
+
 
 
 //滚动完成时调用的方法
@@ -527,21 +535,39 @@
     pageControlIsChangingPage = NO;
     
     //翻页时重置缩放
+
     if (scrollView == mainscrollView){
-        CGFloat x = scrollView.contentOffset.x;
-        if (x==offset){
-            
-        }
-        else {
-            offset = x;
+        if (self.ispagechanged == YES) {
             for (UIScrollView *s in scrollView.subviews){
+                [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
-                    [s setZoomScale:1.0];
+                    
+                    for (UIButton *imv in s.subviews){
+                        if ([imv isKindOfClass:[UIButton class]]){
+                            
+                            if (sOrientation == kLandScapeTop) {
+                                imv.frame = oldFrameV;
+                                imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                            }
+                            else if(sOrientation == kLandScapeRight){
+                                imv.frame = oldFrameH;
+                                imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                                
+                            }
+                            
+                            
+                            
+                            
+                        }
+                    }
                 }
+                
             }
+            
+            self.ispagechanged = NO;
         }
     }
-    //[self resetImageFrame];
+    
 }
 
 
@@ -550,10 +576,11 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     
-    NSLog(@"scrollViewDidScroll");
+    
     if (pageControlIsChangingPage) {
         return;
     }
+    NSLog(@"scrollViewDidScroll");
 	/*
 	 *	下一画面拖动到超过50%时，进行切换
 	 */
@@ -572,9 +599,14 @@
         
         
         self.currentImageId = page;
-        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
-        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
-        if(self.currentImageId == self.lastpage){
+//        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
+//        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
+        if(self.currentImageId != self.lastpage){
+            NSLog(@"changing page");
+            self.lastpage = self.currentImageId;
+            self.ispagechanged = YES;
+            
+        }else{
             if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
                 [self showNopageMessage:@"最後の画像です"];
             }
@@ -583,13 +615,8 @@
             {
                 [self showNopageMessage:@"最初の画像です"];
             }
-        }else{
-            self.lastpage = self.currentImageId;
-            //            self.isZooming = NO;
-            
         }
     }
-    //[self resetImageFrame];
     
 }
 
@@ -598,17 +625,20 @@
 -(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView{
     
     for (UIView *v in scrollView.subviews){
-        NSLog(@"Zooming");
-        //        self.isZooming = YES;
+        
         
         return v;
     }
     return nil;
-    //[self resetImageFrame];
 }
 
+
+-(void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view{
+   
+
+
+}
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
-    //[self resetImageFrame];
     
 }
 

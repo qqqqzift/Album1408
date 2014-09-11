@@ -34,16 +34,18 @@
     NSTimer *playTimer;                 //播放计时器
     NSTimer *fullScreenTimer;           //隐藏导航栏计时器
     UIAlertView *pageMessage;           //首页末页提示
+    CGFloat saveForZooming;
     int offset;
 }
 
 @property int currentImageId;
-@property BOOL islastpageList;
+@property BOOL islastpageList;      //上一页是否是列表
+
 @property bool ishidebar;
 @property BOOL isPlaying;    //播放状态
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
-
+@property BOOL ispagechanged;
 @property bool isShowingAlter;
 //@property bool isZooming;           //
 @property int lastpage;

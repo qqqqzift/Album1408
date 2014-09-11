@@ -37,6 +37,7 @@
 		AA03482119B8004A00B3DB71 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03481019B8004A00B3DB71 /* UIWebView+AFNetworking.m */; };
 		AA03482619B800BC00B3DB71 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482419B800BC00B3DB71 /* AFXMLRequestOperation.m */; };
 		AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */; };
+		AA5AF0F419C1AF1C005EFE47 /* StartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA5AF0F319C1AF1C005EFE47 /* StartViewController.m */; };
 		AAA8AE3F19B83E4C00459612 /* PhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */; };
 		AAA8AE4519B95B1D00459612 /* MMCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE4419B95B1D00459612 /* MMCommon.m */; };
 		AAF7E31D19AB27430058D630 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E31C19AB27430058D630 /* Foundation.framework */; };
@@ -55,7 +56,6 @@
 		AAF7E34E19AB276E0058D630 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E34D19AB276E0058D630 /* Security.framework */; };
 		AAF7E35019AB27A80058D630 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E34F19AB27A80058D630 /* MobileCoreServices.framework */; };
 		AAF7E35219AB27B20058D630 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF7E35119AB27B20058D630 /* CFNetwork.framework */; };
-		AAF7E39619AB295A0058D630 /* StartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF7E39519AB295A0058D630 /* StartViewController.m */; };
 		AAF7E3AF19AC49EE0058D630 /* PhotoEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF7E3AE19AC49EE0058D630 /* PhotoEntity.m */; };
 		AAF7E3B719AC68790058D630 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF7E3B619AC68790058D630 /* MBProgressHUD.m */; };
 		AAF7E3BA19AC8D6E0058D630 /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF7E3B919AC8D6E0058D630 /* PhotoViewController.m */; };
@@ -133,6 +133,8 @@
 		AA03482519B800BC00B3DB71 /* AFXMLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFXMLRequestOperation.h; sourceTree = "<group>"; };
 		AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageRequestOperation.m; sourceTree = "<group>"; };
 		AA03482819B8024F00B3DB71 /* AFImageRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFImageRequestOperation.h; sourceTree = "<group>"; };
+		AA5AF0F219C1AF1C005EFE47 /* StartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController.h; sourceTree = "<group>"; };
+		AA5AF0F319C1AF1C005EFE47 /* StartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StartViewController.m; sourceTree = "<group>"; };
 		AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotoScrollViewController.h; path = src/PhotoScrollViewController.h; sourceTree = "<group>"; };
 		AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhotoScrollViewController.m; path = src/PhotoScrollViewController.m; sourceTree = "<group>"; };
 		AAA8AE4319B95B1D00459612 /* MMCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMCommon.h; sourceTree = "<group>"; };
@@ -157,8 +159,6 @@
 		AAF7E34D19AB276E0058D630 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AAF7E34F19AB27A80058D630 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		AAF7E35119AB27B20058D630 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		AAF7E39419AB295A0058D630 /* StartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StartViewController.h; path = ../AlbumZY/AlbumZY/StartViewController.h; sourceTree = "<group>"; };
-		AAF7E39519AB295A0058D630 /* StartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StartViewController.m; path = ../AlbumZY/AlbumZY/StartViewController.m; sourceTree = "<group>"; };
 		AAF7E3AD19AC49EE0058D630 /* PhotoEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotoEntity.h; path = src/PhotoEntity.h; sourceTree = "<group>"; };
 		AAF7E3AE19AC49EE0058D630 /* PhotoEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhotoEntity.m; path = src/PhotoEntity.m; sourceTree = "<group>"; };
 		AAF7E3B519AC68790058D630 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -391,12 +391,12 @@
 		AAF7E38A19AB28FB0058D630 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				AA5AF0F219C1AF1C005EFE47 /* StartViewController.h */,
+				AA5AF0F319C1AF1C005EFE47 /* StartViewController.m */,
 				AA0347D819AF0C4600B3DB71 /* ListPhotoLViewController.h */,
 				AA0347D919AF0C4600B3DB71 /* ListPhotoLViewController.m */,
 				AAF7E3BB19AD72F80058D630 /* ListPhotoTableViewController.h */,
 				AAF7E3BC19AD72F80058D630 /* ListPhotoTableViewController.m */,
-				AAF7E39419AB295A0058D630 /* StartViewController.h */,
-				AAF7E39519AB295A0058D630 /* StartViewController.m */,
 				AAF7E3B819AC8D6E0058D630 /* PhotoViewController.h */,
 				AAF7E3B919AC8D6E0058D630 /* PhotoViewController.m */,
 				AAA8AE3D19B83E4C00459612 /* PhotoScrollViewController.h */,
@@ -562,6 +562,7 @@
 				AAF7E3AF19AC49EE0058D630 /* PhotoEntity.m in Sources */,
 				AA03481619B8004A00B3DB71 /* AFURLConnectionOperation.m in Sources */,
 				AA03481819B8004A00B3DB71 /* AFURLResponseSerialization.m in Sources */,
+				AA5AF0F419C1AF1C005EFE47 /* StartViewController.m in Sources */,
 				AA0347C819ADE90600B3DB71 /* EGOCache.m in Sources */,
 				AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */,
 				AA03481719B8004A00B3DB71 /* AFURLRequestSerialization.m in Sources */,
@@ -569,7 +570,6 @@
 				AA0347DA19AF0C4600B3DB71 /* ListPhotoLViewController.m in Sources */,
 				AA0347CC19ADE90600B3DB71 /* EGOImageView.m in Sources */,
 				AA0347C919ADE90600B3DB71 /* EGOImageButton.m in Sources */,
-				AAF7E39619AB295A0058D630 /* StartViewController.m in Sources */,
 				AA0347CB19ADE90600B3DB71 /* EGOImageLoader.m in Sources */,
 				AA03481D19B8004A00B3DB71 /* UIButton+AFNetworking.m in Sources */,
 				AA03482019B8004A00B3DB71 /* UIRefreshControl+AFNetworking.m in Sources */,

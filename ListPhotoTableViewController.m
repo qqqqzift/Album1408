@@ -133,6 +133,7 @@
     [self.navigationItem.titleView setBackgroundColor:[UIColor blackColor]];
     self.navigationItem.hidesBackButton = YES;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+//    self.automaticallyAdjustsScrollViewInsets = NO;
     
     [self setTitle:@"アルバム"];
     [[UINavigationBar appearance] setTitleTextAttributes: [NSDictionary dictionaryWithObjectsAndKeys:

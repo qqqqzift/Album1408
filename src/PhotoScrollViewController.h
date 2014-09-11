@@ -18,7 +18,7 @@
 {
 	//定义UIScrollView与UIPageControl实例变量
 	UIScrollView* mainscrollView;
-    TranslucentToolbar *scrollTools;
+    
 //	UIPageControl* pageControl;
 	//定义滚动标志
     BOOL pageControlIsChangingPage;
@@ -41,14 +41,15 @@
 @property int currentImageId;
 @property BOOL islastpageList;      //上一页是否是列表
 
-@property bool ishidebar;
+@property bool ishidebar;     //导航栏是否别隐藏
 @property BOOL isPlaying;    //播放状态
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
 @property BOOL ispagechanged;
 @property bool isShowingAlter;
+@property TranslucentToolbar *scrollTools;
 //@property bool isZooming;           //
-@property int lastpage;
+//@property int lastpage;
 /* UIPageControll的响应方法 */
 //- (void)changePage:(id)sender;
 

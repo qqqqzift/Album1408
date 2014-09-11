@@ -41,7 +41,7 @@
     if (self) {
         // Custom initialization
         offset = -1;
-        self.lastpage = -1;
+//        self.lastpage = -1;
         self.ispagechanged = NO;
         saveForZooming = 1.0f;
     }
@@ -60,6 +60,8 @@
     self.navigationItem.hidesBackButton = YES;
     self.automaticallyAdjustsScrollViewInsets = NO;
     [UIApplication sharedApplication].statusBarHidden = YES;
+    //below not working(try to hide toolsbar)
+    self.hidesBottomBarWhenPushed = YES;
     UIBarButtonItem *seteiButton;
     
     if(_islastpageList == YES){
@@ -104,7 +106,7 @@
     
     
     
-    scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, kScreenHeight - kToolbarHeight, kScreenWidth,kToolbarHeight)];
+    self.scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, kScreenHeight - kToolbarHeight, kScreenWidth,kToolbarHeight)];
     playbtn = [[UIBarButtonItem alloc]
                initWithTitle:@"Play" style:UIBarButtonItemStylePlain target:self action:@selector(playbtnClick:)];
     
@@ -113,8 +115,8 @@
     
     
     
-    [scrollTools setItems:scrollToolBarItems animated:YES];
-    [self.navigationController.view addSubview:scrollTools];
+    [self.scrollTools setItems:scrollToolBarItems animated:YES];
+    [self.navigationController.view addSubview:self.scrollTools];
     [self setToolbarItems:[NSArray arrayWithObjects:playbtn, nil]];
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:YES];
@@ -127,7 +129,7 @@
 
 - (void)viewDidAppear:(BOOL)animated{
 
-//[[self navigationController] setNavigationBarHidden:NO animated:YES];
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
 
 }
 
@@ -141,7 +143,7 @@
     pageControlIsChangingPage = NO;
     
     [self resetImageFrame];
-    [self rollTothePage:[self currentImageId] ];
+    [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
 }
 
 -(void)rolltoLandscape{
@@ -153,7 +155,7 @@
     sOrientation = kLandScapeRight;
     pageControlIsChangingPage = NO;
     [self resetImageFrame];
-    [self rollTothePage:[self currentImageId] ];
+    [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
 
 
 }
@@ -189,7 +191,7 @@
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
    
-    [self.navigationController pushViewController: albumView animated:NO];
+    [self.navigationController pushViewController: albumView animated:YES];
     
 }
 
@@ -200,8 +202,14 @@
 //    [albumView SetPhotos:photos];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
-
+    if (sOrientation == kLandScapeTop) {
+        albumView.elemInLine = kVLineCnt;
+    }else if(sOrientation == kLandScapeRight){
+        albumView.elemInLine = [MMCommon kHLineCnt];
+    }
+    
     [self.navigationController pushViewController: albumView animated:YES];
+    
 }
 
 //-(void) SetPhotos:(NSMutableArray*)photolist{
@@ -228,51 +236,82 @@
 }
 */
 -(void)resetImageFrame{
+    CGFloat pContentWidth,pContentHeight;
     for (int i = 0; i < [self.photos count];i++) {
          UIScrollView *photobtn = [photolist objectAtIndex:i];
         
        
         saveForZooming =  photobtn.zoomScale;
-        
-        
-        //设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
-//        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
-     
-        photobtn.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+       
+        pContentWidth = mainscrollView.frame.size.width;
+        pContentHeight = mainscrollView.frame.size.height;
+        //根据当前屏幕方向重置scrollview里面的button的中心点和大小
         for (UIButton *imv in photobtn.subviews){
+            
             if ([imv isKindOfClass:[UIButton class]]){
-                
-                if (sOrientation == kLandScapeTop) {
-                    if (saveForZooming - 1.0f < kEPS) {
+                if (saveForZooming - 1.0f < kEPS){
+                    if (sOrientation == kLandScapeTop) {
                         imv.frame = oldFrameV;
                         imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-                    }else{
-                        
-                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
-                    }
-                    
-                    
-                    
-                    
-                }else if(sOrientation == kLandScapeRight){
-                    
-                    if (saveForZooming - 1.0f < kEPS) {
-                       imv.frame = oldFrameH;
+                    }else if(sOrientation == kLandScapeRight){
+                        imv.frame = oldFrameH;
                         imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-                        
-                    }else{
-                        
-                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
                     }
-                    
-                    
                 }
+                else{
+                    //有缩放时
+                    
+                    imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+                    pContentWidth = imv.frame.size.width;
+                    pContentHeight = imv.frame.size.height;
+                }
+                
+                
+                
+                
+//                if (sOrientation == kLandScapeTop) {
+//                    if (saveForZooming - 1.0f < kEPS) {
+//                        imv.frame = oldFrameV;
+//                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+//                    }else{
+//                        
+////                        imv.frame = oldFrameV;
+////                        [photobtn setZoomScale:saveForZooming];
+//                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+//                    }
+//                    
+//                    
+//                    
+//                    
+//                }else if(sOrientation == kLandScapeRight){
+//                    
+//                    if (saveForZooming - 1.0f < kEPS) {
+//                       imv.frame = oldFrameH;
+//                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+//                        
+//                    }else{
+////                        imv.frame = oldFrameH;
+////                        [photobtn setZoomScale:saveForZooming];
+//                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+//                    }
+//                    
+//                    
+//                }
             }
-//            if (saveForZooming - 1.0f > kEPS) {
-//                [photobtn setZoomScale:saveForZooming];
-//            }
         }
+        
+        //重置scrollview的frame
+        //设置各UIImageView实例位置，及UIImageView实例的frame属性值
+        photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
+        //        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
+        
+        if (saveForZooming - 1.0f < kEPS) {
+            photobtn.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+        }else{
+            photobtn.contentSize = CGSizeMake(pContentWidth, pContentHeight);
+        }
+        
+        
         
     }
     
@@ -281,12 +320,12 @@
 }
 
 
--(void)rollTothePage:(int)thePage{
+-(void)rollTothePage:(int)thePage AnimeOrNot:(BOOL)withAnime{
     CGRect frame = mainscrollView.frame;
 //    NSLog(@"thePage:%d",thePage);
     frame.origin.x = frame.size.width *thePage;
 //    NSLog(@"frame.origin.x:%f",frame.origin.x);
-    [mainscrollView scrollRectToVisible:frame animated:NO];
+    [mainscrollView scrollRectToVisible:frame animated:withAnime];
 }
 
 - (void)setupPage
@@ -364,7 +403,7 @@
 	
     [self.view addSubview:mainscrollView];
     self.currentImageId = self.currentImageId - 1;
-    [self rollTothePage:[self currentImageId] ];
+    [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
     
 	
     
@@ -432,7 +471,7 @@
     
     if (self.currentImageId < [[self photos] count]) {
         self.currentImageId++;
-        [self rollTothePage:[self currentImageId]];
+        [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
     }else{
         [playbtn setTitle:@"Play"];
         self.isPlaying = NO;
@@ -495,7 +534,12 @@
     [playTimer invalidate];
     playTimer = nil;
     [self stopAutoFullScreen];
-    [scrollTools removeFromSuperview];
+    [[self navigationController] setToolbarItems:nil];
+
+    
+    [self.scrollTools removeFromSuperview];
+    self.scrollTools = nil;
+    
 }
 
 
@@ -531,13 +575,17 @@
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSLog(@"scrollViewDidEndDecelerating");
+    
     pageControlIsChangingPage = NO;
     
     //翻页时重置缩放
 
     if (scrollView == mainscrollView){
         if (self.ispagechanged == YES) {
+            NSLog(@"self.ispagechanged:%d",self.ispagechanged);
+            NSLog(@"scrollViewDidEndDecelerating");
+            NSLog(@"currentpage is :%d",self.currentImageId);
+            [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
             for (UIScrollView *s in scrollView.subviews){
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
@@ -587,23 +635,24 @@
     
     if (scrollView == mainscrollView){
         CGFloat pageWidth = scrollView.frame.size.width;
-        int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-        if ((page == self.lastpage)&&
+        int page = floor((scrollView.contentOffset.x - pageWidth*9 / 16) / pageWidth) + 1;
+        if ((page == self.currentImageId)&&
             (page != (self.photos.count-1))&&
             (page != 0)) {
             return ;
         }
-        NSLog(@"changing page to:%d",page);
+        
         //        NSLog(@"changing page to:%d",page);
         //    pageControl.currentPage = page;
         
         
-        self.currentImageId = page;
+        
 //        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
 //        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
-        if(self.currentImageId != self.lastpage){
-            NSLog(@"changing page");
-            self.lastpage = self.currentImageId;
+        if(self.currentImageId != page){
+            NSLog(@"changing page to:%d",page);
+//            self.lastpage = self.currentImageId;
+            self.currentImageId = page;
             self.ispagechanged = YES;
             
         }else{
@@ -642,6 +691,8 @@
     
 }
 
-
+- (BOOL) hidesBottomBarWhenPushed {
+    return YES;
+}
 
 @end

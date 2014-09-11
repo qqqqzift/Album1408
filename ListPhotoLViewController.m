@@ -49,7 +49,7 @@
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
             NSLog(@"UIInterfaceOrientationPortrait");
-            elemInLine = kVLineCnt;
+            self.elemInLine = kVLineCnt;
             sOrientation = kLandScapeTop;
             //home健在下
             //loadingview.frame=CGRectMake(284, 402, 200, 200);
@@ -66,7 +66,7 @@
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
             NSLog(@"UIInterfaceOrientationLandscapeLeft");
-            elemInLine = [MMCommon kHLineCnt];
+            self.elemInLine = [MMCommon kHLineCnt];
             //home健在左
             sOrientation = kLandScapeRight;
             
@@ -85,7 +85,10 @@
 //            break;
         default:
             NSLog(@"OrientationNotHandled");
-            elemInLine = kVLineCnt;
+            if (self.elemInLine == 0) {
+                self.elemInLine = kVLineCnt;
+            }
+            
             break;
             
             
@@ -160,9 +163,11 @@
 {
     [super viewDidLoad];
     self.title = @"アルバム";
+    
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.hidesBackButton = YES;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.automaticallyAdjustsScrollViewInsets = NO;
     self.wantsFullScreenLayout = YES;
     //self.image = [self cutCenterImage:[UIImage imageNamed:@"macbook_pro.jpg"]  size:CGSizeMake(100, 100)];
     
@@ -173,26 +178,29 @@
     UIBarButtonItem *seteiButton = [[UIBarButtonItem alloc] initWithTitle:@"列表" style:UIBarButtonItemStylePlain target:self action:@selector(selectRightAction:)];
     self.navigationItem.rightBarButtonItem = seteiButton;
     //todo 横屏判断
-    elemInLine = 4;
+    if (self.elemInLine == 0) {
+        self.elemInLine = 4;
+    }
+    
     
     //
-    UIDevice *device = [UIDevice currentDevice];
-    
-    [device beginGeneratingDeviceOrientationNotifications];
-    
-    //利用 NSNotificationCenter 获得旋转信号 UIDeviceOrientationDidChangeNotification
-    
-    NSNotificationCenter *ncenter = [NSNotificationCenter defaultCenter];
-    
-    [ncenter addObserver:self selector:@selector(orientationChanged) name:UIDeviceOrientationDidChangeNotification object:device];
+//    UIDevice *device = [UIDevice currentDevice];
+//    
+//    [device beginGeneratingDeviceOrientationNotifications];
+//    
+//    //利用 NSNotificationCenter 获得旋转信号 UIDeviceOrientationDidChangeNotification
+//    
+//    NSNotificationCenter *ncenter = [NSNotificationCenter defaultCenter];
+//    
+//    [ncenter addObserver:self selector:@selector(orientationChanged) name:UIDeviceOrientationDidChangeNotification object:device];
     
     
     
 }
 
--(void)orientationChanged{
-    NSLog(@"orientationChanged");
-}
+//-(void)orientationChanged{
+//    NSLog(@"orientationChanged");
+//}
 -(void)selectRightAction:(id)sender
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
@@ -210,10 +218,10 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (([_photos count]%elemInLine) == 0) {
-        return ([_photos count]/elemInLine);
+    if (([_photos count]%self.elemInLine) == 0) {
+        return ([_photos count]/self.elemInLine);
     }else{
-        return (([_photos count]/elemInLine) + 1);
+        return (([_photos count]/self.elemInLine) + 1);
     }
 }
 
@@ -223,7 +231,11 @@
 
 }
 
-
+- (void)viewDidAppear:(BOOL)animated{
+    
+//    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    
+}
 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -280,6 +292,7 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    
     [[self navigationController] setToolbarHidden:YES animated:NO];
     
 }

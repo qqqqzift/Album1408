@@ -32,7 +32,7 @@
         [self.window addSubview:navCtrl.view];
     }
     
-    [self.window addSubview:self.navController.view];
+    //[self.window addSubview:self.navController.view];
     
     [self.window makeKeyAndVisible];
     return YES;

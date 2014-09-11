@@ -53,10 +53,10 @@
     [super viewDidLoad];
     self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
-	self.view.backgroundColor = [UIColor clearColor];
+	self.view.backgroundColor = [UIColor blueColor];
     //[self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
-    
+    self.automaticallyAdjustsScrollViewInsets = NO;
     [UIApplication sharedApplication].statusBarHidden = YES;
     UIBarButtonItem *seteiButton;
     
@@ -71,16 +71,16 @@
     UIImageView *imageView = [[UIImageView alloc]initWithImage:[(PhotoEntity *)[_photos objectAtIndex:0] egoImage].image];
     
     oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
-    largeFrameV = CGRectMake(kScreenWidth/2, kScreenHeight/2, 3 * oldFrameV.size.width, 3 * oldFrameV.size.height);
+  
     
     oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
-    largeFrameH = CGRectMake( kScreenHeight/2, kScreenWidth/2, 3 * oldFrameV.size.height, 3 * oldFrameV.size.width);
+    
     photolist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
 	
     
 //    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
-	mainscrollView = [[UIScrollView alloc] initWithFrame:CGRectMake( 0, 0,kScreenWidth, kScreenHeight )];
+	mainscrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
 //    mainscrollView.contentMode = UIViewContentModeCenter;
     
 
@@ -118,7 +118,8 @@
     [self.navigationController setToolbarHidden:NO animated:YES];
     
     
-    
+//    CGRect frame1 = mainscrollView.frame;
+//    CGRect frame2 = self.view.frame;
     
 }
 
@@ -233,7 +234,8 @@
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
         photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
 //        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
-        
+     
+        photobtn.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
         for (UIButton *imv in photobtn.subviews){
             if ([imv isKindOfClass:[UIButton class]]){
                 
@@ -287,7 +289,7 @@
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
 	mainscrollView.delegate = self;
-	[mainscrollView setBackgroundColor:[UIColor clearColor]];
+	[mainscrollView setBackgroundColor:[UIColor redColor]];
 	[mainscrollView setCanCancelContentTouches:NO];
     
 	//设置滚动条类型
@@ -310,7 +312,7 @@
         UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
     
         s.backgroundColor = [UIColor whiteColor];
-        s.contentSize = CGSizeMake(mainscrollView.frame.size.width, 0);
+        s.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
         s.delegate = self;
         s.minimumZoomScale = 1.0;
         s.maximumZoomScale = 3.0;
@@ -365,91 +367,6 @@
 
 
 
-//实现UIScrollViewDelegate 中定义的方法
-//滚动时调用的方法，其中判断画面滚动时机
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    
-    NSLog(@"scrollViewDidScroll");
-    if (pageControlIsChangingPage) {
-        return;
-    }
-	/*
-	 *	下一画面拖动到超过50%时，进行切换
-	 */
-    
-    if (scrollView == mainscrollView){
-        CGFloat pageWidth = scrollView.frame.size.width;
-        int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-        if ((page == self.lastpage)&&
-            (page != (self.photos.count-1))&&
-            (page != 0)) {
-            return ;
-        }
-        NSLog(@"changing page to:%d",page);
-        //        NSLog(@"changing page to:%d",page);
-        //    pageControl.currentPage = page;
-        
-        
-        self.currentImageId = page;
-        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
-        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
-        if(self.currentImageId == self.lastpage){
-            if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
-                [self showNopageMessage:@"最後の画像です"];
-                
-                
-            }
-            
-            if((page == 0)&&(scrollView.contentOffset.x < 0))
-            {
-                [self showNopageMessage:@"最初の画像です"];
-            }
-        }else{
-            self.lastpage = self.currentImageId;
-//            self.isZooming = NO;
-               if (sOrientation == kLandScapeRight) {
-                   [self rolltoLandscape];
-                }else if (sOrientation == kLandScapeTop){
-                    [self rolltoPotrait];
-                }
-        
-        }
-    }
-    
-    
-}
-
-//滚动完成时调用的方法
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    NSLog(@"scrollViewDidEndDecelerating");
-    pageControlIsChangingPage = NO;
-    
-    //翻页时重置缩放
-    if (scrollView == mainscrollView){
-        CGFloat x = scrollView.contentOffset.x;
-        if (x==offset){
-            
-        }
-        else {
-            offset = x;
-            for (UIScrollView *s in scrollView.subviews){
-                if ([s isKindOfClass:[UIScrollView class]]){
-                    [s setZoomScale:1.0];
-                    
-                    
-                }
-            }
-        }
-    }
-    //not a good ideal
-//    if (sOrientation == kLandScapeRight) {
-//        [self rolltoLandscape];
-//    }else if (sOrientation == kLandScapeTop){
-//        [self rolltoPotrait];
-//    }
-}
 
 
 
@@ -595,7 +512,85 @@
 //
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     
-    [self resetImageFrame];
+    //[self resetImageFrame];
+}
+
+
+
+#pragma scrollMethod
+
+
+//滚动完成时调用的方法
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    NSLog(@"scrollViewDidEndDecelerating");
+    pageControlIsChangingPage = NO;
+    
+    //翻页时重置缩放
+    if (scrollView == mainscrollView){
+        CGFloat x = scrollView.contentOffset.x;
+        if (x==offset){
+            
+        }
+        else {
+            offset = x;
+            for (UIScrollView *s in scrollView.subviews){
+                if ([s isKindOfClass:[UIScrollView class]]){
+                    [s setZoomScale:1.0];
+                }
+            }
+        }
+    }
+    //[self resetImageFrame];
+}
+
+
+//实现UIScrollViewDelegate 中定义的方法
+//滚动时调用的方法，其中判断画面滚动时机
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    
+    NSLog(@"scrollViewDidScroll");
+    if (pageControlIsChangingPage) {
+        return;
+    }
+	/*
+	 *	下一画面拖动到超过50%时，进行切换
+	 */
+    
+    if (scrollView == mainscrollView){
+        CGFloat pageWidth = scrollView.frame.size.width;
+        int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+        if ((page == self.lastpage)&&
+            (page != (self.photos.count-1))&&
+            (page != 0)) {
+            return ;
+        }
+        NSLog(@"changing page to:%d",page);
+        //        NSLog(@"changing page to:%d",page);
+        //    pageControl.currentPage = page;
+        
+        
+        self.currentImageId = page;
+        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
+        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
+        if(self.currentImageId == self.lastpage){
+            if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
+                [self showNopageMessage:@"最後の画像です"];
+            }
+            
+            if((page == 0)&&(scrollView.contentOffset.x < 0))
+            {
+                [self showNopageMessage:@"最初の画像です"];
+            }
+        }else{
+            self.lastpage = self.currentImageId;
+            //            self.isZooming = NO;
+            
+        }
+    }
+    //[self resetImageFrame];
+    
 }
 
 // 扩大/縮小功能
@@ -604,19 +599,18 @@
     
     for (UIView *v in scrollView.subviews){
         NSLog(@"Zooming");
-//        self.isZooming = YES;
+        //        self.isZooming = YES;
         
         return v;
     }
     return nil;
+    //[self resetImageFrame];
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
-    [self resetImageFrame];
-
+    //[self resetImageFrame];
+    
 }
-
-
 
 
 

@@ -23,9 +23,9 @@
 	//定义滚动标志
     BOOL pageControlIsChangingPage;
     CGRect oldFrameV;    //保存图片原来的大小
-    CGRect largeFrameV;  //确定图片放大最大的程度
+//    CGRect largeFrameV;  //确定图片放大最大的程度
     CGRect oldFrameH;    //保存图片原来的大小
-    CGRect largeFrameH;  //确定图片放大最大的程度
+//    CGRect largeFrameH;  //确定图片放大最大的程度
 
     NSMutableArray *photolist;          //list of scrollview
     NSMutableArray *imagelist;          //list of uibutton in scrollview

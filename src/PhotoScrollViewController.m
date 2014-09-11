@@ -191,7 +191,7 @@
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
    
-    [self.navigationController pushViewController: albumView animated:YES];
+    [self.navigationController pushViewController: albumView animated:NO];
     
 }
 
@@ -208,7 +208,7 @@
         albumView.elemInLine = [MMCommon kHLineCnt];
     }
     
-    [self.navigationController pushViewController: albumView animated:YES];
+    [self.navigationController pushViewController: albumView animated:NO];
     
 }
 
@@ -249,6 +249,8 @@
         for (UIButton *imv in photobtn.subviews){
             
             if ([imv isKindOfClass:[UIButton class]]){
+                //没有缩放时
+                
                 if (saveForZooming - 1.0f < kEPS){
                     if (sOrientation == kLandScapeTop) {
                         imv.frame = oldFrameV;
@@ -260,43 +262,24 @@
                 }
                 else{
                     //有缩放时
+                    [photobtn setZoomScale:1.0 ];
+                    if (sOrientation == kLandScapeTop) {
+                        imv.frame = oldFrameV;
+                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                        saveForZooming = saveForZooming*kScreenHeight/kScreenWidth;
+                    }else if(sOrientation == kLandScapeRight){
+                        imv.frame = oldFrameH;
+                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                        saveForZooming = saveForZooming*kScreenWidth/kScreenHeight;
+                    }
                     
-                    imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
+                    [photobtn setZoomScale:saveForZooming];
+//                    imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
                     pContentWidth = imv.frame.size.width;
                     pContentHeight = imv.frame.size.height;
                 }
                 
-                
-                
-                
-//                if (sOrientation == kLandScapeTop) {
-//                    if (saveForZooming - 1.0f < kEPS) {
-//                        imv.frame = oldFrameV;
-//                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-//                    }else{
-//                        
-////                        imv.frame = oldFrameV;
-////                        [photobtn setZoomScale:saveForZooming];
-//                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
-//                    }
-//                    
-//                    
-//                    
-//                    
-//                }else if(sOrientation == kLandScapeRight){
-//                    
-//                    if (saveForZooming - 1.0f < kEPS) {
-//                       imv.frame = oldFrameH;
-//                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-//                        
-//                    }else{
-////                        imv.frame = oldFrameH;
-////                        [photobtn setZoomScale:saveForZooming];
-//                        imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
-//                    }
-//                    
-//                    
-//                }
+               
             }
         }
         
@@ -579,7 +562,6 @@
     pageControlIsChangingPage = NO;
     
     //翻页时重置缩放
-
     if (scrollView == mainscrollView){
         if (self.ispagechanged == YES) {
             NSLog(@"self.ispagechanged:%d",self.ispagechanged);
@@ -688,7 +670,10 @@
 
 }
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
-    
+    NSLog(@"scrollViewDidEndZooming");
+    if (scrollView == mainscrollView) {
+        
+    }
 }
 
 - (BOOL) hidesBottomBarWhenPushed {

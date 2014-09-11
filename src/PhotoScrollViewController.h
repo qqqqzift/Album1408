@@ -48,6 +48,7 @@
 @property BOOL ispagechanged;
 @property bool isShowingAlter;
 @property TranslucentToolbar *scrollTools;
+//@property BOOL isRotation;          //
 //@property bool isZooming;           //
 //@property int lastpage;
 /* UIPageControll的响应方法 */

@@ -133,7 +133,7 @@
             break;
         }
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
-        UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
+        __block UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
         //[button.tag ]
 //        button.backgroundColor = [UIColor blackColor];
         
@@ -148,7 +148,10 @@
                             placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                              loadcnt++;
-                             self.isneededtoresize = YES;
+                             
+                             button.bounds = CGRectMake(0, 0, kImageWidth, self.mImageHeight);
+                             button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + self.mImageHeight * 0.5);
+                             [self.tableView reloadData];
                              
                          }];
         

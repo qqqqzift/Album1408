@@ -32,7 +32,7 @@
 #define kEPS                                    0.001
 #define kPhotoCnt                               21
 #define kToolbarHeight                          50
-
+#define IsIOS7 ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] intValue]>=7)
 //缩略图画面
 
 static int sideMargin;              //4 inch screen is 88 wider than 3.5 inch screen

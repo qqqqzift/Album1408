@@ -51,14 +51,16 @@
 
 
 - (void)viewDidLoad
-{;
+{
     [super viewDidLoad];
     self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
-	self.view.backgroundColor = [UIColor blueColor];
+	self.view.backgroundColor = [UIColor blackColor];
     //[self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
-    self.automaticallyAdjustsScrollViewInsets = NO;
+    if(IsIOS7){
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
     [UIApplication sharedApplication].statusBarHidden = YES;
     //below not working(try to hide toolsbar)
     self.hidesBottomBarWhenPushed = YES;
@@ -238,45 +240,44 @@
 -(void)resetImageFrame{
     CGFloat pContentWidth,pContentHeight;
     for (int i = 0; i < [self.photos count];i++) {
-         UIScrollView *photobtn = [photolist objectAtIndex:i];
+         UIScrollView *photoscroll = [photolist objectAtIndex:i];
         
        
-        saveForZooming =  photobtn.zoomScale;
+        saveForZooming =  photoscroll.zoomScale;
        
         pContentWidth = mainscrollView.frame.size.width;
         pContentHeight = mainscrollView.frame.size.height;
         //根据当前屏幕方向重置scrollview里面的button的中心点和大小
-        for (UIButton *imv in photobtn.subviews){
+        for (UIButton *photobtn in photoscroll.subviews){
             
-            if ([imv isKindOfClass:[UIButton class]]){
+            if ([photobtn isKindOfClass:[UIButton class]]){
                 //没有缩放时
                 
                 if (saveForZooming - 1.0f < kEPS){
                     if (sOrientation == kLandScapeTop) {
-                        imv.frame = oldFrameV;
-                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                        photobtn.frame = oldFrameV;
+                        photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
                     }else if(sOrientation == kLandScapeRight){
-                        imv.frame = oldFrameH;
-                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                        photobtn.frame = oldFrameH;
+                        photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                     }
                 }
                 else{
                     //有缩放时
-                    [photobtn setZoomScale:1.0 ];
+                    [photoscroll setZoomScale:1.0 ];
                     if (sOrientation == kLandScapeTop) {
-                        imv.frame = oldFrameV;
-                        imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                        photobtn.frame = oldFrameV;
+                        photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
                         saveForZooming = saveForZooming*kScreenHeight/kScreenWidth;
                     }else if(sOrientation == kLandScapeRight){
-                        imv.frame = oldFrameH;
-                        imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                        photobtn.frame = oldFrameH;
+                        photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                         saveForZooming = saveForZooming*kScreenWidth/kScreenHeight;
                     }
-                    
-                    [photobtn setZoomScale:saveForZooming];
+                    [photoscroll setZoomScale:saveForZooming];
 //                    imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
-                    pContentWidth = imv.frame.size.width;
-                    pContentHeight = imv.frame.size.height;
+                    pContentWidth = photobtn.frame.size.width;
+                    pContentHeight = photobtn.frame.size.height;
                 }
                 
                
@@ -285,13 +286,13 @@
         
         //重置scrollview的frame
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        photobtn.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
+        photoscroll.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
         //        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
         
         if (saveForZooming - 1.0f < kEPS) {
-            photobtn.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+            photoscroll.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
         }else{
-            photobtn.contentSize = CGSizeMake(pContentWidth, pContentHeight);
+            photoscroll.contentSize = CGSizeMake(pContentWidth, pContentHeight);
         }
         
         
@@ -316,7 +317,7 @@
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
 	mainscrollView.delegate = self;
-	[mainscrollView setBackgroundColor:[UIColor redColor]];
+	[mainscrollView setBackgroundColor:[UIColor clearColor]];
 	[mainscrollView setCanCancelContentTouches:NO];
     
 	//设置滚动条类型
@@ -336,18 +337,27 @@
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
         
-        UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
+        UIScrollView *photoscroll = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
     
-        s.backgroundColor = [UIColor whiteColor];
-        s.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
-        s.delegate = self;
-        s.minimumZoomScale = 1.0;
-        s.maximumZoomScale = 3.0;
-        s.showsVerticalScrollIndicator= NO;
-        s.showsHorizontalScrollIndicator= NO;
-//        s.clipsToBounds = YES;
-        //        s.tag = i+1;
-        [s setZoomScale:1.0];
+        photoscroll.backgroundColor = [UIColor whiteColor];
+        photoscroll.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+        
+        photoscroll.delegate = self;
+        
+        photoscroll.minimumZoomScale = 1.0;
+        
+        photoscroll.maximumZoomScale = 3.0;
+        
+        photoscroll.showsVerticalScrollIndicator= NO;
+        
+        photoscroll.showsHorizontalScrollIndicator= NO;
+        
+        //        photoscroll.clipsToBounds = YES;
+        
+        //        photoscroll.tag = i+1;
+        
+        [photoscroll setZoomScale:1.0];
+        
         
         
         
@@ -359,20 +369,20 @@
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
         //设置背景
-		[photobtn setBackgroundColor:[UIColor blueColor]];
+		[photobtn setBackgroundColor:[UIColor blackColor]];
 		
         
 		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
         photobtn.frame = oldFrameV;
-        photobtn.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+        photobtn.center = CGPointMake(CGRectGetWidth(photoscroll.frame)/2,CGRectGetHeight(photoscroll.frame)/2);
 		//将图片内容的显示模式设置为自适应模式
 //		photobtn.contentMode = UIViewContentModeRedraw;
         
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
         
-        [s addSubview:photobtn];
-        [photolist addObject:s];
-        [mainscrollView addSubview:s];
+        [photoscroll addSubview:photobtn];
+        [photolist addObject:photoscroll];
+        [mainscrollView addSubview:photoscroll];
 		
 	}
 	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
@@ -402,12 +412,19 @@
 - (void)imageItemClick:(id)sender
 {
 	NSLog(@"BUTTON CLICKED");
-    if([self ishidebar] == NO){
-        [self setFullScreen];
+    if (self.isPlaying == NO) {
+        if([self ishidebar] == NO){
+            [self setFullScreen];
+        }else{
+            
+            [self setShowNavibar];
+        }
     }else{
-        
-        [self setShowNavibar];
+        self.isPlaying = NO;
+        [playbtn setTitle:@"Play"];
+        [playTimer invalidate];
     }
+    
 //    UINavigationBar *navBar = self.navigationController.navigationBar;
 //    bool a = navBar.isTranslucent;
 }
@@ -571,24 +588,27 @@
             for (UIScrollView *s in scrollView.subviews){
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
-                    
+//
                     for (UIButton *imv in s.subviews){
-                        if ([imv isKindOfClass:[UIButton class]]){
-                            
-                            if (sOrientation == kLandScapeTop) {
-                                imv.frame = oldFrameV;
-                                imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-                            }
-                            else if(sOrientation == kLandScapeRight){
-                                imv.frame = oldFrameH;
-                                imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-                                
-                            }
-                            
-                            
-                            
-                            
+                        if (imv.imageView.image == nil) {
+                            [s setScrollEnabled:NO];
+                            NSLog(@"image is nil");
+                        }else{
+                            [s setScrollEnabled:YES];
+                            NSLog(@"image not nil");
                         }
+//                        if ([imv isKindOfClass:[UIButton class]]){
+//                            
+//                            if (sOrientation == kLandScapeTop) {
+//                                imv.frame = oldFrameV;
+//                                imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+//                            }
+//                            else if(sOrientation == kLandScapeRight){
+//                                imv.frame = oldFrameH;
+//                                imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+//                                
+//                            }
+//                        }
                     }
                 }
                 
@@ -624,13 +644,7 @@
             return ;
         }
         
-        //        NSLog(@"changing page to:%d",page);
-        //    pageControl.currentPage = page;
-        
-        
-        
-//        NSLog(@"_scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
-//        NSLog(@"_scrollView.contentSize.width:%f",scrollView.contentSize.width);
+    
         if(self.currentImageId != page){
             NSLog(@"changing page to:%d",page);
 //            self.lastpage = self.currentImageId;
@@ -660,21 +674,44 @@
         
         return v;
     }
+    
     return nil;
 }
 
 
--(void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view{
-   
+//-(void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view{
+//   
+//
+//
+//}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
+    NSLog(@"scrollViewDidZoom");
+    CGSize boundsSize = scrollView.bounds.size;
+    for(UIButton *scroolbtn in scrollView.subviews){
+        CGRect frameToCenter = scroolbtn.frame;
+        // center horizontally
+        if (frameToCenter.size.width < boundsSize.width)
+            frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2;
+        else
+            frameToCenter.origin.x = 0.0f;
+        
+        // center vertically
+        if (frameToCenter.size.height < boundsSize.height)
+            frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
+        else
+            frameToCenter.origin.y = 0.0f;
+        
+        scroolbtn.frame = frameToCenter;
+        
+    }
 
 
 }
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
     NSLog(@"scrollViewDidEndZooming");
-    if (scrollView == mainscrollView) {
-        
-    }
-}
+   }
 
 - (BOOL) hidesBottomBarWhenPushed {
     return YES;

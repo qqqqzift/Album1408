@@ -14,6 +14,7 @@
 #import "AFNetworking.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
+#import "UIImageView+WebCache.h"
 @interface ListPhotoTableViewController ()
 
 @end
@@ -201,16 +202,20 @@
     }
     // Configure the cell...
     //dataSource_中保存有各单元显示用字符串
-    cell.textLabel.text = [@"      " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
+    cell.textLabel.text = [@"" stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
     
     
     ;
-    cell.textLabel.frame = CGRectMake(60, 60, 100, 40);
+    cell.textLabel.frame = CGRectMake(0, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
     //UIImageView * timage =[[UIImageView alloc]initWithImage: [[EGOImageLoader sharedImageLoader]imageForURL:[NSURL URLWithString:[(PhotoEntity *)[photos objectAtIndex:indexPath.row] url]] shouldLoadWithObserver:nil]];
-    UIImageView * timage = [(PhotoEntity *)[_photos objectAtIndex:indexPath.row] egoImage];
-    [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
+    UIImageView * timage = [[UIImageView alloc]initWithFrame:CGRectMake(0,0,kListImageWidth,kListImageHeight)];
+    [timage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
+        placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+    
+    
+//    [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
     [cell.contentView addSubview:timage];
     
     //[cell.contentView ]

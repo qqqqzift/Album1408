@@ -10,6 +10,7 @@
 #import "ListPhotoTableViewController.h"
 #import "PhotoScrollViewController.h"
 #import "ListPhotoLViewController.h"
+#import "UIButton+WebCache.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
 
@@ -74,12 +75,18 @@
     self.navigationItem.rightBarButtonItem = seteiButton;
     
     
-    UIImageView *imageView = [[UIImageView alloc]initWithImage:[(PhotoEntity *)[_photos objectAtIndex:0] egoImage].image];
+//    UIImageView *imageView = [photobtn.imageView sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
+//                          placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
     
-    oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
-  
+//    oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
+//  
+//    
+//    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
     
-    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
+    oldFrameV = CGRectMake(0, 0, kScreenWidth,   kScreenWidth);
+    
+    
+    oldFrameH = CGRectMake(0, 0, kScreenWidth,kScreenWidth);
     
     photolist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
@@ -363,7 +370,9 @@
         
         UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
         
-        [photobtn setImage:[(PhotoEntity *)[_photos objectAtIndex:(i)] egoImage].image forState:UIControlStateNormal ];
+        [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
+                            forState:UIControlStateNormal
+                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
         
         [photobtn setAdjustsImageWhenHighlighted:NO];
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];

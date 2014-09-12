@@ -11,7 +11,7 @@
 @implementation PhotoEntity
 
 @synthesize ID=_ID,url=_url,title=_title,author=_author;
-@synthesize isLoaded =  _isLoaded,egoImage = _egoImage;
-//@synthesize image = _image;
+@synthesize isLoaded =  _isLoaded;
+@synthesize image = _image;
 
 @end

@@ -11,6 +11,7 @@
 #import "AFXMLRequestOperation.h"
 #import "ListPhotoTableViewController.h"
 #import "MMCommon.h"
+#import "UIImageView+WebCache.h"
 
 
 @interface StartViewController ()
@@ -261,9 +262,11 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
-            aPhoto.egoImage = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
-            aPhoto.egoImage.imageURL = [NSURL URLWithString:trimmedString];
-            aPhoto.egoImage.frame = CGRectMake(0, 0,kScreenWidth, kScreenHeight);
+//            aPhoto.image = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+//            UIImageView *imageview;
+//            aPhoto.egoImage = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+//            aPhoto.egoImage.imageURL = [NSURL URLWithString:trimmedString];
+//            aPhoto.egoImage.frame = CGRectMake(0, 0,kScreenWidth, kScreenHeight);
             
             //NSLog(@"url :%@",aPhoto.url);
         }

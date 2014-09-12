@@ -12,7 +12,7 @@
 #import "UITableGridViewCell.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
-
+#import "UIButton+WebCache.h"
 
 @interface ListPhotoLViewController ()
 
@@ -130,9 +130,10 @@
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         
         
-        UIImageView * timage = [(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] egoImage];
-        
-        [button setBackgroundImage:timage.image forState:UIControlStateNormal];
+        [button sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
+                            forState:UIControlStateNormal
+                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+
         
         [button addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         

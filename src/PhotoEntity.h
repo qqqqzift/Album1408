@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EGOImageView.h"
+
 
 @interface PhotoEntity : NSObject
 
@@ -16,6 +16,6 @@
 @property NSString *title;
 @property NSString *author;
 @property bool isLoaded;
-@property EGOImageView *egoImage;
-//@property (nonatomic,weak)UIImage *image;
+
+@property UIImageView *image;
 @end

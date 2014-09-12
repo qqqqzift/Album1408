@@ -425,7 +425,8 @@
 - (void)imageItemClick:(id)sender
 {
 	NSLog(@"BUTTON CLICKED");
-    [self updateZoomStatus];
+    
+    
     if (self.isPlaying == NO) {
         if([self ishidebar] == NO){
             [self setFullScreen];
@@ -437,6 +438,12 @@
         self.isPlaying = NO;
         [playbtn setTitle:@"Play"];
         [playTimer invalidate];
+        if([self ishidebar] == NO){
+            [self setFullScreen];
+        }else{
+            
+            [self setShowNavibar];
+        }
     }
     
 //    UINavigationBar *navBar = self.navigationController.navigationBar;

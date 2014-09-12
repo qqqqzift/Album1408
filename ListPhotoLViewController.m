@@ -123,6 +123,7 @@
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
         UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
         //[button.tag ]
+//        button.backgroundColor = [UIColor blackColor];
         button.bounds = CGRectMake(0, 0, kImageWidth, kImageHeight);
         button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + kImageHeight * 0.5);
         //button.column = i;
@@ -209,7 +210,7 @@
 //    [albumView SetPhotos:photos];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
-    [self.navigationController pushViewController: albumView animated:YES];
+    [self.navigationController pushViewController: albumView animated:NO];
     
 }
 

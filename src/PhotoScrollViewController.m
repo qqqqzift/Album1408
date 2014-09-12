@@ -368,25 +368,25 @@
         
         
         UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
-        
+        [photoscroll addSubview:photobtn];
+        [photolist addObject:photoscroll];
         [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
                             forState:UIControlStateNormal
                             placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                //... completion code here ...
-                               ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
-                               UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
-                               for (UIButton *photobtn in photoscroll.subviews){
-                                   if ([photobtn isKindOfClass:[UIButton class]]){
-                                       if (sOrientation == kLandScapeTop) {
-                                           photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
-                                           photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-                                       }else if(sOrientation == kLandScapeRight){
-                                           photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
-                                           photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-                                       }
-                                   }
+                               
+                               
+                               if (sOrientation == kLandScapeTop) {
+                                   photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
+                                   photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                               }else if(sOrientation == kLandScapeRight){
+                                   photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
+                                   photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                                }
+                               photoscroll.maximumZoomScale = 3.0;
+                               photoscroll.minimumZoomScale = 1.0;
+                               ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded =  YES;
                                
                                
                             }];
@@ -406,8 +406,7 @@
         
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
         
-        [photoscroll addSubview:photobtn];
-        [photolist addObject:photoscroll];
+        
         [mainscrollView addSubview:photoscroll];
 		
 	}
@@ -438,10 +437,10 @@
 - (void)imageItemClick:(id)sender
 {
 	NSLog(@"BUTTON CLICKED");
-    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-        [self updateZoomStatus];
-    }
-    
+//    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+//        [self updateZoomStatus];
+//    }
+//    
     
     if (self.isPlaying == NO) {
         if([self ishidebar] == NO){
@@ -600,17 +599,17 @@
     
     
 }
--(void)updateZoomStatus{
-    
-    
-    
-    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
-    
-    photoscroll.maximumZoomScale = 3.0;
-    photoscroll.minimumZoomScale = 1.0;
-    NSLog(@"update isLoaded to YES");
+//-(void)updateZoomStatus{
+//    
+//    
+//    
+//    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
+//    
+//    photoscroll.maximumZoomScale = 3.0;
+//    photoscroll.minimumZoomScale = 1.0;
+//    NSLog(@"update isLoaded to YES");
 
-}
+//}
 
 
 #pragma scrollMethod
@@ -636,7 +635,20 @@
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
                     if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-                        [self updateZoomStatus];
+//                        [self updateZoomStatus];
+//                        UIScrollView *ss = [photolist objectAtIndex:(self.currentImageId)];
+//                        for (UIButton *photobtn in s.subviews){
+//                            if ([photobtn isKindOfClass:[UIButton class]]){
+//                                if (sOrientation == kLandScapeTop) {
+//                                    photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
+//                                    photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+//                                }else if(sOrientation == kLandScapeRight){
+//                                    photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
+//                                    photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+//                                }
+//                            }
+//                        }
+                        
                     }else{
                         
                         NSLog(@"isLoaded == NO");
@@ -705,6 +717,8 @@
             self.ispagechanged = YES;
             
         }else{
+//            CGFloat a = scrollView.contentOffset.x+pageWidth;
+//            CGFloat b = scrollView.contentSize.width;
             if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
                 [self showNopageMessage:@"最後の画像です"];
             }

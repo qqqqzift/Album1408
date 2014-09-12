@@ -13,6 +13,9 @@
 #import "PhotoEntity.h"
 #import "MMCommon.h"
 #import "UIButton+WebCache.h"
+#import "UIImageView+WebCache.h"
+
+
 
 @interface ListPhotoLViewController ()
 
@@ -133,33 +136,41 @@
             break;
         }
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
-        UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
+        __block UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
         //[button.tag ]
-//        button.backgroundColor = [UIColor blackColor];
+        button.bounds = CGRectMake(0, 0, kImageWidth, kImageWidth);
+        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + self.mImageHeight * 0.5);
+        button.backgroundColor = [UIColor blackColor];
         
-       
+        
         //button.column = i;
         [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         
-        
-        [button sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
-                            forState:UIControlStateNormal
+        UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
+        [tmpImage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
+//                            forState:UIControlStateNormal
                             placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                             loadcnt++;
-                             self.isneededtoresize = YES;
+//                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
+                                 tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
+                                 tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
+                                                       CGRectGetHeight(button.frame)/2);
+                                 loadcnt++;
+                                 [button addSubview:tmpImage];
+                                 [[self tableView] reloadData];
+//                                 ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
+//                             }
+                             
+                             
+                             
                              
                          }];
         
 
-        int tImageHeight = kImageWidth*button.imageView.image.size.height/button.imageView.image.size.width;
-        if (tImageHeight > self.mImageHeight) {
-            self.mImageHeight = tImageHeight;
-        }
         
-        button.bounds = CGRectMake(0, 0, kImageWidth, self.mImageHeight);
-        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + self.mImageHeight * 0.5);
+        
+        
         
         
         [button addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -263,7 +274,7 @@
 - (void)viewDidAppear:(BOOL)animated{
     
 //    [[self navigationController] setNavigationBarHidden:NO animated:YES];
-    resizeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicturesize:) userInfo:nil repeats:YES];
+//    resizeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicturesize:) userInfo:nil repeats:YES];
     
 }
 

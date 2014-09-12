@@ -15,7 +15,7 @@
 @property NSString *url;
 @property NSString *title;
 @property NSString *author;
-@property bool isLoaded;
+@property __block bool isLoaded;
 
 @property UIImageView *image;
 @end

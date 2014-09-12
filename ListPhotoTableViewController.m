@@ -202,7 +202,7 @@
     }
     // Configure the cell...
     //dataSource_中保存有各单元显示用字符串
-    cell.textLabel.text = [@"" stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
+    cell.textLabel.text = [@"    " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
     
     
     ;

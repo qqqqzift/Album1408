@@ -83,10 +83,10 @@
 //    
 //    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
     
-    oldFrameV = CGRectMake(0, 0, kScreenWidth,   kScreenWidth);
-    
-    
-    oldFrameH = CGRectMake(0, 0, kScreenWidth,kScreenWidth);
+//    oldFrameV = CGRectMake(0, 0, kScreenWidth,   kScreenWidth);
+//    
+//    
+//    oldFrameH = CGRectMake(0, 0, kScreenWidth,kScreenWidth);
     
     photolist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
@@ -259,13 +259,12 @@
             
             if ([photobtn isKindOfClass:[UIButton class]]){
                 //没有缩放时
-                
                 if (saveForZooming - 1.0f < kEPS){
                     if (sOrientation == kLandScapeTop) {
-                        photobtn.frame = oldFrameV;
+                        photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
                         photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
                     }else if(sOrientation == kLandScapeRight){
-                        photobtn.frame = oldFrameH;
+                        photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
                         photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                     }
                 }
@@ -273,11 +272,11 @@
                     //有缩放时
                     [photoscroll setZoomScale:1.0 ];
                     if (sOrientation == kLandScapeTop) {
-                        photobtn.frame = oldFrameV;
+                        photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
                         photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
                         saveForZooming = saveForZooming*kScreenHeight/kScreenWidth;
                     }else if(sOrientation == kLandScapeRight){
-                        photobtn.frame = oldFrameH;
+                        photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;;
                         photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                         saveForZooming = saveForZooming*kScreenWidth/kScreenHeight;
                     }
@@ -372,7 +371,12 @@
         
         [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
                             forState:UIControlStateNormal
-                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                           completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                               //... completion code here ...
+                               ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
+                               
+                                }];
         
         [photobtn setAdjustsImageWhenHighlighted:NO];
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -382,7 +386,7 @@
 		
         
 		//设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        photobtn.frame = oldFrameV;
+        photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));;
         photobtn.center = CGPointMake(CGRectGetWidth(photoscroll.frame)/2,CGRectGetHeight(photoscroll.frame)/2);
 		//将图片内容的显示模式设置为自适应模式
 //		photobtn.contentMode = UIViewContentModeRedraw;
@@ -421,6 +425,7 @@
 - (void)imageItemClick:(id)sender
 {
 	NSLog(@"BUTTON CLICKED");
+    [self updateZoomStatus];
     if (self.isPlaying == NO) {
         if([self ishidebar] == NO){
             [self setFullScreen];
@@ -572,7 +577,16 @@
     
     
 }
+-(void)updateZoomStatus{
+    
+    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+        UIScrollView *photoscroll = [photolist objectAtIndex:self.currentImageId];
+        photoscroll.maximumZoomScale = 3.0;
+        photoscroll.minimumZoomScale = 1.0;
+        NSLog(@"update isLoaded to YES");
+    }
 
+}
 
 
 #pragma scrollMethod
@@ -597,15 +611,24 @@
             for (UIScrollView *s in scrollView.subviews){
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
+                    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+                        s.maximumZoomScale = 3.0;
+                        s.minimumZoomScale = 1.0;
+                        NSLog(@"isLoaded == YES");
+                    }else{
+                        s.maximumZoomScale = 1.0;
+                        s.minimumZoomScale = 1.0;
+                        NSLog(@"isLoaded == NO");
+                    }
 //
-                    for (UIButton *imv in s.subviews){
-                        if (imv.imageView.image == nil) {
-                            [s setScrollEnabled:NO];
-                            NSLog(@"image is nil");
-                        }else{
-                            [s setScrollEnabled:YES];
-                            NSLog(@"image not nil");
-                        }
+//                    for (UIButton *imv in s.subviews){
+//                        if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+//                            [s setScrollEnabled:NO];
+//                            NSLog(@"image is nil");
+//                        }else{
+//                            [s setScrollEnabled:YES];
+//                            NSLog(@"image not nil");
+//                        }
 //                        if ([imv isKindOfClass:[UIButton class]]){
 //                            
 //                            if (sOrientation == kLandScapeTop) {
@@ -618,7 +641,7 @@
 //                                
 //                            }
 //                        }
-                    }
+//                    }
                 }
                 
             }
@@ -696,9 +719,9 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    NSLog(@"scrollViewDidZoom");
     CGSize boundsSize = scrollView.bounds.size;
     for(UIButton *scroolbtn in scrollView.subviews){
+        
         CGRect frameToCenter = scroolbtn.frame;
         // center horizontally
         if (frameToCenter.size.width < boundsSize.width)

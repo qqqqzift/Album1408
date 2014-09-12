@@ -352,7 +352,7 @@
         
         photoscroll.minimumZoomScale = 1.0;
         
-        photoscroll.maximumZoomScale = 3.0;
+        photoscroll.maximumZoomScale = 1.0;
         
         photoscroll.showsVerticalScrollIndicator= NO;
         
@@ -375,8 +375,21 @@
                            completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                //... completion code here ...
                                ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
+                               UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
+                               for (UIButton *photobtn in photoscroll.subviews){
+                                   if ([photobtn isKindOfClass:[UIButton class]]){
+                                       if (sOrientation == kLandScapeTop) {
+                                           photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
+                                           photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                                       }else if(sOrientation == kLandScapeRight){
+                                           photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
+                                           photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                                       }
+                                   }
+                               }
                                
-                                }];
+                               
+                            }];
         
         [photobtn setAdjustsImageWhenHighlighted:NO];
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -425,6 +438,9 @@
 - (void)imageItemClick:(id)sender
 {
 	NSLog(@"BUTTON CLICKED");
+    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+        [self updateZoomStatus];
+    }
     
     
     if (self.isPlaying == NO) {
@@ -586,12 +602,13 @@
 }
 -(void)updateZoomStatus{
     
-    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-        UIScrollView *photoscroll = [photolist objectAtIndex:self.currentImageId];
-        photoscroll.maximumZoomScale = 3.0;
-        photoscroll.minimumZoomScale = 1.0;
-        NSLog(@"update isLoaded to YES");
-    }
+    
+    
+    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
+    
+    photoscroll.maximumZoomScale = 3.0;
+    photoscroll.minimumZoomScale = 1.0;
+    NSLog(@"update isLoaded to YES");
 
 }
 
@@ -619,12 +636,9 @@
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
                     if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-                        s.maximumZoomScale = 3.0;
-                        s.minimumZoomScale = 1.0;
-                        NSLog(@"isLoaded == YES");
+                        [self updateZoomStatus];
                     }else{
-                        s.maximumZoomScale = 1.0;
-                        s.minimumZoomScale = 1.0;
+                        
                         NSLog(@"isLoaded == NO");
                     }
 //

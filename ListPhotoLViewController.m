@@ -23,6 +23,17 @@
 @implementation ListPhotoLViewController
 @synthesize sOrientation;
 
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        self.mImageHeight = 0;
+        loadcnt = 0;
+        self.isneededtoresize = NO;
+    }
+    return self;
+}
 -(void)imageItemClick:(UIImageButton *)button{
 
     PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
@@ -30,6 +41,7 @@
     photoView.photos = [self photos];
     photoView.islastpageList = NO;
     photoView.sOrientation = [self sOrientation];
+    [self stopResize];
     [self.navigationController pushViewController: photoView animated:YES];
 }
 
@@ -124,8 +136,8 @@
         UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
         //[button.tag ]
 //        button.backgroundColor = [UIColor blackColor];
-        button.bounds = CGRectMake(0, 0, kImageWidth, kImageHeight);
-        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + kImageHeight * 0.5);
+        
+       
         //button.column = i;
         [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
@@ -133,8 +145,22 @@
         
         [button sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
                             forState:UIControlStateNormal
-                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                             loadcnt++;
+                             self.isneededtoresize = YES;
+                             
+                         }];
+        
 
+        int tImageHeight = kImageWidth*button.imageView.image.size.height/button.imageView.image.size.width;
+        if (tImageHeight > self.mImageHeight) {
+            self.mImageHeight = tImageHeight;
+        }
+        
+        button.bounds = CGRectMake(0, 0, kImageWidth, self.mImageHeight);
+        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + self.mImageHeight * 0.5);
+        
         
         [button addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -208,6 +234,7 @@
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
 //    [albumView SetPhotos:photos];
+    [self stopResize];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
     [self.navigationController pushViewController: albumView animated:NO];
@@ -236,6 +263,7 @@
 - (void)viewDidAppear:(BOOL)animated{
     
 //    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    resizeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicturesize:) userInfo:nil repeats:YES];
     
 }
 
@@ -244,7 +272,7 @@
     NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
     if((sOrientation == kLandScapeBottom)||(sOrientation == kLandScapeTop)){
         NSLog(@"top:top cell");
-        static NSString *identifierT = @"CellTop";
+        
          UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
         if (cellTop == nil) {
             NSLog(@"top:init top cell");
@@ -260,7 +288,7 @@
     }else {
         
         NSLog(@"right:right cell");
-        static NSString *identifierR = @"CellRight";
+        
         //自定义UITableGridViewCell，里面加了个NSArray用于放置里面的4个图片按钮
         
         
@@ -301,6 +329,38 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return kImageHeight+5;
+    if (self.mImageHeight == 0) {
+        self.mImageHeight = 66;
+    }
+    return self.mImageHeight+5;
 }
+
+-(void)loadPicturesize:(NSTimer *)timer{
+    [self.tableView reloadData];
+    if (self.isneededtoresize == YES) {
+        self.isneededtoresize = NO;
+        
+        UITableViewCell *cellT = [[[self tableView] dequeueReusableCellWithIdentifier:identifierT] cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        
+        [self.tableView reloadData];
+    }
+    
+    if (loadcnt >= [self.photos count]){
+        //   所有图片读取完成
+        [self.tableView reloadData];
+        //停止resize timer
+        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopresizeTimer:) userInfo:nil repeats:NO];
+    }
+    
+}
+
+-(void)stopresizeTimer:(NSTimer *)timer{
+    [self stopResize];
+}
+
+-(void)stopResize{
+    [resizeTimer invalidate];
+    resizeTimer = nil;
+}
+
 @end

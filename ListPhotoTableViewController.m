@@ -98,8 +98,8 @@
 
 -(void)selectRightAction:(id)sender
 {
-    [loadTimer invalidate];
-    loadTimer = nil;
+//    [loadTimer invalidate];
+//    loadTimer = nil;
     ListPhotoLViewController *albumView = [[ListPhotoLViewController alloc]init];
     
 //    [albumView SetPhotos:_photos];
@@ -150,25 +150,25 @@
     self.wantsFullScreenLayout = YES;
     
     
-    loadTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicture:) userInfo:nil repeats:YES];
+//    loadTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicture:) userInfo:nil repeats:YES];
 }
 
 
--(void)loadPicture:(NSTimer *)timer{
-    
-    if ([_photos count] >=  kPhotoCnt) {
-        [self.tableView reloadData];
-    }else{
-    
-        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopTimer:) userInfo:nil repeats:NO];
-    }
-    
-}
+//-(void)loadPicture:(NSTimer *)timer{
+//    
+//    if ([_photos count] >=  kPhotoCnt) {
+//        [self.tableView reloadData];
+//    }else{
+//    
+//        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopTimer:) userInfo:nil repeats:NO];
+//    }
+//    
+//}
 
--(void)stopTimer:(NSTimer *)timer{
-    [loadTimer invalidate];
-    loadTimer = nil;
-}
+//-(void)stopTimer:(NSTimer *)timer{
+//    [loadTimer invalidate];
+//    loadTimer = nil;
+//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -248,8 +248,8 @@
 didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
     //NSLog(@"didSelectRowAtIndexPath:%ld",(long)indexPath.row);
-    [loadTimer invalidate];
-    loadTimer = nil;
+//    [loadTimer invalidate];
+//    loadTimer = nil;
     PhotoScrollViewController *photoView = [[PhotoScrollViewController alloc]init];
     photoView.currentImageId = [[_photos objectAtIndex:indexPath.row] ID];
     photoView.photos = [self photos];

@@ -32,8 +32,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.mImageHeight = 0;
-        loadcnt = 0;
-        self.isneededtoresize = NO;
+//        loadcnt = 0;
+//        self.isneededtoresize = NO;
     }
     return self;
 }
@@ -44,7 +44,7 @@
     photoView.photos = [self photos];
     photoView.islastpageList = NO;
     photoView.sOrientation = [self sOrientation];
-    [self stopResize];
+//    [self stopResize];
     [self.navigationController pushViewController: photoView animated:YES];
 }
 
@@ -156,7 +156,7 @@
                                  tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
                                  tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
                                                        CGRectGetHeight(button.frame)/2);
-                                 loadcnt++;
+//                                 loadcnt++;
                                  [button addSubview:tmpImage];
                                  [[self tableView] reloadData];
 //                                 ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
@@ -245,7 +245,7 @@
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
 //    [albumView SetPhotos:photos];
-    [self stopResize];
+//    [self stopResize];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
     [self.navigationController pushViewController: albumView animated:NO];
@@ -346,32 +346,32 @@
     return self.mImageHeight+5;
 }
 
--(void)loadPicturesize:(NSTimer *)timer{
-    [self.tableView reloadData];
-    if (self.isneededtoresize == YES) {
-        self.isneededtoresize = NO;
-        
-        UITableViewCell *cellT = [[[self tableView] dequeueReusableCellWithIdentifier:identifierT] cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-        
-        [self.tableView reloadData];
-    }
-    
-    if (loadcnt >= [self.photos count]){
-        //   所有图片读取完成
-        [self.tableView reloadData];
-        //停止resize timer
-        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopresizeTimer:) userInfo:nil repeats:NO];
-    }
-    
-}
+//-(void)loadPicturesize:(NSTimer *)timer{
+//    [self.tableView reloadData];
+//    if (self.isneededtoresize == YES) {
+//        self.isneededtoresize = NO;
+//        
+//        UITableViewCell *cellT = [[[self tableView] dequeueReusableCellWithIdentifier:identifierT] cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+//        
+//        [self.tableView reloadData];
+//    }
+//    
+//    if (loadcnt >= [self.photos count]){
+//        //   所有图片读取完成
+//        [self.tableView reloadData];
+//        //停止resize timer
+//        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopresizeTimer:) userInfo:nil repeats:NO];
+//    }
+//    
+//}
+//
+//-(void)stopresizeTimer:(NSTimer *)timer{
+//    [self stopResize];
+//}
 
--(void)stopresizeTimer:(NSTimer *)timer{
-    [self stopResize];
-}
-
--(void)stopResize{
-    [resizeTimer invalidate];
-    resizeTimer = nil;
-}
+//-(void)stopResize{
+//    [resizeTimer invalidate];
+//    resizeTimer = nil;
+//}
 
 @end

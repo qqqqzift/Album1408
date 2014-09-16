@@ -56,14 +56,14 @@
     [super viewDidLoad];
     self.wantsFullScreenLayout = YES;
     self.navigationItem.title = @"アルバム";
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [UIColor clearColor];
     //[self setAutomaticallyAdjustsScrollViewInsets:NO];
     self.navigationItem.hidesBackButton = YES;
     if(IsIOS7){
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     [UIApplication sharedApplication].statusBarHidden = YES;
-    //below not working(try to hide toolsbar)
+
     self.hidesBottomBarWhenPushed = YES;
     UIBarButtonItem *seteiButton;
     
@@ -230,6 +230,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    NSLog(@"didReceiveMemoryWarning in PhotoScrollViewController");
+    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 
@@ -483,11 +487,11 @@
         
     }
 }
--(void) dismissAction:(NSTimer *)timer{
-    [pageMessage dismissWithClickedButtonIndex:0 animated:NO];//important
-    pageMessage = nil;
-    self.isShowingAlter = NO;
-}
+//-(void) dismissAction:(NSTimer *)timer{
+//    [pageMessage dismissWithClickedButtonIndex:0 animated:NO];//important
+//    pageMessage = nil;
+//    self.isShowingAlter = NO;
+//}
 -(void)showNopageMessage:(NSString *)message{
     if (self.isShowingAlter == YES) {
         return ;
@@ -497,12 +501,18 @@
                           initWithTitle:@"メーセージ"
                           message:message
                           delegate:self
-                          cancelButtonTitle:nil
+                          cancelButtonTitle:@"OK"
                           otherButtonTitles:nil];
     [pageMessage show];
-    [NSTimer scheduledTimerWithTimeInterval:0.8f target:self selector: @selector(dismissAction:)  userInfo:nil repeats:NO];
+//    [NSTimer scheduledTimerWithTimeInterval:0.8f target:self selector: @selector(dismissAction:)  userInfo:nil repeats:NO];
 }
 
+
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        self.isShowingAlter = NO;
+    }
+}
 -(void)playPhotoAction:(NSTimer *)timer{
     
     if (self.currentImageId < [[self photos] count]) {
@@ -596,13 +606,19 @@
 //}
 //
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    
-    
+    NSLog(@"scrollViewDidEndDragging");
+    if (self.willshowStartAlter == YES) {
+        [self showNopageMessage:@"最初の画像です"];
+        self.willshowStartAlter = NO;
+    }else if(self.willshowEndAlter == YES){
+        [self showNopageMessage:@"最後の画像です"];
+        self.willshowEndAlter = NO;
+    }
 }
 //-(void)updateZoomStatus{
-//    
-//    
-//    
+//
+//
+//
 //    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
 //    
 //    photoscroll.maximumZoomScale = 3.0;
@@ -621,6 +637,7 @@
 //滚动完成时调用的方法
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    NSLog(@"scrollViewDidEndDecelerating");
     
     pageControlIsChangingPage = NO;
     
@@ -635,46 +652,11 @@
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
                     if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-//                        [self updateZoomStatus];
-//                        UIScrollView *ss = [photolist objectAtIndex:(self.currentImageId)];
-//                        for (UIButton *photobtn in s.subviews){
-//                            if ([photobtn isKindOfClass:[UIButton class]]){
-//                                if (sOrientation == kLandScapeTop) {
-//                                    photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
-//                                    photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-//                                }else if(sOrientation == kLandScapeRight){
-//                                    photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
-//                                    photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-//                                }
-//                            }
-//                        }
                         
                     }else{
                         
                         NSLog(@"isLoaded == NO");
                     }
-//
-//                    for (UIButton *imv in s.subviews){
-//                        if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-//                            [s setScrollEnabled:NO];
-//                            NSLog(@"image is nil");
-//                        }else{
-//                            [s setScrollEnabled:YES];
-//                            NSLog(@"image not nil");
-//                        }
-//                        if ([imv isKindOfClass:[UIButton class]]){
-//                            
-//                            if (sOrientation == kLandScapeTop) {
-//                                imv.frame = oldFrameV;
-//                                imv.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-//                            }
-//                            else if(sOrientation == kLandScapeRight){
-//                                imv.frame = oldFrameH;
-//                                imv.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-//                                
-//                            }
-//                        }
-//                    }
                 }
                 
             }
@@ -691,8 +673,10 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     
-    
+    CGFloat pageWidth = mainscrollView.frame.size.width;
+    int page = floor((mainscrollView.contentOffset.x - pageWidth*9 / 16) / pageWidth) + 1;
     if (pageControlIsChangingPage) {
+        
         return;
     }
     NSLog(@"scrollViewDidScroll");
@@ -701,32 +685,42 @@
 	 */
     
     if (scrollView == mainscrollView){
-        CGFloat pageWidth = scrollView.frame.size.width;
-        int page = floor((scrollView.contentOffset.x - pageWidth*9 / 16) / pageWidth) + 1;
-        if ((page == self.currentImageId)&&
+        
+               if ((page == self.currentImageId)&&
             (page != (self.photos.count-1))&&
             (page != 0)) {
+           
             return ;
         }
+        
         
     
         if(self.currentImageId != page){
             NSLog(@"changing page to:%d",page);
-//            self.lastpage = self.currentImageId;
+
             self.currentImageId = page;
             self.ispagechanged = YES;
             
         }else{
-//            CGFloat a = scrollView.contentOffset.x+pageWidth;
-//            CGFloat b = scrollView.contentSize.width;
-            if (((page+1) == [[self photos] count] ) &&((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))){
-                [self showNopageMessage:@"最後の画像です"];
-            }
+
             
-            if((page == 0)&&(scrollView.contentOffset.x < 0))
-            {
-                [self showNopageMessage:@"最初の画像です"];
-            }
+        }
+    }
+    
+    if ((page+1) == [[self photos] count] ){
+        if (((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))&&(self.willshowStartAlter == NO)) {
+            self.willshowEndAlter = YES;
+        }
+        
+        
+        
+    }
+    
+    if(page == 0)
+    {
+        //                CGFloat a = scrollView.contentOffset.x;
+        if ((scrollView.contentOffset.x < 0)&&(self.willshowStartAlter == NO)) {
+            self.willshowStartAlter = YES;
         }
     }
     
@@ -754,6 +748,7 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
+    NSLog(@"scrollViewDidZoom");
     CGSize boundsSize = scrollView.bounds.size;
     for(UIButton *scroolbtn in scrollView.subviews){
         
@@ -783,5 +778,7 @@
 - (BOOL) hidesBottomBarWhenPushed {
     return YES;
 }
+
+
 
 @end

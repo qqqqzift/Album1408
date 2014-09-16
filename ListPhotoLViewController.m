@@ -280,13 +280,13 @@
 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
+//    NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
     if((sOrientation == kLandScapeBottom)||(sOrientation == kLandScapeTop)){
-        NSLog(@"top:top cell");
+//        NSLog(@"top:top cell");
         
          UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
         if (cellTop == nil) {
-            NSLog(@"top:init top cell");
+//            NSLog(@"top:init top cell");
 //            [[cellTop viewWithTag:100] removeFromSuperview];
             
             cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierT];
@@ -298,7 +298,7 @@
         return cellTop;
     }else {
         
-        NSLog(@"right:right cell");
+//        NSLog(@"right:right cell");
         
         //自定义UITableGridViewCell，里面加了个NSArray用于放置里面的4个图片按钮
         
@@ -306,7 +306,7 @@
         UITableGridViewCell *cellRight = [tableView dequeueReusableCellWithIdentifier:identifierR];
         cellRight.selectedBackgroundView = [[UIView alloc] init];
         if (cellRight == nil) {
-            NSLog(@"right:init right cell");
+//            NSLog(@"right:init right cell");
             
 //            [[cellRight viewWithTag:100] removeFromSuperview];
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
@@ -321,7 +321,15 @@
 
 }
 
-
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    NSLog(@"didReceiveMemoryWarning in ListPhotoViewController");
+    // Dispose of any resources that can be recreated.
+    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+}
 
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -352,7 +360,7 @@
 //        self.isneededtoresize = NO;
 //        
 //        UITableViewCell *cellT = [[[self tableView] dequeueReusableCellWithIdentifier:identifierT] cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-//        
+//
 //        [self.tableView reloadData];
 //    }
 //    

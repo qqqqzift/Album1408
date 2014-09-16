@@ -46,6 +46,8 @@
 @property int sOrientation;
 @property NSMutableArray  *photos;  //用于存储一组photo
 @property BOOL ispagechanged;
+@property bool willshowStartAlter;
+@property bool willshowEndAlter;
 @property bool isShowingAlter;
 @property TranslucentToolbar *scrollTools;
 //@property BOOL isRotation;          //

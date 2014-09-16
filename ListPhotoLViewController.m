@@ -148,42 +148,25 @@
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         
         UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
-//        [tmpImage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
-////                            forState:UIControlStateNormal
-//                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
-//                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-////                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
-//                                 tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
-//                                 tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
-//                                                       CGRectGetHeight(button.frame)/2);
-////                                 loadcnt++;
-//                                 [button addSubview:tmpImage];
-//                                 [[self tableView] reloadData];
-////                                 ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
-////                             }
-//                             
-//                             
-//                             
-//                             
-//                         }];
+        [tmpImage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
+//                            forState:UIControlStateNormal
+                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+//                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
+                                 tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
+                                 tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
+                                                       CGRectGetHeight(button.frame)/2);
+//                                 loadcnt++;
+                                 [button addSubview:tmpImage];
+                                 [[self tableView] reloadData];
+//                                 ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
+//                             }
+                             
+                             
+                             
+                             
+                         }];
         
-        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]) {
-            
-            [tmpImage setImage:[[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]];
-            
-            
-            
-            
-
-        }else{
-            [tmpImage setImage:[UIImage imageNamed:@"Block_01_00.png"] ];
-            
-        }
-        tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
-        tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
-                              CGRectGetHeight(button.frame)/2);
-        [button addSubview:tmpImage];
-        [[self tableView] reloadData];
 
         
         
@@ -343,9 +326,9 @@
     [super didReceiveMemoryWarning];
     NSLog(@"didReceiveMemoryWarning in ListPhotoViewController");
     // Dispose of any resources that can be recreated.
-//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 

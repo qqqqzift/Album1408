@@ -262,23 +262,13 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
-            SDWebImageManager *manager = [SDWebImageManager sharedManager];
-            [manager downloadImageWithURL:[NSURL URLWithString:aPhoto.url]
-                                  options:0
-                                 progress:^(NSInteger receivedSize, NSInteger expectedSize)
-             {
-                 // progression tracking code
-             }
-                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL)
-             {
-                 if (image)
-                 {
-                     [[SDImageCache sharedImageCache] storeImage:image forKey: [imageURL absoluteString]];
-                 }
-             }];
+//            aPhoto.image = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+//            UIImageView *imageview;
+//            aPhoto.egoImage = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+//            aPhoto.egoImage.imageURL = [NSURL URLWithString:trimmedString];
+//            aPhoto.egoImage.frame = CGRectMake(0, 0,kScreenWidth, kScreenHeight);
             
-            
-
+            //NSLog(@"url :%@",aPhoto.url);
         }
         if ([elementName isEqualToString:@"author"]) {
             aPhoto.author = trimmedString;

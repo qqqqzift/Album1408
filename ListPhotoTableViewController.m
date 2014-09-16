@@ -175,9 +175,9 @@
     [super didReceiveMemoryWarning];
     NSLog(@"didReceiveMemoryWarning in ListPhotoTableViewController");
     // Dispose of any resources that can be recreated.
-//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 #pragma mark - Table view data source
@@ -209,24 +209,15 @@
     cell.textLabel.text = [@"    " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
     
     
-    
+    ;
     cell.textLabel.frame = CGRectMake(0, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
-    UIImageView * timage =[[UIImageView alloc] init];
     //UIImageView * timage =[[UIImageView alloc]initWithImage: [[EGOImageLoader sharedImageLoader]imageForURL:[NSURL URLWithString:[(PhotoEntity *)[photos objectAtIndex:indexPath.row] url]] shouldLoadWithObserver:nil]];
+    UIImageView * timage = [[UIImageView alloc]initWithFrame:CGRectMake(0,0,kListImageWidth,kListImageHeight)];
+    [timage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
+        placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
     
-    
-    
-    
-    if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]) {
-        
-        [timage setImage:[[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]];
-    }else{
-        [timage setImage:[UIImage imageNamed:@"Block_01_00.png"] ];
-    
-    }
-    timage.frame = CGRectMake(0, 0, kListImageWidth, kListImageHeight);
     
 //    [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
     [cell.contentView addSubview:timage];

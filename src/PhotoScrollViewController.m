@@ -231,9 +231,9 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     NSLog(@"didReceiveMemoryWarning in PhotoScrollViewController");
-    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 
@@ -426,9 +426,7 @@
     [self.view addSubview:mainscrollView];
     self.currentImageId = self.currentImageId - 1;
     [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
-    
-	
-    
+
 }
 
 
@@ -511,6 +509,8 @@
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) {
         self.isShowingAlter = NO;
+        self.willshowStartAlter = NO;
+        self.willshowEndAlter = NO;
     }
 }
 -(void)playPhotoAction:(NSTimer *)timer{
@@ -615,17 +615,17 @@
         self.willshowEndAlter = NO;
     }
 }
-//-(void)updateZoomStatus{
-//
-//
-//
-//    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
-//    
-//    photoscroll.maximumZoomScale = 3.0;
-//    photoscroll.minimumZoomScale = 1.0;
-//    NSLog(@"update isLoaded to YES");
+-(void)updateZoomStatus{
 
-//}
+
+
+    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
+    
+    photoscroll.maximumZoomScale = 3.0;
+    photoscroll.minimumZoomScale = 1.0;
+    NSLog(@"update isLoaded to YES");
+
+}
 
 
 #pragma scrollMethod
@@ -652,7 +652,7 @@
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
                     if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-                        
+                        [self updateZoomStatus];
                     }else{
                         
                         NSLog(@"isLoaded == NO");
@@ -686,7 +686,7 @@
     
     if (scrollView == mainscrollView){
         
-               if ((page == self.currentImageId)&&
+        if ((page == self.currentImageId)&&
             (page != (self.photos.count-1))&&
             (page != 0)) {
            

@@ -326,9 +326,9 @@
     [super didReceiveMemoryWarning];
     NSLog(@"didReceiveMemoryWarning in ListPhotoViewController");
     // Dispose of any resources that can be recreated.
-    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
+//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
+//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 
@@ -348,10 +348,8 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.mImageHeight == 0) {
-        self.mImageHeight = 66;
-    }
-    return self.mImageHeight+5;
+    
+    return kImageWidth+5;
 }
 
 //-(void)loadPicturesize:(NSTimer *)timer{

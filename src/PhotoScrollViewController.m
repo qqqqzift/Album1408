@@ -347,7 +347,7 @@
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
         
-        UIScrollView *photoscroll = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
+        __block UIScrollView *photoscroll = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
     
         photoscroll.backgroundColor = [UIColor whiteColor];
         photoscroll.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
@@ -371,7 +371,7 @@
         
         
         
-        UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
+        __weak UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
         [photoscroll addSubview:photobtn];
         [photolist addObject:photoscroll];
         [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]

@@ -262,6 +262,22 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
+            SDWebImageManager *manager = [SDWebImageManager sharedManager];
+            [manager downloadImageWithURL:[NSURL URLWithString:aPhoto.url]
+                                  options:0
+                                 progress:^(NSInteger receivedSize, NSInteger expectedSize)
+             {
+                 // progression tracking code
+             }
+                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL)
+             {
+                 if (image)
+                 {
+                     [[SDImageCache sharedImageCache] storeImage:image forKey: [imageURL absoluteString]];
+                 }
+             }];
+            
+            
 
         }
         if ([elementName isEqualToString:@"author"]) {

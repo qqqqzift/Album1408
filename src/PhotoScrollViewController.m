@@ -371,7 +371,7 @@
         
         
         
-        UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
+        __weak UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
         [photoscroll addSubview:photobtn];
         [photolist addObject:photoscroll];
         

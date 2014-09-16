@@ -262,13 +262,7 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
-//            aPhoto.image = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-//            UIImageView *imageview;
-//            aPhoto.egoImage = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
-//            aPhoto.egoImage.imageURL = [NSURL URLWithString:trimmedString];
-//            aPhoto.egoImage.frame = CGRectMake(0, 0,kScreenWidth, kScreenHeight);
-            
-            //NSLog(@"url :%@",aPhoto.url);
+
         }
         if ([elementName isEqualToString:@"author"]) {
             aPhoto.author = trimmedString;

@@ -13,7 +13,7 @@
 #import "UIButton+WebCache.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
-
+#import "UIImageView+WebCache.h"
 @interface PhotoScrollViewController ()
 
 @end
@@ -360,26 +360,51 @@
         UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
         [photoscroll addSubview:photobtn];
         [self.photolist addObject:photoscroll];
-        [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
-                            forState:UIControlStateNormal
-                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
-                           completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                               //... completion code here ...
-                               
-                               
-                               if (sOrientation == kLandScapeTop) {
-                                   photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
-                                   photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-                               }else if(sOrientation == kLandScapeRight){
-                                   photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;
-                                   photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-                               }
-                               photoscroll.maximumZoomScale = 3.0;
-                               photoscroll.minimumZoomScale = 1.0;
-                               ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded =  YES;
-                               
-                               
-                            }];
+        __weak PhotoEntity * thisphoto = (PhotoEntity *)[self.photos objectAtIndex:i];
+        if (thisphoto.isLoaded ==  YES) {
+            if (sOrientation == kLandScapeTop) {
+                photobtn.frame = CGRectMake(0, 0, kScreenWidth,   thisphoto.image.image.size.height*(kScreenWidth/thisphoto.image.image.size.width));
+                photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+            }else if(sOrientation == kLandScapeRight){
+                photobtn.frame = CGRectMake(0, 0, thisphoto.image.image.size.width*(kScreenWidth/thisphoto.image.image.size.height),kScreenWidth);;
+                photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+            }
+            photoscroll.maximumZoomScale = 3.0;
+            photoscroll.minimumZoomScale = 1.0;
+            [photobtn setImage:thisphoto.image.image forState:UIControlStateNormal];
+        }else{
+            [photobtn.imageView setImage:[UIImage imageNamed:@"Block_01_00.png"]];
+            photobtn.frame = CGRectMake(0, 0, kScreenWidth,   kScreenWidth);
+            if (sOrientation == kLandScapeTop) {
+                photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+            }else if(sOrientation == kLandScapeRight){
+                photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+            }
+            [thisphoto.image  sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
+                        placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                               completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                                   //... completion code here ...
+                                   
+                                   thisphoto.isLoaded =  YES;
+                                   
+                                   if (sOrientation == kLandScapeTop) {
+                                       photobtn.frame = CGRectMake(0, 0, kScreenWidth,   thisphoto.image.image.size.height*(kScreenWidth/thisphoto.image.image.size.width));
+                                       photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
+                                   }else if(sOrientation == kLandScapeRight){
+                                       photobtn.frame = CGRectMake(0, 0, thisphoto.image.image.size.width*(kScreenWidth/thisphoto.image.image.size.height),kScreenWidth);;
+                                       photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
+                                   }
+                                   [photobtn setImage:thisphoto.image.image forState:UIControlStateNormal];
+                                   photoscroll.maximumZoomScale = 3.0;
+                                   photoscroll.minimumZoomScale = 1.0;
+                                   
+                                   
+                                   
+                               }];
+        
+        
+        }
+        
         
         [photobtn setAdjustsImageWhenHighlighted:NO];
         [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];

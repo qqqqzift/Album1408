@@ -12,7 +12,7 @@
 #import "UITableGridViewCell.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
-#import "UIButton+WebCache.h"
+
 #import "UIImageView+WebCache.h"
 #import "UIImage+UIImageExt.h"
 
@@ -273,13 +273,13 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 //    NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
-    [self updateAllLoadFlag];
+//    [self updateAllLoadFlag];
     if((sOrientation == kLandScapeBottom)||(sOrientation == kLandScapeTop)){
 //        NSLog(@"top:top cell");
         UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
-        if (allLoaded == NO) {
-            cellTop = nil;
-        }
+//        if (allLoaded == NO) {
+//            cellTop.selectedBackgroundView = [[UIView alloc] init];
+//        }
         
         if (cellTop == nil) {
             
@@ -298,9 +298,9 @@
         
         
         UITableGridViewCell *cellRight = [tableView dequeueReusableCellWithIdentifier:identifierR];
-        if (allLoaded == NO) {
-            cellRight = nil;
-        }
+//        if (allLoaded == NO) {
+//            cellRight.selectedBackgroundView = [[UIView alloc] init];
+//        }
         if (cellRight == nil) {
             
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];

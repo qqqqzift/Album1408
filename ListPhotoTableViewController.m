@@ -163,23 +163,39 @@
     //dataSource_中保存有各单元显示用字符串
     cell.textLabel.text = [@"    " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
     
-    
-    ;
     cell.textLabel.frame = CGRectMake(0, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
-    UIImage *placeholder = [UIImage imageNamed:@"Block_01_00.png"];
-    UIImageView * timage = [[UIImageView alloc]initWithFrame:CGRectMake(0,0,kListImageWidth,kListImageHeight)];
-    [timage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
-              placeholderImage:[placeholder imageByScalingAndCroppingForSize:CGSizeMake(kListImageWidth,kListImageHeight)]
-                     completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-//                         image = [image imageByScalingAndCroppingForSize:CGSizeMake(kListImageWidth,kListImageHeight)];
-
-              }];
+//    UIImageView * timage = [[UIImageView alloc]initWithFrame:CGRectMake(0,0,kListImageWidth,kListImageHeight)];
+    
+    __weak PhotoEntity * thisphoto = (PhotoEntity *)[self.photos objectAtIndex:(indexPath.row)];
+    __weak UITableView *thistable;
+    thisphoto.image.backgroundColor = [UIColor blackColor];
+    if ([thisphoto isLoaded] == YES) {
+        thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
+        [cell.contentView addSubview:thisphoto.image];
+        [thistable reloadData];
+    }else{
+        [thisphoto.image setImage:[UIImage imageNamed:@"Block_01_00.png"]];
+        thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
+        [cell.contentView addSubview:thisphoto.image];
+        [thistable reloadData];
+        [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
+                  placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                             thisphoto.isLoaded = YES;
+                             [thisphoto.image setImage:image];
+                             thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
+                             [cell.contentView addSubview:thisphoto.image];
+                             [thistable reloadData];
+                         }];
+        
+    }
+    
     
     
 //    [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
-    [cell.contentView addSubview:timage];
+    
     
     //[cell.contentView ]
     //cel[.imageView = timage;
@@ -195,6 +211,14 @@
 - (NSInteger)tableView:(UITableView *)tableView indentationLevelForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSUInteger indent = 4;
     return indent;
+}
+
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    
+    
+    
 }
 //- (void)tableView:(UITableView*)tableView
 //accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath

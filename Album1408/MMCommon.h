@@ -34,7 +34,7 @@
 #define kToolbarHeight                          50
 #define IsIOS7 ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] intValue]>=7)
 //缩略图画面
-
+static BOOL allLoaded;                 //stands for all the picture is loaded
 static int sideMargin;              //4 inch screen is 88 wider than 3.5 inch screen
 static int kHLineCnt;
 @interface MMCommon : NSObject

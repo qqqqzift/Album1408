@@ -113,7 +113,6 @@
     }else{
         indent =5;
     }
-    UIImage *placeholder = [UIImage imageNamed:@"Block_01_00.png"];
     NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[_photos count]];
     for (int i=0; i<lcnt; i++) {
         if ((row*lcnt +i) >= [_photos count]) {
@@ -130,33 +129,48 @@
         //button.column = i;
         [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
-        
-        UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
-        __weak UITableView * thisTbl = [self tableView];
-        [tmpImage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
-//                            forState:UIControlStateNormal;
-                            placeholderImage:[placeholder imageByScalingAndCroppingForSize:CGSizeMake(kImageWidth, kImageWidth)]
-                         completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-//                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
-                            image = [image imageByScalingAndCroppingForSize:CGSizeMake(kImageWidth, kImageWidth)];
-                            tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
-                            tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
-                                                       CGRectGetHeight(button.frame)/2);
-//                          
-                            [button addSubview:tmpImage];
-                            [thisTbl reloadData];
-//
-                             
-                         }];
-
-        
-        
-        
-        
-        
         [button addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
         [ocell addSubview:button];
+        
+        UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
+        __weak UITableView * thisTbl = [self tableView];
+        __weak PhotoEntity * thisphoto = (PhotoEntity *)[self.photos objectAtIndex:(row*lcnt +i)];
+        thisphoto.image.backgroundColor = [UIColor blackColor];
+        if ([(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] isLoaded] == YES) {
+            
+            tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*thisphoto.image.image.size.height/thisphoto.image.image.size.width);
+            tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
+                                         CGRectGetHeight(button.frame)/2);
+            [tmpImage setImage:thisphoto.image.image];
+            [button addSubview:tmpImage];
+            [thisTbl reloadData];
+        }else{
+            
+            [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
+             //                            forState:UIControlStateNormal;
+                        placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                               completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                                   //                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
+                                   
+                                   
+                                   thisphoto.isLoaded = YES;
+                                   tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*thisphoto.image.image.size.height/thisphoto.image.image.size.width);
+                                   tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
+                                                 CGRectGetHeight(button.frame)/2);
+                                   [tmpImage setImage:thisphoto.image.image];
+                                   [button addSubview:tmpImage];
+                                   [thisTbl reloadData];
+                                   //
+                                   
+                               }];
+        }
+        
+        
+        
+        
+        
+        
         [btnArray addObject:button];
     }
     
@@ -176,7 +190,19 @@
     [self setCellByRow:row  lineCnt:[MMCommon kHLineCnt] oFlag:kLandScapeRight icell:cell];
     
 }
+-(void)updateAllLoadFlag{
+    BOOL loadComfirm = YES;
+    for(int i = 0; i< [self.photos count];i++){
+        PhotoEntity *aphoto = [self.photos objectAtIndex:i];
+        if (aphoto.isLoaded == NO) {
+            loadComfirm = NO;
+            break;
+        }
+    
+    }
+    allLoaded = loadComfirm;
 
+}
 
 
 - (void)viewDidLoad
@@ -247,15 +273,17 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 //    NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
+    [self updateAllLoadFlag];
     if((sOrientation == kLandScapeBottom)||(sOrientation == kLandScapeTop)){
 //        NSLog(@"top:top cell");
+        UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
+        if (allLoaded == NO) {
+            cellTop = nil;
+        }
         
-         UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
         if (cellTop == nil) {
-//            NSLog(@"top:init top cell");
-//            [[cellTop viewWithTag:100] removeFromSuperview];
             
-            cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierT];
+            cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
             cellTop.selectedBackgroundView = [[UIView alloc] init];
             [self setTopCellByRow:indexPath.row allele:_photos cell:cellTop];
             
@@ -270,13 +298,13 @@
         
         
         UITableGridViewCell *cellRight = [tableView dequeueReusableCellWithIdentifier:identifierR];
-        cellRight.selectedBackgroundView = [[UIView alloc] init];
+        if (allLoaded == NO) {
+            cellRight = nil;
+        }
         if (cellRight == nil) {
-//            NSLog(@"right:init right cell");
             
-//            [[cellRight viewWithTag:100] removeFromSuperview];
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
-            
+            cellRight.selectedBackgroundView = [[UIView alloc] init];
             [self setRightCellByRow:indexPath.row allele:_photos cell:cellRight];
             
             

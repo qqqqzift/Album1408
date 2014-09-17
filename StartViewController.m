@@ -67,7 +67,7 @@
     elementToParse = [[NSArray alloc] initWithObjects:@"id",@"url",@"title",@"author", nil];
     
     
-    
+    allLoaded = NO;
     
 }
 
@@ -246,6 +246,7 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
+            aPhoto.image = [[UIImageView alloc]init];
 
         }
         if ([elementName isEqualToString:@"author"]) {

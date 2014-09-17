@@ -17,10 +17,10 @@ static NSString *identifierR = @"CellRight";
 
 }
 
-@property  int sOrientation;
-@property int mImageHeight;
-@property int elemInLine;            //每行元素个数
-@property NSMutableArray *photos;  //用于存储一组photo
+@property  (nonatomic,assign)int sOrientation;
+@property (nonatomic,assign)int mImageHeight;
+@property (nonatomic,assign)int elemInLine;            //每行元素个数
+@property (nonatomic,strong)NSMutableArray *photos;  //用于存储一组photo
 //-(void) SetPhotos:(NSMutableArray*)photolist;
 
 @end

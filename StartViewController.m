@@ -114,6 +114,7 @@
 //    [albumView SetPhotos:photos];
     albumView.photos = photos;
     [self.navigationController pushViewController: albumView animated:NO];
+    
     //HUD.mode = MBProgressHUDModeCustomView;
 	//HUD.labelText = @"Completed";
 }
@@ -149,12 +150,7 @@
                 NSLog(@"AFNetworkReachabilityStatusUnknown");
             case AFNetworkReachabilityStatusNotReachable:{
                 NSLog(@"AFNetworkReachabilityStatusUnknown Or AFNetworkReachabilityStatusNotReachable");
-                //if connectted failed
                 
-//                ErrorViewController *errorVeiwController = [[ErrorViewController alloc]init];
-//                //go to error page
-//                //[self presentModalViewController:errorVeiwController animated:YES];
-//                [self.navigationController pushViewController: errorVeiwController animated:NO];
 //                
                 break;}
             case AFNetworkReachabilityStatusReachableViaWWAN://same as below
@@ -165,19 +161,7 @@
             default:
                 break;
         }
-        /*for test error page
-        if(runCnt == 0){
-            NSLog(@"XXX");
-            ErrorViewController *errorVeiwController = [[ErrorViewController alloc]init];
-        //go to error page
-        //[self presentModalViewController:errorVeiwController animated:YES];
-        //self.navigationItem.backBarButtonItem.enabled = NO;
-            [self.navigationController pushViewController: errorVeiwController animated:NO];
-            
-            runCnt++;
-         
-        }
-         */
+       
          
         
     }];
@@ -262,13 +246,7 @@
         }
         if ([elementName isEqualToString:@"url"]) {
             aPhoto.url = trimmedString;
-//            aPhoto.image = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-//            UIImageView *imageview;
-//            aPhoto.egoImage = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
-//            aPhoto.egoImage.imageURL = [NSURL URLWithString:trimmedString];
-//            aPhoto.egoImage.frame = CGRectMake(0, 0,kScreenWidth, kScreenHeight);
-            
-            //NSLog(@"url :%@",aPhoto.url);
+
         }
         if ([elementName isEqualToString:@"author"]) {
             aPhoto.author = trimmedString;
@@ -337,4 +315,20 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+-(void)dealloc{
+    NSLog(@"StartViewController dealloc");
+    
+}
+
+
+- (void)viewDidDisappear:(BOOL)animated{
+    NSLog(@"StartViewController dealloc");
+    currentElementValue = nil;
+    photos = nil;
+    aPhoto = nil;
+    elementToParse = nil;
+    elementToParse = nil;
+    
+}
 @end

@@ -14,7 +14,7 @@
 #import "MMCommon.h"
 #import "UIButton+WebCache.h"
 #import "UIImageView+WebCache.h"
-
+#import "UIImage+UIImageExt.h"
 
 
 @interface ListPhotoLViewController ()
@@ -67,37 +67,21 @@
             self.elemInLine = kVLineCnt;
             sOrientation = kLandScapeTop;
             //home健在下
-            //loadingview.frame=CGRectMake(284, 402, 200, 200);
-            //[self.viewaddSubview:loadingview];
             break;
         
-//            NSLog(@"UIInterfaceOrientationPortraitUpsideDown");
-//            sOrientation = kLandScapeBottom;
-//            elemInLine = kVLineCnt;
-//            //home健在上
-//            //loadingview.frame=CGRectMake(284, 402, 200, 200);
-//            //[self.viewaddSubview:loadingview];
-//            break;
+
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
             NSLog(@"UIInterfaceOrientationLandscapeLeft");
             self.elemInLine = [MMCommon kHLineCnt];
-            //home健在左
+            //home健在右
             sOrientation = kLandScapeRight;
             
             
-//            loadingview.frame=CGRectMake(412, 264, 200, 200);
-//            [self.viewaddSubview:loadingview];
+
             break;
         
-//            NSLog(@"UIInterfaceOrientationLandscapeRight");
-//            //home健在右
-//            elemInLine = [MMCommon kHLineCnt];
-//            sOrientation = kLandScapeRight;
-//            
-////            loadingview.frame=CGRectMake(412, 264, 200, 200);
-////            [self.viewaddSubview:loadingview];
-//            break;
+
         default:
             NSLog(@"OrientationNotHandled");
             if (self.elemInLine == 0) {
@@ -129,17 +113,17 @@
     }else{
         indent =5;
     }
-//    NSLog(@"indent:%lf",indent);
+    UIImage *placeholder = [UIImage imageNamed:@"Block_01_00.png"];
     NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[_photos count]];
     for (int i=0; i<lcnt; i++) {
         if ((row*lcnt +i) >= [_photos count]) {
             break;
         }
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
-        __block UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
+        UIImageButton *button = [UIImageButton buttonWithType:UIButtonTypeCustom];
         //[button.tag ]
         button.bounds = CGRectMake(0, 0, kImageWidth, kImageWidth);
-        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + self.mImageHeight * 0.5);
+        button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + kImageWidth * 0.5);
         button.backgroundColor = [UIColor blackColor];
         
         
@@ -148,25 +132,22 @@
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         
         UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
+        __weak UITableView * thisTbl = [self tableView];
         [tmpImage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
-//                            forState:UIControlStateNormal
-                            placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+//                            forState:UIControlStateNormal;
+                            placeholderImage:[placeholder imageByScalingAndCroppingForSize:CGSizeMake(kImageWidth, kImageWidth)]
                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
 //                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
-                                 tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
-                                 tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
+                            image = [image imageByScalingAndCroppingForSize:CGSizeMake(kImageWidth, kImageWidth)];
+                            tmpImage.frame = CGRectMake(0,0, kImageWidth,  kImageWidth*tmpImage.image.size.height/tmpImage.image.size.width);
+                            tmpImage.center = ccp(CGRectGetWidth(button.frame)/2,
                                                        CGRectGetHeight(button.frame)/2);
-//                                 loadcnt++;
-                                 [button addSubview:tmpImage];
-                                 [[self tableView] reloadData];
-//                                 ((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded = YES;
-//                             }
-                             
-                             
-                             
+//                          
+                            [button addSubview:tmpImage];
+                            [thisTbl reloadData];
+//
                              
                          }];
-        
 
         
         
@@ -221,20 +202,7 @@
         self.elemInLine = 4;
     }
     
-    
-    //
-//    UIDevice *device = [UIDevice currentDevice];
-//    
-//    [device beginGeneratingDeviceOrientationNotifications];
-//    
-//    //利用 NSNotificationCenter 获得旋转信号 UIDeviceOrientationDidChangeNotification
-//    
-//    NSNotificationCenter *ncenter = [NSNotificationCenter defaultCenter];
-//    
-//    [ncenter addObserver:self selector:@selector(orientationChanged) name:UIDeviceOrientationDidChangeNotification object:device];
-    
-    
-    
+
 }
 
 //-(void)orientationChanged{
@@ -244,8 +212,6 @@
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
-//    [albumView SetPhotos:photos];
-//    [self stopResize];
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
     [self.navigationController pushViewController: albumView animated:NO];
@@ -326,11 +292,21 @@
     [super didReceiveMemoryWarning];
     NSLog(@"didReceiveMemoryWarning in ListPhotoViewController");
     // Dispose of any resources that can be recreated.
+    if ([self isViewLoaded] && self.view.window == nil) {
+        self.view = nil;
+    }
+    
+    
+    
 //    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
 //    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
+
+- (void)viewWillDisappear:(BOOL)animated{
+
+}
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     //不让tableviewcell有选中效果
@@ -352,32 +328,8 @@
     return kImageWidth+5;
 }
 
-//-(void)loadPicturesize:(NSTimer *)timer{
-//    [self.tableView reloadData];
-//    if (self.isneededtoresize == YES) {
-//        self.isneededtoresize = NO;
-//        
-//        UITableViewCell *cellT = [[[self tableView] dequeueReusableCellWithIdentifier:identifierT] cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-//
-//        [self.tableView reloadData];
-//    }
-//    
-//    if (loadcnt >= [self.photos count]){
-//        //   所有图片读取完成
-//        [self.tableView reloadData];
-//        //停止resize timer
-//        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopresizeTimer:) userInfo:nil repeats:NO];
-//    }
-//    
-//}
-//
-//-(void)stopresizeTimer:(NSTimer *)timer{
-//    [self stopResize];
-//}
-
-//-(void)stopResize{
-//    [resizeTimer invalidate];
-//    resizeTimer = nil;
-//}
-
+-(void)dealloc{
+    NSLog(@"ListPhotoLViewController dealloc");
+    
+}
 @end

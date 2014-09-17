@@ -7,17 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-static bool loadImageDone;
+
 @interface ListPhotoTableViewController : UITableViewController{
     
 
 }
   
-@property int sOrientation;
+@property (nonatomic,assign)int sOrientation;
 
 
 
-@property NSMutableArray *photos;  //用于存储一组photo
+@property (nonatomic,strong)NSMutableArray *photos;  //用于存储一组photo
 
 
 @end

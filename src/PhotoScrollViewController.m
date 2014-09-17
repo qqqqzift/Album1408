@@ -41,10 +41,10 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        offset = -1;
+//        offset = -1;
 //        self.lastpage = -1;
         self.ispagechanged = NO;
-        saveForZooming = 1.0f;
+        self.saveForZooming = 1.0f;
     }
     return self;
 }
@@ -75,64 +75,44 @@
     self.navigationItem.rightBarButtonItem = seteiButton;
     
     
-//    UIImageView *imageView = [photobtn.imageView sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
-//                          placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+
     
-//    oldFrameV = CGRectMake(0, 0, kScreenWidth,   imageView.image.size.height*(kScreenWidth/imageView.image.size.width));
-//  
-//    
-//    oldFrameH = CGRectMake(0, 0, imageView.image.size.width*(kScreenWidth/imageView.image.size.height),kScreenWidth);
-    
-//    oldFrameV = CGRectMake(0, 0, kScreenWidth,   kScreenWidth);
-//    
-//    
-//    oldFrameH = CGRectMake(0, 0, kScreenWidth,kScreenWidth);
-    
-    photolist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
+    self.photolist = [[NSMutableArray alloc]initWithCapacity:[[self photos] count] ];
     
 	
     
-//    pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, 344, 320, 36)];
-	mainscrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
-//    mainscrollView.contentMode = UIViewContentModeCenter;
-    
 
-    [mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(mainscrollView.frame),  CGRectGetHeight(mainscrollView.frame))];
+	self.mainscrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
+
+    [self.mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(self.mainscrollView.frame),  CGRectGetHeight(self.mainscrollView.frame))];
 
     
     
-    mainscrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+    self.mainscrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
     
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
     
-//    pageControl.hidden = YES;
-    //_ishidebar = NO;
-    
-//    vView = [[UIView alloc]initWithFrame: CGRectMake(0, 0,kScreenWidth , kScreenHeight)];
-//    [self.view addSubview:vView];
-//    [self.view addSubview:scrollView];
+
     
     
     
     self.scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, kScreenHeight - kToolbarHeight, kScreenWidth,kToolbarHeight)];
-    playbtn = [[UIBarButtonItem alloc]
+    self.playbtn = [[UIBarButtonItem alloc]
                initWithTitle:@"Play" style:UIBarButtonItemStylePlain target:self action:@selector(playbtnClick:)];
     
     
-    NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:playbtn, nil];
+    NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:self.playbtn, nil];
     
     
     
     [self.scrollTools setItems:scrollToolBarItems animated:YES];
     [self.navigationController.view addSubview:self.scrollTools];
-    [self setToolbarItems:[NSArray arrayWithObjects:playbtn, nil]];
+    [self setToolbarItems:[NSArray arrayWithObjects:self.playbtn, nil]];
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:YES];
     
     
-//    CGRect frame1 = mainscrollView.frame;
-//    CGRect frame2 = self.view.frame;
     
 }
 
@@ -144,12 +124,12 @@
 
 -(void)rolltoPotrait{
     NSLog(@"UIInterfaceOrientationPortraitUpsideDown or UIInterfaceOrientationPortrait");
-    mainscrollView.frame = CGRectMake( 0, 0,kScreenWidth, kScreenHeight );
-    [mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(mainscrollView.frame),  CGRectGetHeight(mainscrollView.frame))];
-    mainscrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
+    self.mainscrollView.frame = CGRectMake( 0, 0,kScreenWidth, kScreenHeight );
+    [self.mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(self.mainscrollView.frame),  CGRectGetHeight(self.mainscrollView.frame))];
+    self.mainscrollView.center = CGPointMake(kScreenWidth/2, kScreenHeight/2);
     
     sOrientation = kLandScapeTop;
-    pageControlIsChangingPage = NO;
+    self.pageControlIsChangingPage = NO;
     
     [self resetImageFrame];
     [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
@@ -157,12 +137,12 @@
 
 -(void)rolltoLandscape{
     NSLog(@"UIInterfaceOrientationLandscapeRight or UIInterfaceOrientationLandscapeLeft");
-    mainscrollView.frame = CGRectMake( 0, 0, kScreenHeight,kScreenWidth );
-    [mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(mainscrollView.frame),  CGRectGetHeight(mainscrollView.frame))];
-    mainscrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
+    self.mainscrollView.frame = CGRectMake( 0, 0, kScreenHeight,kScreenWidth );
+    [self.mainscrollView setContentSize:CGSizeMake([[self photos] count]*CGRectGetWidth(self.mainscrollView.frame),  CGRectGetHeight(self.mainscrollView.frame))];
+    self.mainscrollView.center = CGPointMake(kScreenHeight/2,kScreenWidth/2);
     
     sOrientation = kLandScapeRight;
-    pageControlIsChangingPage = NO;
+    self.pageControlIsChangingPage = NO;
     [self resetImageFrame];
     [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
 
@@ -171,7 +151,7 @@
 #pragma willAnimateRotationToInterfaceOrientation
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
-    pageControlIsChangingPage = YES;
+    self.pageControlIsChangingPage = YES;
     NSLog(@"willAnimateRotationToInterfaceOrientation");
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
@@ -231,13 +211,19 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     NSLog(@"didReceiveMemoryWarning in PhotoScrollViewController");
+    if ([self isViewLoaded] && self.view.window == nil) {
+        self.view = nil;
+    }
 //    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
 //    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 
+-(void)dealloc{
+    NSLog(@"PhotoScrollViewController dealloc");
 
+}
 /*
 #pragma mark - Navigation
 
@@ -251,19 +237,19 @@
 -(void)resetImageFrame{
     CGFloat pContentWidth,pContentHeight;
     for (int i = 0; i < [self.photos count];i++) {
-         UIScrollView *photoscroll = [photolist objectAtIndex:i];
+         UIScrollView *photoscroll = [self.photolist objectAtIndex:i];
         
        
-        saveForZooming =  photoscroll.zoomScale;
+        self.saveForZooming =  photoscroll.zoomScale;
        
-        pContentWidth = mainscrollView.frame.size.width;
-        pContentHeight = mainscrollView.frame.size.height;
+        pContentWidth = self.mainscrollView.frame.size.width;
+        pContentHeight = self.mainscrollView.frame.size.height;
         //根据当前屏幕方向重置scrollview里面的button的中心点和大小
         for (UIButton *photobtn in photoscroll.subviews){
             
             if ([photobtn isKindOfClass:[UIButton class]]){
                 //没有缩放时
-                if (saveForZooming - 1.0f < kEPS){
+                if (self.saveForZooming - 1.0f < kEPS){
                     if (sOrientation == kLandScapeTop) {
                         photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
                         photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
@@ -278,13 +264,13 @@
                     if (sOrientation == kLandScapeTop) {
                         photobtn.frame = CGRectMake(0, 0, kScreenWidth,   photobtn.imageView.image.size.height*(kScreenWidth/photobtn.imageView.image.size.width));
                         photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
-                        saveForZooming = saveForZooming*kScreenHeight/kScreenWidth;
+                        self.saveForZooming = self.saveForZooming*kScreenHeight/kScreenWidth;
                     }else if(sOrientation == kLandScapeRight){
                         photobtn.frame = CGRectMake(0, 0, photobtn.imageView.image.size.width*(kScreenWidth/photobtn.imageView.image.size.height),kScreenWidth);;;
                         photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
-                        saveForZooming = saveForZooming*kScreenWidth/kScreenHeight;
+                        self.saveForZooming = self.saveForZooming*kScreenWidth/kScreenHeight;
                     }
-                    [photoscroll setZoomScale:saveForZooming];
+                    [photoscroll setZoomScale:self.saveForZooming];
 //                    imv.center = CGPointMake(imv.frame.size.width/2, imv.frame.size.height/2);
                     pContentWidth = photobtn.frame.size.width;
                     pContentHeight = photobtn.frame.size.height;
@@ -296,11 +282,11 @@
         
         //重置scrollview的frame
         //设置各UIImageView实例位置，及UIImageView实例的frame属性值
-        photoscroll.frame = CGRectMake( (float)mainscrollView.frame.size.width * i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height );
+        photoscroll.frame = CGRectMake( (float)self.mainscrollView.frame.size.width * i, 0, self.mainscrollView.frame.size.width, self.mainscrollView.frame.size.height );
         //        NSLog(@"(float)mainscrollView.frame.size.width * i:%f",((float)mainscrollView.frame.size.width * i));
         
-        if (saveForZooming - 1.0f < kEPS) {
-            photoscroll.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+        if (self.saveForZooming - 1.0f < kEPS) {
+            photoscroll.contentSize = CGSizeMake(self.mainscrollView.frame.size.width, self.mainscrollView.frame.size.height);
         }else{
             photoscroll.contentSize = CGSizeMake(pContentWidth, pContentHeight);
         }
@@ -315,42 +301,42 @@
 
 
 -(void)rollTothePage:(int)thePage AnimeOrNot:(BOOL)withAnime{
-    CGRect frame = mainscrollView.frame;
+    CGRect frame = self.mainscrollView.frame;
 //    NSLog(@"thePage:%d",thePage);
     frame.origin.x = frame.size.width *thePage;
 //    NSLog(@"frame.origin.x:%f",frame.origin.x);
-    [mainscrollView scrollRectToVisible:frame animated:withAnime];
+    [self.mainscrollView scrollRectToVisible:frame animated:withAnime];
 }
 
 - (void)setupPage
 {
 	//设置UIScrollView实例各显示特性
 	//设置委托类为自身，其中必须实现UIScrollViewDelegate协议中定义的scrollViewDidScroll:及scrollViewDidEndDecelerating:方法
-	mainscrollView.delegate = self;
-	[mainscrollView setBackgroundColor:[UIColor clearColor]];
-	[mainscrollView setCanCancelContentTouches:NO];
+	self.mainscrollView.delegate = self;
+	[self.mainscrollView setBackgroundColor:[UIColor clearColor]];
+	[self.mainscrollView setCanCancelContentTouches:NO];
     
 	//设置滚动条类型
 //	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-	mainscrollView.clipsToBounds = YES;
-	mainscrollView.scrollEnabled = YES;
+	self.mainscrollView.clipsToBounds = YES;
+	self.mainscrollView.scrollEnabled = YES;
 	//只有pagingEnabled为YES时才可进行画面切换
-	mainscrollView.pagingEnabled = YES;
+	self.mainscrollView.pagingEnabled = YES;
 //	scrollView.directionalLockEnabled =NO;
 	//隐藏滚动条设置
 //	mainscrollView.alwaysBounceVertical=YES;
 //	mainscrollView.alwaysBounceHorizontal =NO;
-	mainscrollView.showsVerticalScrollIndicator= NO;
-	mainscrollView.showsHorizontalScrollIndicator= NO;
+	self.mainscrollView.showsVerticalScrollIndicator= NO;
+	self.mainscrollView.showsHorizontalScrollIndicator= NO;
 
 	//循环导入数值中的图片
 	for (int i = 0; i < [_photos count];i++) {
 		//初始化图片的UIImageView实例
         
-        UIScrollView *photoscroll = [[UIScrollView alloc] initWithFrame:CGRectMake((float)mainscrollView.frame.size.width*i, 0, mainscrollView.frame.size.width, mainscrollView.frame.size.height)];
+        UIScrollView *photoscroll = [[UIScrollView alloc] initWithFrame:CGRectMake((float)self.mainscrollView.frame.size.width*i, 0, self.mainscrollView.frame.size.width, self.mainscrollView.frame.size.height)];
     
         photoscroll.backgroundColor = [UIColor whiteColor];
-        photoscroll.contentSize = CGSizeMake(mainscrollView.frame.size.width, mainscrollView.frame.size.height);
+        photoscroll.contentSize = CGSizeMake(self.mainscrollView.frame.size.width, self.mainscrollView.frame.size.height);
         
         photoscroll.delegate = self;
         
@@ -373,7 +359,7 @@
         
         UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
         [photoscroll addSubview:photobtn];
-        [photolist addObject:photoscroll];
+        [self.photolist addObject:photoscroll];
         [photobtn sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
                             forState:UIControlStateNormal
                             placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
@@ -411,7 +397,7 @@
 		//[imageView setCenter:CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2)];
         
         
-        [mainscrollView addSubview:photoscroll];
+        [self.mainscrollView addSubview:photoscroll];
 		
 	}
 	//注册UIPageControl实例的响应方法（事件为UIControlEventValueChanged）
@@ -423,7 +409,7 @@
 	//pageControl.tag=0;
 	//重置UIScrollView的尺寸
 	
-    [self.view addSubview:mainscrollView];
+    [self.view addSubview:self.mainscrollView];
     self.currentImageId = self.currentImageId - 1;
     [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
 
@@ -453,8 +439,8 @@
         }
     }else{
         self.isPlaying = NO;
-        [playbtn setTitle:@"Play"];
-        [playTimer invalidate];
+        [self.playbtn setTitle:@"Play"];
+        [self.playTimer invalidate];
         if([self ishidebar] == NO){
             [self setFullScreen];
         }else{
@@ -472,16 +458,16 @@
     [self stopAutoFullScreen];
     if([self isPlaying] == NO){
         self.isPlaying = YES;
-        [playbtn setTitle:@"Stop"];
-         playTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
+        [self.playbtn setTitle:@"Stop"];
+         self.playTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
         [[self navigationController] setNavigationBarHidden:YES animated:YES];
         [[self navigationController] setToolbarHidden:YES animated:YES];
         self.ishidebar = YES;
         
     }else{
         self.isPlaying = NO;
-        [playbtn setTitle:@"Play"];
-        [playTimer invalidate];
+        [self.playbtn setTitle:@"Play"];
+        [self.playTimer invalidate];
         
     }
 }
@@ -495,13 +481,13 @@
         return ;
     }
     self.isShowingAlter = YES;
-    pageMessage = [[UIAlertView alloc]
+    self.pageMessage = [[UIAlertView alloc]
                           initWithTitle:@"メーセージ"
                           message:message
                           delegate:self
                           cancelButtonTitle:@"OK"
                           otherButtonTitles:nil];
-    [pageMessage show];
+    [self.pageMessage show];
 //    [NSTimer scheduledTimerWithTimeInterval:0.8f target:self selector: @selector(dismissAction:)  userInfo:nil repeats:NO];
 }
 
@@ -519,7 +505,7 @@
         self.currentImageId++;
         [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
     }else{
-        [playbtn setTitle:@"Play"];
+        [self.playbtn setTitle:@"Play"];
         self.isPlaying = NO;
         [self stopPlaying];
         [self showNopageMessage:@"最後の画像です" ];
@@ -555,13 +541,13 @@
 }
 
 -(void)stopPlaying{
-    [playTimer invalidate];
-    playTimer = nil;
+    [self.playTimer invalidate];
+    self.playTimer = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
-    fullScreenTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(setFullScreenAction:) userInfo:nil repeats:NO];
+    self.fullScreenTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(setFullScreenAction:) userInfo:nil repeats:NO];
     
 //    self.isZooming = NO;
     self.ishidebar = NO;
@@ -577,8 +563,8 @@
 
 -(void)viewDidDisappear:(BOOL)animated
 {
-    [playTimer invalidate];
-    playTimer = nil;
+    [self.playTimer invalidate];
+    self.playTimer = nil;
     [self stopAutoFullScreen];
     [[self navigationController] setToolbarItems:nil];
 
@@ -586,14 +572,25 @@
     [self.scrollTools removeFromSuperview];
     self.scrollTools = nil;
     
+    
+    [self.photolist removeAllObjects];
+    self.photolist = nil;
+    [self.mainscrollView removeFromSuperview];
+    self.mainscrollView = nil;
+    [self.fullScreenTimer invalidate];
+    self.fullScreenTimer = nil;
+    [self.pageMessage removeFromSuperview];
+    self.pageMessage = nil;
+    
+    
 }
 
 
 
 -(void)stopAutoFullScreen{
-    if(fullScreenTimer != nil){
-        [fullScreenTimer invalidate];
-        fullScreenTimer = nil;
+    if(self.fullScreenTimer != nil){
+        [self.fullScreenTimer invalidate];
+        self.fullScreenTimer = nil;
     }
 }
 
@@ -619,7 +616,7 @@
 
 
 
-    UIScrollView *photoscroll = [photolist objectAtIndex:(self.currentImageId)];
+    UIScrollView *photoscroll = [self.photolist objectAtIndex:(self.currentImageId)];
     
     photoscroll.maximumZoomScale = 3.0;
     photoscroll.minimumZoomScale = 1.0;
@@ -639,10 +636,10 @@
 {
     NSLog(@"scrollViewDidEndDecelerating");
     
-    pageControlIsChangingPage = NO;
+    self.pageControlIsChangingPage = NO;
     
     //翻页时重置缩放
-    if (scrollView == mainscrollView){
+    if (scrollView == self.mainscrollView){
         if (self.ispagechanged == YES) {
             NSLog(@"self.ispagechanged:%d",self.ispagechanged);
             NSLog(@"scrollViewDidEndDecelerating");
@@ -673,9 +670,9 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     
-    CGFloat pageWidth = mainscrollView.frame.size.width;
-    int page = floor((mainscrollView.contentOffset.x - pageWidth*9 / 16) / pageWidth) + 1;
-    if (pageControlIsChangingPage) {
+    CGFloat pageWidth = self.mainscrollView.frame.size.width;
+    int page = floor((self.mainscrollView.contentOffset.x - pageWidth*9 / 16) / pageWidth) + 1;
+    if (self.pageControlIsChangingPage) {
         
         return;
     }
@@ -684,7 +681,7 @@
 	 *	下一画面拖动到超过50%时，进行切换
 	 */
     
-    if (scrollView == mainscrollView){
+    if (scrollView == self.mainscrollView){
         
         if ((page == self.currentImageId)&&
             (page != (self.photos.count-1))&&

@@ -15,6 +15,7 @@
 #import "PhotoEntity.h"
 #import "MMCommon.h"
 #import "UIImageView+WebCache.h"
+#import "UIImage+UIImageExt.h"
 @interface ListPhotoTableViewController ()
 
 @end
@@ -22,72 +23,23 @@
 @implementation ListPhotoTableViewController
 
 
-@synthesize  sOrientation;
 
-//-(void) SetPhotos:(NSMutableArray*)photolist{
-//    photos = [[NSMutableArray alloc] initWithArray:photolist];
-//}
 
-/*
--(void) SendLoadImageRequest{
-    for (PhotoEntity *photo in photos) {
-        if(photo.isLoaded == NO){
- 
-            Block_01_00.png
-            
-            photo.EGOImageLoader = [[EGOImageView alloc] initWithPlaceholderImage:[UIImage imageNamed:@"placeholder.png"]];
-            _imageView.imageURL = [NSURL URLWithString:@"http://i0.sinaimg.cn/ent/s/m/2011-08-19/U3904P28T3D3391507F329DT20110819143720.jpg"];
-            _imageView.frame = CGRectMake(60, 30, 200, 400);
-            
- 
-            
-            
-            NSLog(@"%@",photo.url);
-            if([self GetImage:photo.url  ID:photo.ID]==YES){
-                photo.isLoaded = YES;
-                [self.tableView reloadData];
-            }
-        }
-    }
-}
-*/
-/*
--(BOOL)GetImage:(NSString *)url ID:(int)vID{
-    __block BOOL isDone = NO;
-    __block int tId = vID;
-    [[photos objectAtIndex:tId]setImageURL:url];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        
-        
-        isDone = YES;
-        NSLog(@"loadimage%d,success",isDone);
-        [self.tableView reloadData];
-    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-        isDone = NO;
-        NSLog(@"loadimage%d,failed",isDone);
-        NSLog(@"Error %@",error);
-    }];
-    
-    [operation start];
-    NSLog(@"loadimage%d",isDone);
-    return isDone;
-}
-*/
+
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
     
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
-            sOrientation = kLandScapeTop;
+            self.sOrientation = kLandScapeTop;
             break;
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
-            sOrientation = kLandScapeRight;
+            self.sOrientation = kLandScapeRight;
             break;
         default:;
-            sOrientation = kLandScapeTop;
+            self.sOrientation = kLandScapeTop;
             break;
             
             
@@ -104,7 +56,7 @@
     
 //    [albumView SetPhotos:_photos];
     albumView.photos = [self photos];
-    albumView.sOrientation = sOrientation;
+    albumView.sOrientation = self.sOrientation;
     
     [self.navigationController pushViewController: albumView animated:YES];
 }
@@ -113,8 +65,8 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        if (kLandScapeNone == sOrientation) {
-            sOrientation = kLandScapeTop;
+        if (kLandScapeNone == self.sOrientation) {
+            self.sOrientation = kLandScapeTop;
         }
         
     }
@@ -174,6 +126,9 @@
 {
     [super didReceiveMemoryWarning];
     NSLog(@"didReceiveMemoryWarning in ListPhotoTableViewController");
+    if ([self isViewLoaded] && self.view.window == nil) {
+        self.view = nil;
+    }
     // Dispose of any resources that can be recreated.
 //    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
 //    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
@@ -213,10 +168,14 @@
     cell.textLabel.frame = CGRectMake(0, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
     //images_中保存了各单元中显示用图片
-    //UIImageView * timage =[[UIImageView alloc]initWithImage: [[EGOImageLoader sharedImageLoader]imageForURL:[NSURL URLWithString:[(PhotoEntity *)[photos objectAtIndex:indexPath.row] url]] shouldLoadWithObserver:nil]];
+    UIImage *placeholder = [UIImage imageNamed:@"Block_01_00.png"];
     UIImageView * timage = [[UIImageView alloc]initWithFrame:CGRectMake(0,0,kListImageWidth,kListImageHeight)];
     [timage sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
-        placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]];
+              placeholderImage:[placeholder imageByScalingAndCroppingForSize:CGSizeMake(kListImageWidth,kListImageHeight)]
+                     completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+//                         image = [image imageByScalingAndCroppingForSize:CGSizeMake(kListImageWidth,kListImageHeight)];
+
+              }];
     
     
 //    [timage setFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
@@ -321,5 +280,11 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
     [[self navigationController] setToolbarHidden:YES animated:NO];
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
+}
+
+
+-(void)dealloc{
+    NSLog(@"ListPhotoTableViewController dealloc");
+    
 }
 @end

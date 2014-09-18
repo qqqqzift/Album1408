@@ -741,7 +741,7 @@
     }
     
     if ((page+1) == [[self photos] count] ){
-        if (((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))&&(self.willshowStartAlter == NO)) {
+        if (((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))) {
             if (scrollView.zoomScale > 1.0f) {
                 self.willshowEndAlter = YES;
             }
@@ -755,7 +755,7 @@
     if(page == 0)
     {
         //                CGFloat a = scrollView.contentOffset.x;
-        if ((scrollView.contentOffset.x < 0)&&(self.willshowStartAlter == NO)) {
+        if ((scrollView.contentOffset.x < 0)) {
             if (scrollView.zoomScale > 1.0f) {
                 self.willshowStartAlter = YES;
             }

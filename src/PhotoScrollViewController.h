@@ -20,6 +20,8 @@
 //    int offset;
 }
 //定义UIScrollView与UIPageControl实例变量
+@property  (nonatomic,strong)UITapGestureRecognizer *taprecognizer;
+
 @property (nonatomic,strong)UIScrollView* mainscrollView;
 
 
@@ -28,6 +30,7 @@
 
 @property (nonatomic,strong)NSMutableArray *photolist;          //list of scrollview
 //    NSMutableArray *imagelist;          //list of uibutton in scrollview
+@property (nonatomic,assign)BOOL isZooming;
 @property (nonatomic,strong)UIBarButtonItem *playbtn;
 @property (nonatomic,assign)BOOL isVertical;                    //横屏竖屏判断
 @property (nonatomic,strong)NSTimer *playTimer;                 //播放计时器

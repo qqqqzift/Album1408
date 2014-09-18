@@ -65,8 +65,19 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
+        
         if (kLandScapeNone == self.sOrientation) {
-            self.sOrientation = kLandScapeTop;
+            NSLog(@"initialize sOrientation by UIInterfaceOrientation");
+            UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+            if ((currentOrientation == UIInterfaceOrientationPortrait)||
+                (currentOrientation == UIInterfaceOrientationPortraitUpsideDown)) {
+                self.sOrientation = kLandScapeTop;
+            }
+            else if ((currentOrientation == UIInterfaceOrientationLandscapeLeft)||
+                      (currentOrientation == UIInterfaceOrientationLandscapeRight)){
+                self.sOrientation = kLandScapeRight;
+            }
+            
         }
         
     }

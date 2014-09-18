@@ -45,6 +45,7 @@
 //        self.lastpage = -1;
         self.ispagechanged = NO;
         self.saveForZooming = 1.0f;
+        self.isZooming = NO;
     }
     return self;
 }
@@ -102,16 +103,21 @@
                initWithTitle:@"Play" style:UIBarButtonItemStylePlain target:self action:@selector(playbtnClick:)];
     
     
-    NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:self.playbtn, nil];
     
     
-    
+    UIBarButtonItem *fixedButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace
+                                     
+                                                                                  target: nil
+                                     
+                                                                                  action: nil];
+    NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:fixedButton,self.playbtn, fixedButton,nil];
     [self.scrollTools setItems:scrollToolBarItems animated:YES];
     [self.navigationController.view addSubview:self.scrollTools];
-    [self setToolbarItems:[NSArray arrayWithObjects:self.playbtn, nil]];
+    [self setToolbarItems:scrollToolBarItems];
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:YES];
     
+    self.taprecognizer = [[UITapGestureRecognizer alloc]init];
     
     
 }
@@ -153,9 +159,9 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
     self.pageControlIsChangingPage = YES;
     NSLog(@"willAnimateRotationToInterfaceOrientation");
-    if(self.isPlaying == YES){
-        [self pausePlaying];
-    }
+//    if(self.isPlaying == YES){
+//        [self pausePlaying];
+//    }
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
@@ -309,12 +315,13 @@
     frame.origin.x = frame.size.width *thePage;
 //    NSLog(@"frame.origin.x:%f",frame.origin.x);
     [self.mainscrollView scrollRectToVisible:frame animated:withAnime];
-    if ([(PhotoEntity *)[self.photos objectAtIndex:thePage] isLoaded] == NO) {
-        UIScrollView *thisscroll = (UIScrollView *)[self.photolist objectAtIndex:thePage];
-        //todo test
-        thisscroll.maximumZoomScale = 3.0;
-        thisscroll.minimumZoomScale = 1.0;
-    }
+    
+}
+
+// 添加手势
+- (void) addGestureRecognizerToView:(UIView *)view
+{
+
 }
 
 - (void)setupPage
@@ -324,7 +331,7 @@
 	self.mainscrollView.delegate = self;
 	[self.mainscrollView setBackgroundColor:[UIColor clearColor]];
 	[self.mainscrollView setCanCancelContentTouches:NO];
-    
+    self.mainscrollView.decelerationRate = 0.1;
 	//设置滚动条类型
 //	scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
 	self.mainscrollView.clipsToBounds = YES;
@@ -346,7 +353,7 @@
     
         photoscroll.backgroundColor = [UIColor whiteColor];
         photoscroll.contentSize = CGSizeMake(self.mainscrollView.frame.size.width, self.mainscrollView.frame.size.height);
-        
+        photoscroll.decelerationRate = 0.1f;
         photoscroll.delegate = self;
         
         
@@ -359,10 +366,10 @@
         
         //        photoscroll.tag = i+1;
         
-        [photoscroll setZoomScale:1.0];
+        
         photoscroll.minimumZoomScale = 1.0;
         photoscroll.maximumZoomScale = 3.0;
-        
+        [photoscroll setZoomScale:1.0];
         
         
         UIButton *photobtn = [[UIButton alloc] initWithFrame:CGRectZero];
@@ -402,8 +409,6 @@
                                    }
                                    
                                    [photobtn setImage:thisphoto.image.image forState:UIControlStateNormal];
-                                   photoscroll.maximumZoomScale = 3.0;
-                                   photoscroll.minimumZoomScale = 1.0;
                                }];
         
         
@@ -411,7 +416,8 @@
         
         
         [photobtn setAdjustsImageWhenHighlighted:NO];
-        [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self.taprecognizer addTarget:photobtn action:@selector(imageItemClick:)];
+//        [photobtn addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
         //设置背景
 		[photobtn setBackgroundColor:[UIColor blackColor]];
@@ -440,7 +446,13 @@
 	
     [self.view addSubview:self.mainscrollView];
     self.currentImageId = self.currentImageId - 1;
-    [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
+    if((sOrientation == kLandScapeRight)||
+       (sOrientation == kLandScapeLeft)){
+        [self rolltoLandscape];
+    }else{
+        [self rollTothePage:[self currentImageId] AnimeOrNot:NO ];
+    }
+    
 
 }
 
@@ -459,6 +471,7 @@
     }
 
 }
+
 
 
 
@@ -513,18 +526,30 @@
         return ;
     }
     self.isShowingAlter = YES;
-    self.pageMessage = [[UIAlertView alloc]
-                          initWithTitle:@"メーセージ"
-                          message:message
-                          delegate:self
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil];
-    [self.pageMessage show];
+    self.willshowStartAlter = NO;
+    self.willshowEndAlter = NO;
+    
+    
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        self.pageMessage = [[UIAlertView alloc]
+                            initWithTitle:@"メーセージ"
+                            message:message
+                            delegate:self
+                            cancelButtonTitle:@"OK"
+                            otherButtonTitles:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.pageMessage show];
+        });
+    });
+    
 //    [NSTimer scheduledTimerWithTimeInterval:0.8f target:self selector: @selector(dismissAction:)  userInfo:nil repeats:NO];
 }
 
 
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
     if (buttonIndex == 0) {
         self.isShowingAlter = NO;
         self.willshowStartAlter = NO;
@@ -534,6 +559,7 @@
 -(void)playPhotoAction:(NSTimer *)timer{
     
     if (self.currentImageId < [[self photos] count]-1) {
+        [[self.photolist objectAtIndex:self.currentImageId] setZoomScale:1.0f];
         self.currentImageId++;
         [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
     }else{
@@ -587,10 +613,7 @@
     self.isPlaying = NO;
     self.isShowingAlter = NO;
     //mainscrollView.contentOffset = CGPointMake(0, 0);
-    if((sOrientation == kLandScapeRight)||
-       (sOrientation == kLandScapeLeft)){
-        [self rolltoLandscape];
-    }
+    
 }
 
 
@@ -640,24 +663,8 @@
 //
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     NSLog(@"scrollViewDidEndDragging");
-    if (self.willshowStartAlter == YES) {
-        [self showNopageMessage:@"最初の画像です"];
-        self.willshowStartAlter = NO;
-    }else if(self.willshowEndAlter == YES){
-        [self showNopageMessage:@"最後の画像です"];
-        self.willshowEndAlter = NO;
-    }
-}
--(void)updateZoomStatus{
-
-
-
-    UIScrollView *photoscroll = [self.photolist objectAtIndex:(self.currentImageId)];
     
-    photoscroll.maximumZoomScale = 3.0;
-    photoscroll.minimumZoomScale = 1.0;
-    NSLog(@"update isLoaded to YES");
-
+    
 }
 
 
@@ -680,12 +687,12 @@
             NSLog(@"self.ispagechanged:%d",self.ispagechanged);
             NSLog(@"scrollViewDidEndDecelerating");
             NSLog(@"currentpage is :%d",self.currentImageId);
-            [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
+//            [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
             for (UIScrollView *s in scrollView.subviews){
                 [s setZoomScale:1.0];
                 if ([s isKindOfClass:[UIScrollView class]]){
                     if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-                        [self updateZoomStatus];
+//                        [self updateZoomStatus];
                     }else{
                         
                         NSLog(@"isLoaded == NO");
@@ -697,6 +704,16 @@
             self.ispagechanged = NO;
         }
     }
+    
+    if (self.willshowStartAlter == YES) {
+        [self showNopageMessage:@"最初の画像です"];
+        
+    }else if(self.willshowEndAlter == YES){
+        [self showNopageMessage:@"最後の画像です"];
+        
+    }
+    self.willshowStartAlter = NO;
+    self.willshowEndAlter = NO;
     
 }
 
@@ -712,13 +729,13 @@
         
         return;
     }
-    NSLog(@"scrollViewDidScroll");
+    
 	/*
 	 *	下一画面拖动到超过50%时，进行切换
 	 */
-    
+    NSLog(@"scrollViewDidScroll");
     if (scrollView == self.mainscrollView){
-        
+         NSLog(@"scrollViewDidScroll:mainscrollView");
         if ((page == self.currentImageId)&&
             (page != (self.photos.count-1))&&
             (page != 0)) {
@@ -728,9 +745,11 @@
         
         
     
-        if(self.currentImageId != page){
+        if((self.currentImageId != page)&&
+           (page > 0)&&
+           (page <= [self.photos count]-1)){
             NSLog(@"changing page to:%d",page);
-
+            
             self.currentImageId = page;
             self.ispagechanged = YES;
             
@@ -740,9 +759,12 @@
         }
     }
     
-    if ((page+1) == [[self photos] count] ){
-        if (((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))) {
-            if (scrollView.zoomScale > 1.0f) {
+    if ((page+1) >= [[self photos] count] ){
+        if (((scrollView.contentOffset.x+pageWidth*7/8 >scrollView.contentSize.width))) {
+            if (self.isZooming == NO) {
+                NSLog(@"EndcontentOffset.x:%f",scrollView.contentOffset.x);
+                NSLog(@"EndscrollView.contentSize.width:%f",scrollView.contentSize.width);
+//                NSLog(@"EndcontentOffset.x:%f",scrollView.contentOffset.x);
                 self.willshowEndAlter = YES;
             }
             
@@ -750,15 +772,15 @@
         
         
         
-    }
-    
-    if(page == 0)
+    }else  if(page <= 0)
     {
         //                CGFloat a = scrollView.contentOffset.x;
-        if ((scrollView.contentOffset.x < 0)) {
-            if (scrollView.zoomScale > 1.0f) {
+        if ((scrollView.contentOffset.x + pageWidth / 8 < 0)) {
+            if (self.isZooming == NO) { //缩放时不弹出提示
+                NSLog(@"scrollView.contentOffset.x:%f",scrollView.contentOffset.x);
                 self.willshowStartAlter = YES;
             }
+            
             
         }
     }
@@ -782,11 +804,11 @@
 }
 
 
-//-(void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view{
-//   
-//
-//
-//}
+-(void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view{
+   
+    self.isZooming = YES;
+
+}
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
@@ -808,13 +830,11 @@
             frameToCenter.origin.y = 0.0f;
         
         scroolbtn.frame = frameToCenter;
-        
     }
-
-
 }
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale{
     NSLog(@"scrollViewDidEndZooming");
+    self.isZooming = NO;
    }
 
 - (BOOL) hidesBottomBarWhenPushed {

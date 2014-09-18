@@ -45,7 +45,7 @@
     photoView.islastpageList = NO;
     photoView.sOrientation = [self sOrientation];
 //    [self stopResize];
-    [self.navigationController pushViewController: photoView animated:YES];
+    [self.navigationController pushViewController: photoView animated:NO];
 }
 
 

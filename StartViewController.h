@@ -26,8 +26,9 @@ static int runCnt;
     NSArray *elementToParse;  //要存储的元素
     
     MBProgressHUD *HUD;
-    
+   
     
 }
+
 
 @end

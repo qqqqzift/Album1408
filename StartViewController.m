@@ -64,7 +64,7 @@
     
     //get connect status , request infomation(fomart in xml) of image
     [self reach];
-    elementToParse = [[NSArray alloc] initWithObjects:@"id",@"url",@"title",@"author", nil];
+    self.elementToParse = [[NSArray alloc] initWithObjects:@"id",@"url",@"title",@"author", nil];
     
     
     allLoaded = NO;
@@ -73,12 +73,12 @@
 
 
 -(void)viewDidAppear:(BOOL)animated{
-    HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
-	[self.navigationController.view addSubview:HUD];
+    self.HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+	[self.navigationController.view addSubview:self.HUD];
 	
 	//HUD.labelText = @"Loading";
-	HUD.minSize = CGSizeMake(135.f, 135.f);
-    [HUD showWhileExecuting:@selector(loadXMLTask) onTarget:self withObject:nil animated:YES];
+	self.HUD.minSize = CGSizeMake(135.f, 135.f);
+    [self.HUD showWhileExecuting:@selector(loadXMLTask) onTarget:self withObject:nil animated:YES];
     
 }
 
@@ -91,20 +91,20 @@
     [self RequestXMLandParse:1];
     
 	// Switch to determinate mode
-	HUD.mode = MBProgressHUDModeDeterminate;
-	HUD.labelText = @"Loading";
+	self.HUD.mode = MBProgressHUDModeDeterminate;
+	self.HUD.labelText = @"Loading";
     float progress = 0.01f,rprogress;
-	while (([photos count] < 21)||(progress <1.0f))
+	while (([self->photos count] < 21)||(progress <1.0f))
 	{
-        rprogress = [photos count]/21.0f;//real progress
+        rprogress = [self->photos count]/21.0f;//real progress
         if(rprogress == 0)
             continue;
         if(progress < rprogress){
             progress = progress + 0.01f;
-            HUD.progress = progress;
+            self.HUD.progress = progress;
         }
         else
-            HUD.progress = rprogress;
+            self.HUD.progress = rprogress;
 		usleep(5000);
 	}
     //HUD.progress = 1.0f;
@@ -112,12 +112,24 @@
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
 //    [albumView SetPhotos:photos];
-    albumView.photos = photos;
+    albumView.photos = self->photos;
+    albumView.leftTime = 10;
     [self.navigationController pushViewController: albumView animated:NO];
     
+//    [MMCommon setPhotosPtr:self->photos];
+//    mmTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(timerOverAction:) userInfo:nil repeats:NO];
     //HUD.mode = MBProgressHUDModeCustomView;
 	//HUD.labelText = @"Completed";
 }
+
+
+//+(void)setPhotosPtr:(NSMutableArray *)photos{
+//    photosPtr = photos;
+//}
+
+
+
+
 -(void)selectLeftAction:(id)sender
 {
     
@@ -189,23 +201,23 @@
     if([elementName isEqualToString:@"photos"]) {
         //Initialize the array.
         //在这里初始化用于存储最终解析结果的数组变量,我们是在当遇到Photos根元素时才开始初始化
-        photos = [[NSMutableArray alloc] init];
+        self->photos = [[NSMutableArray alloc] init];
     }
     else if([elementName isEqualToString:@"photo"]) {
         
         //Initialize the book.
         //当碰到Book元素时，初始化用于存储Photo信息的实例对象aPhoto
         
-        aPhoto = [[PhotoEntity alloc] init];
+        self.aPhoto = [[PhotoEntity alloc] init];
         
         //Extract the attribute here.
         //从attributeDict字典中读取photo元素的属性
         
-        aPhoto.ID = [[attributeDict objectForKey:@"id"] intValue];
+        self.aPhoto.ID = [[attributeDict objectForKey:@"id"] intValue];
         
-        NSLog(@"ID:%i", aPhoto.ID);
+        NSLog(@"ID:%i", self.aPhoto.ID);
     }
-    storingFlag = [elementToParse containsObject:elementName];  //判断是否存在要存储的对象
+    self.storingFlag = [self.elementToParse containsObject:elementName];  //判断是否存在要存储的对象
     
 }
 //step 3:获取首尾节点间内容
@@ -214,12 +226,12 @@
     //NSLog(@"%@",NSStringFromSelector(_cmd) );
     // 当用于存储当前元素的值是空时，则先用值进行初始化赋值
     // 否则就直接追加信息
-    if (storingFlag) {
-        if (!currentElementValue) {
-            currentElementValue = [[NSMutableString alloc] initWithString:string];
+    if (self.storingFlag) {
+        if (!self.currentElementValue) {
+            self.currentElementValue = [[NSMutableString alloc] initWithString:string];
         }
         else {
-            [currentElementValue appendString:string];
+            [self.currentElementValue appendString:string];
         }
     }
 }
@@ -229,32 +241,32 @@
 {
     //NSLog(@"%@",NSStringFromSelector(_cmd) );
     if ([elementName isEqualToString:@"photo"]) {
-        aPhoto.isLoaded = NO;
-        [photos addObject:aPhoto];
-        aPhoto = nil;
+        self.aPhoto.isLoaded = NO;
+        [self->photos addObject:self.aPhoto];
+        self.aPhoto = nil;
     }
     
-    if (storingFlag) {
+    if (self.storingFlag) {
         //去掉字符串的空格
-        NSString *trimmedString = [currentElementValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSString *trimmedString = [self.currentElementValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
         //将字符串置空
-        [currentElementValue setString:@""];
+        [self.currentElementValue setString:@""];
         if ([elementName isEqualToString:@"id"]) {
-            aPhoto.ID = [trimmedString intValue];
+            self.aPhoto.ID = [trimmedString intValue];
             //NSLog(@"id :%d",aPhoto.ID);
         }
         if ([elementName isEqualToString:@"url"]) {
-            aPhoto.url = trimmedString;
-            aPhoto.image = [[UIImageView alloc]init];
+            self.aPhoto.url = trimmedString;
+            self.aPhoto.image = [[UIImageView alloc]init];
 
         }
         if ([elementName isEqualToString:@"author"]) {
-            aPhoto.author = trimmedString;
+            self.aPhoto.author = trimmedString;
             //NSLog(@"author :%@",aPhoto.author);
         }
         if ([elementName isEqualToString:@"title"]) {
-            aPhoto.title = trimmedString;
+            self.aPhoto.title = trimmedString;
             //NSLog(@"title :%@",aPhoto.title);
         }
     }
@@ -322,14 +334,16 @@
     
 }
 
-
+- (void)viewWillDisappear:(BOOL)animated{
+//    [mmTimer setFireDate: [NSDate distantFuture]] ;
+}
 - (void)viewDidDisappear:(BOOL)animated{
-    NSLog(@"StartViewController dealloc");
-    currentElementValue = nil;
-    photos = nil;
-    aPhoto = nil;
-    elementToParse = nil;
-    elementToParse = nil;
+    NSLog(@"StartViewController disapear");
+    self.currentElementValue = nil;
+//    self.photos = nil;
+    self.aPhoto = nil;
+    self.elementToParse = nil;
+//    self.elementToParse = nil;
     
 }
 @end

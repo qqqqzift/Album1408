@@ -58,7 +58,7 @@
     albumView.photos = [self photos];
     albumView.sOrientation = self.sOrientation;
     
-    [self.navigationController pushViewController: albumView animated:YES];
+    [self.navigationController pushViewController: albumView animated:NO];
 }
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -88,7 +88,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -113,7 +113,70 @@
     self.wantsFullScreenLayout = YES;
     
     
+
 //    loadTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicture:) userInfo:nil repeats:YES];
+}
+//-(void)loadTimerAction:(NSTimer *)timer{
+//    NSLog(@"loadTimerAction");
+//    if ((self.leftTime-1) > 0) {
+//        self.leftTime--;
+//        self.loadTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f  target:self selector:@selector(loadTimerAction:) userInfo:nil repeats:NO];
+//    }else if(self.leftTime -1 == 0){
+//        [self ShowTimerOverAlert];
+//        allLoaded = YES;        //虽然没有读完但是已经显示过警告了
+//    }
+//    
+//}
+//
+- (void)viewWillAppear:(BOOL)animated{
+    [[self navigationController] setToolbarHidden:YES animated:NO];
+    [[self navigationController] setNavigationBarHidden:NO animated:NO];
+//    if ([MMCommon allLoaded] == NO ){
+//        if ((self.leftTime-1) > 0) {
+//            self.leftTime--;
+//            self.loadTimer = [NSTimer scheduledTimerWithTimeInterval:2.0  target:self selector:@selector(loadTimerAction:) userInfo:nil repeats:NO];
+//            
+//        }else if(self.leftTime -1 == 0){
+//            [self ShowTimerOverAlert];
+//            allLoaded = YES;        //虽然没有读完但是已经显示过警告了
+//        }
+//        
+//    }
+//    
+
+}
+//-(void)viewWillAppear:(BOOL)animated
+//{
+//    
+//}
+
+
+-(void)ShowTimerOverAlert{
+//    NSLog(@"timerOverAction");
+//    UIAlertView *pageMessage = [[UIAlertView alloc]
+//                                initWithTitle:@"画像の読み込み"
+//                                message:@"タイムオーバー"
+//                                delegate:self
+//                                cancelButtonTitle:@"OK"
+//                                otherButtonTitles:nil];
+//    if (self.checkAllIsLoaded == YES) {
+//        [pageMessage setMessage:@"all loaded"];
+//    }else{
+//        [pageMessage setMessage:@"time over"];
+//        
+//    }
+//    
+//    [pageMessage show];
+}
+-(BOOL)checkAllIsLoaded{
+    NSLog(@"checkAllIsLoaded");
+    for (PhotoEntity *aphoto in self.photos) {
+        if (aphoto.isLoaded == NO ) {
+            return NO;
+        }
+    }
+    return YES;
+    
 }
 
 
@@ -304,11 +367,6 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
     return kListImageHeight+1;
 }
 
--(void)viewWillAppear:(BOOL)animated
-{
-    [[self navigationController] setToolbarHidden:YES animated:NO];
-    [[self navigationController] setNavigationBarHidden:NO animated:NO];
-}
 
 
 -(void)dealloc{

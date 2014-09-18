@@ -14,10 +14,10 @@
 }
   
 @property (nonatomic,assign)int sOrientation;
+@property (nonatomic,assign)float leftTime;                               //超时警告剩余时间
 
-
-
+//@property (nonatomic,strong)NSTimer *loadTimer;
 @property (nonatomic,strong)NSMutableArray *photos;  //用于存储一组photo
 
-
+//-(void)loadTimerAction:(NSTimer *)timer;
 @end

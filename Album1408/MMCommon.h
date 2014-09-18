@@ -32,17 +32,21 @@
 #define kEPS                                    0.001
 #define kPhotoCnt                               21
 #define kToolbarHeight                          50
+#define kToolbarHeightH                         60
+#define kTimeOverInterval                       60.0f
 #define IsIOS7 ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] intValue]>=7)
 //缩略图画面
 static BOOL allLoaded;                 //stands for all the picture is loaded
 static int sideMargin;              //4 inch screen is 88 wider than 3.5 inch screen
 static int kHLineCnt;
+
 @interface MMCommon : NSObject
+
 + (int)sideMargin;
 +(int) kHLineCnt;
++(BOOL)allLoaded;
 +(void)MMcleanCache;
 +(void)MMclearCacheSuccess;
-
 
 
 

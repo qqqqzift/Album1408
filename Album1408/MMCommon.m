@@ -7,9 +7,42 @@
 //
 
 #import "MMCommon.h"
+#import "PhotoEntity.h"
 
+@class MMCommon;
 @implementation MMCommon
-
+//+(void)setPhotoPtr:(NSMutableArray *)photos{
+//    NSLog(@"setPhotoPtr");
+//    photoPtr = photos;
+//}
+//+(BOOL)checkAllIsLoaded{
+//    NSLog(@"checkAllIsLoaded");
+//    for (PhotoEntity *aphoto in photoPtr) {
+//        if (aphoto.isLoaded == NO ) {
+//            return NO;
+//        }
+//    }
+//    return YES;
+//    
+//}
+//+(void)timerOverAction:(NSTimer *)timer{
+//    NSLog(@"timerOverAction");
+//    UIAlertView *pageMessage = [[UIAlertView alloc]
+//                                initWithTitle:@"画像の読み込み"
+//                                message:@"タイムオーバー"
+//                                delegate:self
+//                                cancelButtonTitle:@"OK"
+//                                otherButtonTitles:nil];
+//    if (self.checkAllIsLoaded == YES) {
+//        [pageMessage setMessage:@"all loaded"];
+//    }else{
+//        [pageMessage setMessage:@"time over"];
+//        
+//    }
+//    
+//    [pageMessage show];
+//    
+//}
 +(int)sideMargin{
     if(IS_IPHONE5){
         sideMargin = 44;
@@ -18,7 +51,9 @@
     }
     return sideMargin;
 }
-
++(BOOL)allLoaded{
+    return allLoaded;
+}
 
 +(int) kHLineCnt{
     if(IS_IPHONE5){
@@ -50,5 +85,7 @@
                        }
                        [self performSelectorOnMainThread:@selector(MMclearCacheSuccess) withObject:nil waitUntilDone:YES];});
 }
+
+
 
 @end

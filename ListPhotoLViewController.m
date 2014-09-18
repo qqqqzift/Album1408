@@ -211,9 +211,56 @@
     }
     landscapeNeedsToupdate = NO;
     potraitNeedsToupdate = NO;
+//    if (allLoaded == NO ){
+//        if ((self.leftTime-1) > 0) {
+//            self.loadTimer = [NSTimer scheduledTimerWithTimeInterval:(self.leftTime--)  target:self selector:@selector(loadTimerAction:) userInfo:nil repeats:NO];
+//        }else if(self.leftTime -1 == 0){
+//            [self ShowTimerOverAlert];
+//            allLoaded = YES;        //虽然没有读完但是已经显示过警告了
+//        }
+//        
+//    }
 
 }
 
+//-(void)ShowTimerOverAlert{
+//    NSLog(@"timerOverAction");
+//    UIAlertView *pageMessage = [[UIAlertView alloc]
+//                                initWithTitle:@"画像の読み込み"
+//                                message:@"タイムオーバー"
+//                                delegate:self
+//                                cancelButtonTitle:@"OK"
+//                                otherButtonTitles:nil];
+//    if (self.checkAllIsLoaded == YES) {
+//        [pageMessage setMessage:@"all loaded"];
+//    }else{
+//        [pageMessage setMessage:@"time over"];
+//        
+//    }
+//    
+//    [pageMessage show];
+//}
+//-(BOOL)checkAllIsLoaded{
+//    NSLog(@"checkAllIsLoaded");
+//    for (PhotoEntity *aphoto in self.photos) {
+//        if (aphoto.isLoaded == NO ) {
+//            return NO;
+//        }
+//    }
+//    return YES;
+//    
+//}
+//
+//-(void)loadTimerAction:(NSTimer *)timer{
+//    if ((self.leftTime-1) > 0) {
+//        self.loadTimer = [NSTimer scheduledTimerWithTimeInterval:(self.leftTime--)  target:self selector:@selector(loadTimerAction:) userInfo:nil repeats:NO];
+//    }else if(self.leftTime -1 == 0){
+//        [self ShowTimerOverAlert];
+//        allLoaded = YES;        //虽然没有读完但是已经显示过警告了
+//    }
+//    
+//}
+//
 
 -(void)selectRightAction:(id)sender
 {

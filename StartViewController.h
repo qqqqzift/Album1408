@@ -14,21 +14,21 @@
 
 static int runCnt;
 @interface StartViewController : UIViewController<NSXMLParserDelegate>{
+    @public NSMutableArray *photos;  //用于存储一组photo
     
-    NSMutableString *currentElementValue;  //用于存储元素标签的值
-    
-    NSMutableArray *photos;  //用于存储一组photo
-    
-    PhotoEntity *aPhoto;  //photo实例，代表一本书
-    
-    BOOL storingFlag; //查询标签所对应的元素是否存在
-    
-    NSArray *elementToParse;  //要存储的元素
-    
-    MBProgressHUD *HUD;
    
     
 }
+@property (nonatomic,strong)NSMutableString *currentElementValue;  //用于存储元素标签的值
 
+//@property (nonatomic,strong)NSTimer *mmTimer;              //load picture timer overtimer
+
+@property (nonatomic,strong)PhotoEntity *aPhoto;  //photo实例，代表一本书
+
+@property (nonatomic,assign)BOOL storingFlag; //查询标签所对应的元素是否存在
+
+@property (nonatomic,strong)NSArray *elementToParse;  //要存储的元素
+
+@property (nonatomic,strong)MBProgressHUD *HUD;
 
 @end

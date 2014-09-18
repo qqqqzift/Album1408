@@ -20,7 +20,7 @@
 //    int offset;
 }
 //定义UIScrollView与UIPageControl实例变量
-@property  (nonatomic,strong)UITapGestureRecognizer *taprecognizer;
+
 
 @property (nonatomic,strong)UIScrollView* mainscrollView;
 

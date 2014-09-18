@@ -153,6 +153,9 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
     self.pageControlIsChangingPage = YES;
     NSLog(@"willAnimateRotationToInterfaceOrientation");
+    if(self.isPlaying == YES){
+        [self pausePlaying];
+    }
     switch (interfaceOrientation) {
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
@@ -306,6 +309,12 @@
     frame.origin.x = frame.size.width *thePage;
 //    NSLog(@"frame.origin.x:%f",frame.origin.x);
     [self.mainscrollView scrollRectToVisible:frame animated:withAnime];
+    if ([(PhotoEntity *)[self.photos objectAtIndex:thePage] isLoaded] == NO) {
+        UIScrollView *thisscroll = (UIScrollView *)[self.photolist objectAtIndex:thePage];
+        //todo test
+        thisscroll.maximumZoomScale = 3.0;
+        thisscroll.minimumZoomScale = 1.0;
+    }
 }
 
 - (void)setupPage
@@ -340,9 +349,7 @@
         
         photoscroll.delegate = self;
         
-        photoscroll.minimumZoomScale = 1.0;
         
-        photoscroll.maximumZoomScale = 1.0;
         
         photoscroll.showsVerticalScrollIndicator= NO;
         
@@ -353,7 +360,8 @@
         //        photoscroll.tag = i+1;
         
         [photoscroll setZoomScale:1.0];
-        
+        photoscroll.minimumZoomScale = 1.0;
+        photoscroll.maximumZoomScale = 3.0;
         
         
         
@@ -369,8 +377,6 @@
                 photobtn.frame = CGRectMake(0, 0, thisphoto.image.image.size.width*(kScreenWidth/thisphoto.image.image.size.height),kScreenWidth);;
                 photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
             }
-            photoscroll.maximumZoomScale = 3.0;
-            photoscroll.minimumZoomScale = 1.0;
             [photobtn setImage:thisphoto.image.image forState:UIControlStateNormal];
         }else{
             [photobtn.imageView setImage:[UIImage imageNamed:@"Block_01_00.png"]];
@@ -380,13 +386,13 @@
             }else if(sOrientation == kLandScapeRight){
                 photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
             }
+            
             [thisphoto.image  sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
                         placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                    //... completion code here ...
                                    
                                    thisphoto.isLoaded =  YES;
-                                   
                                    if (sOrientation == kLandScapeTop) {
                                        photobtn.frame = CGRectMake(0, 0, kScreenWidth,   thisphoto.image.image.size.height*(kScreenWidth/thisphoto.image.image.size.width));
                                        photobtn.center = CGPointMake( kScreenWidth/2,kScreenHeight/2);
@@ -394,12 +400,10 @@
                                        photobtn.frame = CGRectMake(0, 0, thisphoto.image.image.size.width*(kScreenWidth/thisphoto.image.image.size.height),kScreenWidth);;
                                        photobtn.center = CGPointMake( kScreenHeight/2,kScreenWidth/2);
                                    }
+                                   
                                    [photobtn setImage:thisphoto.image.image forState:UIControlStateNormal];
                                    photoscroll.maximumZoomScale = 3.0;
                                    photoscroll.minimumZoomScale = 1.0;
-                                   
-                                   
-                                   
                                }];
         
         
@@ -443,7 +447,18 @@
 
 
 
+-(void)pausePlaying{
+    self.isPlaying = NO;
+    [self.playbtn setTitle:@"Play"];
+    [self.playTimer invalidate];
+    if([self ishidebar] == NO){
+        [self setFullScreen];
+    }else{
+        
+        [self setShowNavibar];
+    }
 
+}
 
 
 
@@ -463,15 +478,7 @@
             [self setShowNavibar];
         }
     }else{
-        self.isPlaying = NO;
-        [self.playbtn setTitle:@"Play"];
-        [self.playTimer invalidate];
-        if([self ishidebar] == NO){
-            [self setFullScreen];
-        }else{
-            
-            [self setShowNavibar];
-        }
+        [self pausePlaying];
     }
     
 //    UINavigationBar *navBar = self.navigationController.navigationBar;
@@ -526,15 +533,16 @@
 }
 -(void)playPhotoAction:(NSTimer *)timer{
     
-    if (self.currentImageId < [[self photos] count]) {
+    if (self.currentImageId < [[self photos] count]-1) {
         self.currentImageId++;
         [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
     }else{
         [self.playbtn setTitle:@"Play"];
         self.isPlaying = NO;
         [self stopPlaying];
+        self.willshowEndAlter = NO;
         [self showNopageMessage:@"最後の画像です" ];
-    
+        
     }
     
 }
@@ -598,14 +606,14 @@
     self.scrollTools = nil;
     
     
-    [self.photolist removeAllObjects];
-    self.photolist = nil;
-    [self.mainscrollView removeFromSuperview];
-    self.mainscrollView = nil;
-    [self.fullScreenTimer invalidate];
-    self.fullScreenTimer = nil;
-    [self.pageMessage removeFromSuperview];
-    self.pageMessage = nil;
+//    [self.photolist removeAllObjects];
+//    self.photolist = nil;
+//    [self.mainscrollView removeFromSuperview];
+//    self.mainscrollView = nil;
+//    [self.fullScreenTimer invalidate];
+//    self.fullScreenTimer = nil;
+//    [self.pageMessage removeFromSuperview];
+//    self.pageMessage = nil;
     
     
 }
@@ -622,10 +630,13 @@
 //- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
 //    [self setFullScreen];
 //}
-//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-//    
-//
-//}
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    if(self.isPlaying == YES){
+        [self pausePlaying];
+    }
+    
+
+}
 //
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     NSLog(@"scrollViewDidEndDragging");
@@ -731,7 +742,10 @@
     
     if ((page+1) == [[self photos] count] ){
         if (((scrollView.contentOffset.x+pageWidth >scrollView.contentSize.width))&&(self.willshowStartAlter == NO)) {
-            self.willshowEndAlter = YES;
+            if (scrollView.zoomScale > 1.0f) {
+                self.willshowEndAlter = YES;
+            }
+            
         }
         
         
@@ -742,7 +756,10 @@
     {
         //                CGFloat a = scrollView.contentOffset.x;
         if ((scrollView.contentOffset.x < 0)&&(self.willshowStartAlter == NO)) {
-            self.willshowStartAlter = YES;
+            if (scrollView.zoomScale > 1.0f) {
+                self.willshowStartAlter = YES;
+            }
+            
         }
     }
     
@@ -754,6 +771,9 @@
     
     for (UIView *v in scrollView.subviews){
         
+        if ([(PhotoEntity *)[self.photos objectAtIndex:self.currentImageId] isLoaded] == NO) {
+            return nil;
+        }
         
         return v;
     }

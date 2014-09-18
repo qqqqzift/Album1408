@@ -14,7 +14,8 @@ static NSString *identifierR = @"CellRight";
 @interface ListPhotoLViewController : UITableViewController{
     
     
-
+    __block BOOL potraitNeedsToupdate;
+    __block BOOL landscapeNeedsToupdate;
 }
 
 @property  (nonatomic,assign)int sOrientation;

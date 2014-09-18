@@ -106,21 +106,7 @@
 }
 
 
-//-(void)loadPicture:(NSTimer *)timer{
-//    
-//    if ([_photos count] >=  kPhotoCnt) {
-//        [self.tableView reloadData];
-//    }else{
-//    
-//        [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(stopTimer:) userInfo:nil repeats:NO];
-//    }
-//    
-//}
 
-//-(void)stopTimer:(NSTimer *)timer{
-//    [loadTimer invalidate];
-//    loadTimer = nil;
-//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -129,10 +115,7 @@
     if ([self isViewLoaded] && self.view.window == nil) {
         self.view = nil;
     }
-    // Dispose of any resources that can be recreated.
-//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+
 }
 
 #pragma mark - Table view data source
@@ -161,7 +144,7 @@
     }
     // Configure the cell...
     //dataSource_中保存有各单元显示用字符串
-    cell.textLabel.text = [@"    " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
+    cell.textLabel.text = [@"       " stringByAppendingString: [[_photos objectAtIndex:indexPath.row] title]];
     
     cell.textLabel.frame = CGRectMake(0, 60, 100, 40);
     [[_photos objectAtIndex:indexPath.row] url];
@@ -170,23 +153,33 @@
     
     __weak PhotoEntity * thisphoto = (PhotoEntity *)[self.photos objectAtIndex:(indexPath.row)];
     __weak UITableView *thistable;
-    thisphoto.image.backgroundColor = [UIColor blackColor];
+    UIImageView *placeholder =[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kListImageWidth, kListImageHeight)];
+    [placeholder  setImage:[UIImage imageNamed:@"Block_01_00.png"]];
+    UIImageView *tmpImage = [[UIImageView alloc]init];
+    [cell.contentView addSubview:placeholder];
+//    thisphoto.image.backgroundColor = [UIColor blackColor];
     if ([thisphoto isLoaded] == YES) {
-        thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
-        [cell.contentView addSubview:thisphoto.image];
+        tmpImage.frame = CGRectMake(0,0,kListImageWidth ,  kListImageWidth*thisphoto.image.image.size.height/thisphoto.image.image.size.width);
+        [tmpImage setImage:thisphoto.image.image];
+        tmpImage.center = ccp(CGRectGetWidth(placeholder.frame)/2,
+                              CGRectGetHeight(placeholder.frame)/2);
+        [placeholder addSubview:tmpImage];
+        
         [thistable reloadData];
     }else{
-        [thisphoto.image setImage:[UIImage imageNamed:@"Block_01_00.png"]];
-        thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
-        [cell.contentView addSubview:thisphoto.image];
-        [thistable reloadData];
+        
+        
+        
         [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
                   placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                              thisphoto.isLoaded = YES;
-                             [thisphoto.image setImage:image];
-                             thisphoto.image.frame = CGRectMake(0,0,kListImageWidth,kListImageHeight);
-                             [cell.contentView addSubview:thisphoto.image];
+                             tmpImage.frame = CGRectMake(0,0, kListImageWidth ,  kListImageWidth*thisphoto.image.image.size.height/thisphoto.image.image.size.width);
+                             [tmpImage setImage:image];
+                             tmpImage.center = ccp(CGRectGetWidth(placeholder.frame)/2,
+                                                   CGRectGetHeight(placeholder.frame)/2);
+                             [placeholder addSubview:tmpImage];
+                             
                              [thistable reloadData];
                          }];
         

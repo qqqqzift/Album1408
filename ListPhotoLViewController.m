@@ -76,21 +76,13 @@
             self.elemInLine = [MMCommon kHLineCnt];
             //home健在右
             sOrientation = kLandScapeRight;
-            
-            
-
             break;
-        
-
         default:
             NSLog(@"OrientationNotHandled");
             if (self.elemInLine == 0) {
                 self.elemInLine = kVLineCnt;
             }
-            
             break;
-            
-            
     }
     NSLog(@"Reload call");
     [self.tableView reloadData];
@@ -103,19 +95,22 @@
 -(void) setCellByRow:(long)row lineCnt:(int)lcnt oFlag:(int)oflag icell:(UITableGridViewCell *)ocell{
     
     float indent;
+    __block bool ispotrait;
     if ((oflag == kLandScapeTop)||
         (oflag == kLandScapeBottom)){
         indent = (kScreenWidth - kImageWidth * lcnt)/(lcnt +1.0);
+        ispotrait = YES;
     }else if((oflag == kLandScapeRight)||
              (oflag == kLandScapeLeft)){
         indent = (kScreenHeight - kImageWidth * lcnt)/(lcnt +1.0);
-        
+        ispotrait = NO;
     }else{
+        ispotrait = YES;
         indent =5;
     }
-    NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[_photos count]];
+    NSMutableArray *btnArray = [[NSMutableArray alloc]initWithCapacity:[self.photos count]];
     for (int i=0; i<lcnt; i++) {
-        if ((row*lcnt +i) >= [_photos count]) {
+        if ((row*lcnt +i) >= [self.photos count]) {
             break;
         }
         //自定义继续UIButton的UIImageButton 里面只是加了2个row和column属性
@@ -123,18 +118,17 @@
         //[button.tag ]
         button.bounds = CGRectMake(0, 0, kImageWidth, kImageWidth);
         button.center = CGPointMake((1 + i) * indent+ kImageWidth *( 0.5 + i) , 5 + kImageWidth * 0.5);
-        button.backgroundColor = [UIColor blackColor];
-        
+        button.backgroundColor = [UIColor clearColor];
+        [button setImage:[UIImage imageNamed:@"Block_01_00.png"] forState:UIControlStateNormal];
         
         //button.column = i;
-        [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
+        [button setValue:[NSNumber numberWithInt:[(PhotoEntity *)[self.photos objectAtIndex:(row*lcnt +i)] ID]]forKey:@"ID"];
         [button setValue:[NSNumber numberWithInt:i] forKey:@"column"];
         [button addTarget:self action:@selector(imageItemClick:) forControlEvents:UIControlEventTouchUpInside];
         
         [ocell addSubview:button];
         
         UIImageView *tmpImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kImageWidth, kImageWidth)];
-        __weak UITableView * thisTbl = [self tableView];
         __weak PhotoEntity * thisphoto = (PhotoEntity *)[self.photos objectAtIndex:(row*lcnt +i)];
         thisphoto.image.backgroundColor = [UIColor blackColor];
         if ([(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] isLoaded] == YES) {
@@ -144,7 +138,7 @@
                                          CGRectGetHeight(button.frame)/2);
             [tmpImage setImage:thisphoto.image.image];
             [button addSubview:tmpImage];
-            [thisTbl reloadData];
+//            [thisTbl reloadData];
         }else{
             
             [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
@@ -160,16 +154,17 @@
                                                  CGRectGetHeight(button.frame)/2);
                                    [tmpImage setImage:thisphoto.image.image];
                                    [button addSubview:tmpImage];
-                                   [thisTbl reloadData];
+//                                   [thisTbl reloadData];
                                    //
+                                   if (ispotrait == YES) {
+                                       landscapeNeedsToupdate = YES;
+                                   }else{
+                                       potraitNeedsToupdate = YES;
+                                   }
+                                   
                                    
                                }];
         }
-        
-        
-        
-        
-        
         
         [btnArray addObject:button];
     }
@@ -190,19 +185,7 @@
     [self setCellByRow:row  lineCnt:[MMCommon kHLineCnt] oFlag:kLandScapeRight icell:cell];
     
 }
--(void)updateAllLoadFlag{
-    BOOL loadComfirm = YES;
-    for(int i = 0; i< [self.photos count];i++){
-        PhotoEntity *aphoto = [self.photos objectAtIndex:i];
-        if (aphoto.isLoaded == NO) {
-            loadComfirm = NO;
-            break;
-        }
-    
-    }
-    allLoaded = loadComfirm;
 
-}
 
 
 - (void)viewDidLoad
@@ -213,27 +196,25 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.hidesBackButton = YES;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//    self.automaticallyAdjustsScrollViewInsets = NO;
+
     self.wantsFullScreenLayout = YES;
-    //self.image = [self cutCenterImage:[UIImage imageNamed:@"macbook_pro.jpg"]  size:CGSizeMake(100, 100)];
-    
-    
-    
-    
     
     UIBarButtonItem *seteiButton = [[UIBarButtonItem alloc] initWithTitle:@"列表" style:UIBarButtonItemStylePlain target:self action:@selector(selectRightAction:)];
     self.navigationItem.rightBarButtonItem = seteiButton;
     //todo 横屏判断
-    if (self.elemInLine == 0) {
+    if (self.sOrientation == kLandScapeTop) {
+        self.elemInLine = 4;
+    }else if(self.sOrientation == kLandScapeRight){
+        self.elemInLine = [MMCommon kHLineCnt];
+    }else{
         self.elemInLine = 4;
     }
-    
+    landscapeNeedsToupdate = NO;
+    potraitNeedsToupdate = NO;
 
 }
 
-//-(void)orientationChanged{
-//    NSLog(@"orientationChanged");
-//}
+
 -(void)selectRightAction:(id)sender
 {
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
@@ -250,10 +231,10 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (([_photos count]%self.elemInLine) == 0) {
-        return ([_photos count]/self.elemInLine);
+    if (([self.photos count]%self.elemInLine) == 0) {
+        return ([self.photos count]/self.elemInLine);
     }else{
-        return (([_photos count]/self.elemInLine) + 1);
+        return (([self.photos count]/self.elemInLine) + 1);
     }
 }
 
@@ -273,17 +254,15 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 //    NSLog(@"cellforRowAtIndexPath call,sOrientation:%d",sOrientation);
-//    [self updateAllLoadFlag];
+    
     if((sOrientation == kLandScapeBottom)||(sOrientation == kLandScapeTop)){
 //        NSLog(@"top:top cell");
         UITableGridViewCell *cellTop = [tableView dequeueReusableCellWithIdentifier:identifierT];
-//        if (allLoaded == NO) {
-//            cellTop.selectedBackgroundView = [[UIView alloc] init];
-//        }
         
-        if (cellTop == nil) {
+        
+        if ((cellTop == nil)||(potraitNeedsToupdate == YES)) {
             
-            cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
+            cellTop = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierT];
             cellTop.selectedBackgroundView = [[UIView alloc] init];
             [self setTopCellByRow:indexPath.row allele:_photos cell:cellTop];
             
@@ -298,10 +277,9 @@
         
         
         UITableGridViewCell *cellRight = [tableView dequeueReusableCellWithIdentifier:identifierR];
-//        if (allLoaded == NO) {
-//            cellRight.selectedBackgroundView = [[UIView alloc] init];
-//        }
-        if (cellRight == nil) {
+        
+        
+        if ((cellRight == nil)||(landscapeNeedsToupdate == YES)) {
             
             cellRight = [[UITableGridViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifierR];
             cellRight.selectedBackgroundView = [[UIView alloc] init];
@@ -325,10 +303,6 @@
     }
     
     
-    
-//    [[[SDWebImageManager sharedManager] imageCache] clearDisk];
-//    [[[SDWebImageManager sharedManager] imageCache] clearMemory];
-//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 
@@ -338,7 +312,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     //不让tableviewcell有选中效果
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 

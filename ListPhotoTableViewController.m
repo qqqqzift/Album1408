@@ -16,6 +16,7 @@
 #import "MMCommon.h"
 #import "UIImageView+WebCache.h"
 #import "UIImage+UIImageExt.h"
+#import "GlobalAlert.h"
 @interface ListPhotoTableViewController ()
 
 @end
@@ -57,7 +58,14 @@
 //    [albumView SetPhotos:_photos];
     albumView.photos = [self photos];
     albumView.sOrientation = self.sOrientation;
-    
+    //time over timer
+//    if (allLoaded == NO) {
+////        NSTimeInterval enddate = [[NSDate date] timeIntervalSince1970];
+////        
+////        //        NSLog(@"self.enddate:%ld",(long)enddate);
+////        [self.timeOverAlert updateTimeLeft:(enddate -self.startdate)];
+//        albumView.timeOverAlert = self.timeOverAlert;
+//    }
     [self.navigationController pushViewController: albumView animated:NO];
 }
 - (id)initWithStyle:(UITableViewStyle)style
@@ -128,58 +136,42 @@
 //    
 //}
 //
+
+
+
+
+
+
 - (void)viewWillAppear:(BOOL)animated{
     [[self navigationController] setToolbarHidden:YES animated:NO];
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
-//    if ([MMCommon allLoaded] == NO ){
-//        if ((self.leftTime-1) > 0) {
-//            self.leftTime--;
-//            self.loadTimer = [NSTimer scheduledTimerWithTimeInterval:2.0  target:self selector:@selector(loadTimerAction:) userInfo:nil repeats:NO];
-//            
-//        }else if(self.leftTime -1 == 0){
-//            [self ShowTimerOverAlert];
-//            allLoaded = YES;        //虽然没有读完但是已经显示过警告了
-//        }
-//        
-//    }
-//    
-
-}
-//-(void)viewWillAppear:(BOOL)animated
-//{
-//    
-//}
-
-
--(void)ShowTimerOverAlert{
-//    NSLog(@"timerOverAction");
-//    UIAlertView *pageMessage = [[UIAlertView alloc]
-//                                initWithTitle:@"画像の読み込み"
-//                                message:@"タイムオーバー"
-//                                delegate:self
-//                                cancelButtonTitle:@"OK"
-//                                otherButtonTitles:nil];
-//    if (self.checkAllIsLoaded == YES) {
-//        [pageMessage setMessage:@"all loaded"];
-//    }else{
-//        [pageMessage setMessage:@"time over"];
-//        
-//    }
-//    
-//    [pageMessage show];
-}
--(BOOL)checkAllIsLoaded{
-    NSLog(@"checkAllIsLoaded");
-    for (PhotoEntity *aphoto in self.photos) {
-        if (aphoto.isLoaded == NO ) {
-            return NO;
+    if (allLoaded == NO ){
+//        self.startdate = [[NSDate date] timeIntervalSince1970];
+//        NSLog(@"self.startdate:%ld",(long)self.startdate);
+        if ([self.timeOverAlert timerNotSet] == YES) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //todo
+                    [self.timeOverAlert timerAction ];
+                    
+                    
+                    
+                });
+            });
         }
+       
+    
     }
-    return YES;
+    
     
 }
-
-
+-(void)startCountDown{          //global timer 开始计时
+    
+    [self.timeOverAlert timerAction ];
+    
+}
 
 
 - (void)didReceiveMemoryWarning
@@ -246,6 +238,7 @@
         
         [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:indexPath.row] url]]
                   placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                  options:SDWebImageLowPriority|SDWebImageCacheMemoryOnly
                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                              thisphoto.isLoaded = YES;
                              tmpImage.frame = CGRectMake(0,0, kListImageWidth ,  kListImageWidth*thisphoto.image.image.size.height/thisphoto.image.image.size.width);
@@ -309,6 +302,15 @@ didSelectRowAtIndexPath:(NSIndexPath*)indexPath
     photoView.photos = [self photos];
     photoView.islastpageList = YES;
     photoView.sOrientation = [self sOrientation];
+    //time over timer
+//    if (allLoaded == NO) {
+////        NSTimeInterval enddate = [[NSDate date] timeIntervalSince1970];
+////        
+//////        NSLog(@"self.enddate:%ld",(long)enddate);
+////        [self.timeOverAlert updateTimeLeft:(enddate -self.startdate)];
+//        photoView.timeOverAlert = self.timeOverAlert;
+//    }
+    
     [self.navigationController pushViewController: photoView animated:YES];
 }
 

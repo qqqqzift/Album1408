@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "UIImageButton.h"
+@class GlobalAlert;
 static NSString *identifierT = @"CellTop";
 static NSString *identifierR = @"CellRight";
 
@@ -18,8 +19,8 @@ static NSString *identifierR = @"CellRight";
     __block BOOL landscapeNeedsToupdate;
     
 }
-//@property (nonatomic,strong)NSTimer *loadTimer;
-//@property (nonatomic,assign)float leftTime;                               //超时警告剩余时间
+@property (nonatomic,assign)NSInteger  startdate;
+//@property (nonatomic,strong)GlobalAlert *timeOverAlert;
 @property  (nonatomic,assign)int sOrientation;
 @property (nonatomic,assign)int mImageHeight;
 @property (nonatomic,assign)int elemInLine;            //每行元素个数

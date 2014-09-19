@@ -13,6 +13,7 @@
 #import "PhotoEntity.h"
 #import "MMCommon.h"
 #import "UIImageView+WebCache.h"
+#import "GlobalAlert.h"
 @interface PhotoScrollViewController ()
 
 @end
@@ -126,8 +127,11 @@
 - (void)viewDidAppear:(BOOL)animated{
 
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
-
+    
 }
+
+
+
 
 -(void)rolltoPotrait{
     NSLog(@"UIInterfaceOrientationPortraitUpsideDown or UIInterfaceOrientationPortrait");
@@ -402,6 +406,7 @@
             
             [thisphoto.image  sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:i] url]]
                         placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                        options:SDWebImageLowPriority|SDWebImageCacheMemoryOnly
                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                    //... completion code here ...
                                    if (image != nil) {
@@ -578,7 +583,12 @@
         self.isPlaying = NO;
         [self stopPlaying];
         self.willshowEndAlter = NO;
-        [self showNopageMessage:@"最後の画像です" ];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self showNopageMessage:@"最後の画像です" ];
+            
+            
+        });
+        
         
     }
     
@@ -699,18 +709,21 @@
             NSLog(@"scrollViewDidEndDecelerating");
             NSLog(@"currentpage is :%d",self.currentImageId);
 //            [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
-            for (UIScrollView *s in scrollView.subviews){
-                [s setZoomScale:1.0];
-                if ([s isKindOfClass:[UIScrollView class]]){
-                    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
-//                        [self updateZoomStatus];
-                    }else{
-                        
-                        NSLog(@"isLoaded == NO");
-                    }
-                }
-                
-            }
+            
+//            UIScrollView *s = [self.photolist objectAtIndex:(self.currentImageId)];
+//            [s setZoomScale:1.0];
+//            for (UIScrollView *s in scrollView.subviews){
+//                [s setZoomScale:1.0];
+//                if ([s isKindOfClass:[UIScrollView class]]){
+//                    if ( ((PhotoEntity *)[self.photos objectAtIndex:self.currentImageId]).isLoaded == YES) {
+////                        [self updateZoomStatus];
+//                    }else{
+//                        
+//                        NSLog(@"isLoaded == NO");
+//                    }
+//                }
+//                
+//            }
             
             self.ispagechanged = NO;
         }
@@ -760,9 +773,13 @@
            (page >= 0)&&
            (page <= [self.photos count]-1)){
             NSLog(@"changing page to:%d",page);
-            
+            UIScrollView *s = [self.photolist objectAtIndex:(self.currentImageId)];
+            [s setZoomScale:1.0];
             self.currentImageId = page;
             self.ispagechanged = YES;
+            
+            
+
             
         }else{
 

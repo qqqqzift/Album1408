@@ -51,9 +51,7 @@
     }
     return sideMargin;
 }
-+(BOOL)allLoaded{
-    return allLoaded;
-}
+
 
 +(int) kHLineCnt{
     if(IS_IPHONE5){

@@ -12,7 +12,7 @@
 #import "ListPhotoTableViewController.h"
 #import "MMCommon.h"
 #import "UIImageView+WebCache.h"
-
+#import "GlobalAlert.h"
 
 @interface StartViewController ()
 
@@ -63,22 +63,38 @@
     //self.navigationItem.backBarButtonItem.enabled = NO;
     
     //get connect status , request infomation(fomart in xml) of image
-    [self reach];
+    
+    thisCtrl = self;
+    self.isRetry = YES;
+    self.isShowingAlert = NO;
+    [self reach:thisCtrl];
+    self.connectMessage = [[UIAlertView alloc]
+                                   initWithTitle:@"没有检测到可用的网络"
+                                   message:@"是否重试？"
+                                   delegate:self
+                                   cancelButtonTitle:@"取消"
+                                   otherButtonTitles:@"重试",nil];
+    
     self.elementToParse = [[NSArray alloc] initWithObjects:@"id",@"url",@"title",@"author", nil];
-    
-    
+    self.loadxmlTimer = [[NSTimer alloc]init];
+    self.isShowingXMLAlert = NO;
     allLoaded = NO;
     
 }
 
-
--(void)viewDidAppear:(BOOL)animated{
+-(void)startAlbum{
+    [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
     self.HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
 	[self.navigationController.view addSubview:self.HUD];
 	
 	//HUD.labelText = @"Loading";
 	self.HUD.minSize = CGSizeMake(135.f, 135.f);
     [self.HUD showWhileExecuting:@selector(loadXMLTask) onTarget:self withObject:nil animated:YES];
+
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    
     
 }
 
@@ -87,16 +103,26 @@
 - (void)loadXMLTask {
 	// Indeterminate mode
 	sleep(1);
-   
-    [self RequestXMLandParse:1];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //todo
+            self.loadxmlTimer = [NSTimer scheduledTimerWithTimeInterval:60.0f  target:self selector:@selector(loadXMLTimeOverAction:) userInfo:nil repeats:NO];
+            
+            
+            
+        });
+    });
+    [self RequestXMLandParse:1 inthisCtl:self];
     
 	// Switch to determinate mode
 	self.HUD.mode = MBProgressHUDModeDeterminate;
 	self.HUD.labelText = @"Loading";
     float progress = 0.01f,rprogress;
-	while (([self->photos count] < 21)||(progress <1.0f))
+	while (([self.photos count] < 21)||(progress <1.0f))
 	{
-        rprogress = [self->photos count]/21.0f;//real progress
+        rprogress = [self.photos count]/21.0f;//real progress
         if(rprogress == 0)
             continue;
         if(progress < rprogress){
@@ -112,8 +138,10 @@
     ListPhotoTableViewController *albumView = [[ListPhotoTableViewController alloc]init];
     
 //    [albumView SetPhotos:photos];
-    albumView.photos = self->photos;
-    albumView.leftTime = 10;
+    albumView.photos = self.photos;
+    self.timeOverAlert = [[GlobalAlert alloc]init];
+    [self.timeOverAlert initGlobalAlert:self.photos waitTime:60.0];
+    albumView.timeOverAlert = self.timeOverAlert;
     [self.navigationController pushViewController: albumView animated:NO];
     
 //    [MMCommon setPhotosPtr:self->photos];
@@ -141,11 +169,29 @@
 }
 
 
-
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
+    if (buttonIndex == 0) {
+        
+        NSLog(@"internet not reachable");
+//        [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
+        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(0,50,kScreenWidth, 50)];
+        label1.font =  [UIFont boldSystemFontOfSize:20];
+        label1.text = @"网络无效";
+        label1.textColor = [UIColor blackColor];
+        [self.view addSubview:label1];
+        
+    }else if (buttonIndex == 1){
+         NSLog(@"retry reach");
+        
+        [self reach:thisCtrl];
+    }
+    
+}
 
 
 #pragma AFnetworking status
-- (void)reach
+- (void)reach:(StartViewController *)thisCtl
 {
     /**
      AFNetworkReachabilityStatusUnknown          = -1,  // 未知
@@ -162,19 +208,34 @@
                 NSLog(@"AFNetworkReachabilityStatusUnknown");
             case AFNetworkReachabilityStatusNotReachable:{
                 NSLog(@"AFNetworkReachabilityStatusUnknown Or AFNetworkReachabilityStatusNotReachable");
-                
-//                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (thisCtl.isShowingAlert == NO) {
+                            thisCtl.isShowingAlert = YES;
+                            [[thisCtl connectMessage] show];
+                        }
+                        
+                    });
+                });
+                //
                 break;}
             case AFNetworkReachabilityStatusReachableViaWWAN://same as below
             case AFNetworkReachabilityStatusReachableViaWiFi://
                 //connectted succeed
+                if (thisCtl.isShowingAlert == YES) {
+                    [[thisCtl connectMessage] dismissWithClickedButtonIndex:0 animated:NO];
+                }
+                
+                [thisCtl startAlbum];
                 break;
                 
             default:
                 break;
         }
        
-         
+        
         
     }];
 }
@@ -201,7 +262,7 @@
     if([elementName isEqualToString:@"photos"]) {
         //Initialize the array.
         //在这里初始化用于存储最终解析结果的数组变量,我们是在当遇到Photos根元素时才开始初始化
-        self->photos = [[NSMutableArray alloc] init];
+        self.photos = [[NSMutableArray alloc] init];
     }
     else if([elementName isEqualToString:@"photo"]) {
         
@@ -242,7 +303,7 @@
     //NSLog(@"%@",NSStringFromSelector(_cmd) );
     if ([elementName isEqualToString:@"photo"]) {
         self.aPhoto.isLoaded = NO;
-        [self->photos addObject:self.aPhoto];
+        [self.photos addObject:self.aPhoto];
         self.aPhoto = nil;
     }
     
@@ -282,7 +343,7 @@
 {
     //    NSLog(@"%@",NSStringFromSelector(_cmd) );
 }
--(void)RequestXMLandParse:(NSUInteger)ntimes
+-(void)RequestXMLandParse:(NSUInteger)ntimes inthisCtl:(StartViewController *)thisCtl
 {
     
     //AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:myURL]; manager.responseSerializer = [AFXMLResponseSerializer new];
@@ -290,12 +351,14 @@
     //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[baseUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
     NSURLRequest *request =
     [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://test:2014@cd.dev.vc/ios/album/photo.xml"]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0f ];
-    NSLog(@"timeoutInterval: %f",[request timeoutInterval]);
+//    NSLog(@"timeoutInterval: %f",[request timeoutInterval]);
     
     
     
+    __block bool isRequestOK = YES;
     AFXMLRequestOperation *operation =
     [AFXMLRequestOperation XMLParserRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, NSXMLParser *XMLParser) {
+        [thisCtl.loadxmlTimer invalidate];
         //NSLog(@"%@",response);
         
         
@@ -312,16 +375,39 @@
             NSLog(@"解析指定路径的xml文件失败");
         }
     }failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, NSXMLParser *XMLParser) {
-        if(ntimes > 1)
-            [self RequestXMLandParse:(ntimes - 1)];
+        isRequestOK = NO;
+        if(ntimes >= 1){
+            sleep(1);
+            [thisCtl RequestXMLandParse:1 inthisCtl:thisCtl];
+        }
+        else{
         
-        NSLog(@"%@",error);
+        }
+//        NSLog(@"%@",error);
     }];
-    [operation start];
+//    if (isRequestOK == YES) {
+        [operation start];
+//    }
+    
 
 }
 
 
+-(void)loadXMLTimeOverAction:(NSTimer *)timer{
+    NSLog(@"loadXMLTimeOverAction");
+    if (self.isShowingXMLAlert == NO) {
+        self.isShowingXMLAlert = YES;
+        UIAlertView *xmlMessage = [[UIAlertView alloc]
+                                   initWithTitle:@"提示"
+                                   message:@"XML链接获取超时"
+                                   delegate:nil
+                                   cancelButtonTitle:@"OK"
+                                   otherButtonTitles:nil];
+        [xmlMessage show];
+    }
+    
+    
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

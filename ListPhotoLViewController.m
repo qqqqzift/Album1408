@@ -12,7 +12,7 @@
 #import "UITableGridViewCell.h"
 #import "PhotoEntity.h"
 #import "MMCommon.h"
-
+#import "GlobalAlert.h"
 #import "UIImageView+WebCache.h"
 #import "UIImage+UIImageExt.h"
 
@@ -44,7 +44,14 @@
     photoView.photos = [self photos];
     photoView.islastpageList = NO;
     photoView.sOrientation = [self sOrientation];
-//    [self stopResize];
+    //timer overtimer
+//    if (allLoaded == NO) {
+////        NSTimeInterval enddate = [[NSDate date] timeIntervalSince1970];
+////        
+////        //        NSLog(@"self.enddate:%ld",(long)enddate);
+////        [self.timeOverAlert updateTimeLeft:(enddate -self.startdate)];
+//        photoView.timeOverAlert = self.timeOverAlert;
+//    }
     [self.navigationController pushViewController: photoView animated:NO];
 }
 
@@ -144,6 +151,7 @@
             [thisphoto.image sd_setImageWithURL:[NSURL URLWithString:[(PhotoEntity *)[_photos objectAtIndex:(row*lcnt +i)] url]]
              //                            forState:UIControlStateNormal;
                         placeholderImage:[UIImage imageNamed:@"Block_01_00.png"]
+                        options:SDWebImageLowPriority|SDWebImageCacheMemoryOnly
                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                    //                             if (((PhotoEntity *)[self.photos objectAtIndex:i]).isLoaded == NO) {
                                    
@@ -268,6 +276,8 @@
     
     albumView.photos = _photos;
     albumView.sOrientation = sOrientation;
+    //timer overtimer
+
     [self.navigationController pushViewController: albumView animated:NO];
     
 }
@@ -293,9 +303,7 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     
-//    [[self navigationController] setNavigationBarHidden:NO animated:YES];
-//    resizeTimer = [NSTimer scheduledTimerWithTimeInterval:0.5  target:self selector:@selector(loadPicturesize:) userInfo:nil repeats:YES];
-    
+
 }
 
 
@@ -368,8 +376,9 @@
 {
     
     [[self navigationController] setToolbarHidden:YES animated:NO];
-    
+
 }
+
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {

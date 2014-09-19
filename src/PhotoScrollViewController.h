@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class GlobalAlert;
 @interface TranslucentToolbar : UIToolbar
 
 @end
@@ -21,7 +21,7 @@
 }
 //定义UIScrollView与UIPageControl实例变量
 
-
+//@property (nonatomic,strong)GlobalAlert *timeOverAlert;
 @property (nonatomic,strong)UIScrollView* mainscrollView;
 
 

@@ -31,7 +31,7 @@
 #define kLandScapeBottom                        4
 #define kEPS                                    0.001
 #define kPhotoCnt                               21
-#define kToolbarHeight                          50
+#define kToolbarHeight                          80
 #define kToolbarHeightH                         60
 #define kTimeOverInterval                       60.0f
 #define IsIOS7 ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] intValue]>=7)
@@ -44,7 +44,6 @@ static int kHLineCnt;
 
 + (int)sideMargin;
 +(int) kHLineCnt;
-+(BOOL)allLoaded;
 +(void)MMcleanCache;
 +(void)MMclearCacheSuccess;
 

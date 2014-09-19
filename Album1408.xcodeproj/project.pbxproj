@@ -29,6 +29,7 @@
 		AA03482119B8004A00B3DB71 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03481019B8004A00B3DB71 /* UIWebView+AFNetworking.m */; };
 		AA03482619B800BC00B3DB71 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482419B800BC00B3DB71 /* AFXMLRequestOperation.m */; };
 		AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */; };
+		AA18547C19CB215C0036038A /* GlobalAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = AA18547B19CB215C0036038A /* GlobalAlert.m */; };
 		AA19846519C925430045D279 /* UIImage+UIImageExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AA19846419C925430045D279 /* UIImage+UIImageExt.m */; };
 		AA5AF0F419C1AF1C005EFE47 /* StartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA5AF0F319C1AF1C005EFE47 /* StartViewController.m */; };
 		AAA8AE3F19B83E4C00459612 /* PhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA8AE3E19B83E4C00459612 /* PhotoScrollViewController.m */; };
@@ -138,6 +139,8 @@
 		AA03482519B800BC00B3DB71 /* AFXMLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFXMLRequestOperation.h; sourceTree = "<group>"; };
 		AA03482719B8024F00B3DB71 /* AFImageRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFImageRequestOperation.m; sourceTree = "<group>"; };
 		AA03482819B8024F00B3DB71 /* AFImageRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFImageRequestOperation.h; sourceTree = "<group>"; };
+		AA18547A19CB215C0036038A /* GlobalAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlobalAlert.h; path = src/GlobalAlert.h; sourceTree = "<group>"; };
+		AA18547B19CB215C0036038A /* GlobalAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GlobalAlert.m; path = src/GlobalAlert.m; sourceTree = "<group>"; };
 		AA19846319C925430045D279 /* UIImage+UIImageExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+UIImageExt.h"; path = "src/UIImage+UIImageExt.h"; sourceTree = SOURCE_ROOT; };
 		AA19846419C925430045D279 /* UIImage+UIImageExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+UIImageExt.m"; path = "src/UIImage+UIImageExt.m"; sourceTree = SOURCE_ROOT; };
 		AA5AF0F219C1AF1C005EFE47 /* StartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StartViewController.h; sourceTree = "<group>"; };
@@ -498,6 +501,8 @@
 				AA0347D519AF0C1F00B3DB71 /* UIImageButton.m */,
 				AAF7E3AD19AC49EE0058D630 /* PhotoEntity.h */,
 				AAF7E3AE19AC49EE0058D630 /* PhotoEntity.m */,
+				AA18547A19CB215C0036038A /* GlobalAlert.h */,
+				AA18547B19CB215C0036038A /* GlobalAlert.m */,
 			);
 			name = Entity;
 			path = ..;
@@ -651,6 +656,7 @@
 				AA03482919B8024F00B3DB71 /* AFImageRequestOperation.m in Sources */,
 				AA03481719B8004A00B3DB71 /* AFURLRequestSerialization.m in Sources */,
 				AA03481D19B8004A00B3DB71 /* UIButton+AFNetworking.m in Sources */,
+				AA18547C19CB215C0036038A /* GlobalAlert.m in Sources */,
 				AAA8AE4519B95B1D00459612 /* MMCommon.m in Sources */,
 				AA0347DA19AF0C4600B3DB71 /* ListPhotoLViewController.m in Sources */,
 				AAE4987719C29B2300475449 /* UIImageView+WebCache.m in Sources */,

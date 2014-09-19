@@ -31,6 +31,20 @@
     }
     return self;
 }
+
+//-(CGSize)intrinsicContentSize {
+//    return CGSizeMake(UIViewNoIntrinsicMetric, 300);
+//}
+
+
+- (CGSize)sizeThatFits:(CGSize)size {
+    CGSize result = [super sizeThatFits:size];
+    result.height = kToolbarHeight;
+    return result;
+}; 
+
+
+
 @end
 
 @implementation PhotoScrollViewController
@@ -94,15 +108,11 @@
 	//setupPage为本例中定义的实现图片显示的私有方法
 	[self setupPage];
     
-
-    
-    
-    
-    self.scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, kScreenHeight - kToolbarHeight, kScreenWidth,kToolbarHeight)];
+    self.scrollTools = [[TranslucentToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - kToolbarHeight, self.view.frame.size.width, kToolbarHeight)];
     self.playbtn = [[UIBarButtonItem alloc]
                initWithTitle:@"Play" style:UIBarButtonItemStylePlain target:self action:@selector(playbtnClick:)];
-    
-    
+
+   
     
     
     UIBarButtonItem *fixedButton  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace
@@ -112,11 +122,14 @@
                                                                                   action: nil];
     
     NSArray *scrollToolBarItems = [[NSArray alloc]initWithObjects:fixedButton,self.playbtn, fixedButton,nil];
-    [self.scrollTools setItems:scrollToolBarItems animated:YES];
+    [self.scrollTools setItems:scrollToolBarItems animated:NO];
+//    self.scrollTools intrinsicContentSize
     [self.navigationController.view addSubview:self.scrollTools];
     [self setToolbarItems:scrollToolBarItems];
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
     [self.navigationController setToolbarHidden:NO animated:NO];
+//    [self.navigationController.toolbar setFrame:CGRectMake(0, self.view.frame.size.height - kToolbarHeight, self.view.frame.size.width, kToolbarHeight)];
+    
     
     
     
@@ -127,6 +140,7 @@
 - (void)viewDidAppear:(BOOL)animated{
 
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
+//    [self.navigationController.toolbar setFrame:CGRectMake(0, self.view.frame.size.height - kToolbarHeight, self.view.frame.size.width, kToolbarHeight)];
     
 }
 
@@ -505,6 +519,7 @@
         }else{
             
             [self setShowNavibar];
+//            [self showNavigationToolBar];
         }
     }else{
         [self pausePlaying];
@@ -514,6 +529,46 @@
 //    bool a = navBar.isTranslucent;
 }
 
+
+//- (void) showNavigationToolBar {
+//    self.ishidebar = NO;
+//    UINavigationBar *navBar = self.navigationController.navigationBar;
+//    float animationDuration = 0.1;
+//    [self.navigationController setNavigationBarHidden:NO animated:NO];
+//    navBar.frame = CGRectMake(navBar.frame.origin.x,
+//                              -navBar.frame.size.height,
+//                              navBar.frame.size.width,
+//                              navBar.frame.size.height);
+//    
+//    [UIView animateWithDuration:animationDuration animations:^{
+//        navBar.frame = CGRectMake(navBar.frame.origin.x,
+//                                  0,
+//                                  navBar.frame.size.width,
+//                                  navBar.frame.size.height);
+//    }];
+//    
+//    
+//    UIToolbar *toolBar = self.navigationController.toolbar;
+//    CGRect screenRect = [[UIScreen mainScreen] bounds];
+//    float height;
+//    if (UIDeviceOrientationIsPortrait(self.interfaceOrientation))
+//        height = screenRect.size.height;
+//    else
+//        height  = screenRect.size.width;
+//    
+//    [self.navigationController setToolbarHidden:NO animated:NO];
+//    toolBar.frame = CGRectMake(toolBar.frame.origin.x,
+//                               self.view.frame.size.height - kToolbarHeight,
+//                               toolBar.frame.size.width,
+//                               kToolbarHeight);
+//    
+//    [UIView animateWithDuration:animationDuration animations:^{
+//        toolBar.frame = CGRectMake(toolBar.frame.origin.x,
+//                                   self.view.frame.size.height - kToolbarHeight,
+//                                   toolBar.frame.size.width,
+//                                   kToolbarHeight);
+//    }];
+//}
 - (void)playbtnClick:(id)sender
 {
     [self stopAutoFullScreen];
@@ -523,6 +578,7 @@
          self.playTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playPhotoAction:) userInfo:nil repeats:YES];
         [[self navigationController] setNavigationBarHidden:YES animated:YES];
         [[self navigationController] setToolbarHidden:YES animated:YES];
+//        [self.navigationController.toolbar setFrame:CGRectMake(0, self.view.frame.size.height - kToolbarHeight, self.view.frame.size.width, kToolbarHeight)];
         self.ishidebar = YES;
         
     }else{
@@ -603,6 +659,7 @@
 -(void)setFullScreen{
     [[self navigationController] setNavigationBarHidden:YES animated:YES];
     [[self navigationController] setToolbarHidden:YES animated:YES];
+//    [self.navigationController.toolbar setFrame:CGRectMake(0, self.view.frame.size.height - kToolbarHeight, self.view.frame.size.width, kToolbarHeight)];
     
     
     
@@ -612,10 +669,7 @@
 -(void)setShowNavibar{
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [[self navigationController] setToolbarHidden:NO animated:YES];
-//    UINavigationBar *navBar = self.navigationController.navigationBar;
-//    [navBar setTranslucent:YES];
     
-//    self.wantsFullScreenLayout = YES;
     self.ishidebar = NO;
 
 }
@@ -705,9 +759,9 @@
     //翻页时重置缩放
     if (scrollView == self.mainscrollView){
         if (self.ispagechanged == YES) {
-            NSLog(@"self.ispagechanged:%d",self.ispagechanged);
-            NSLog(@"scrollViewDidEndDecelerating");
-            NSLog(@"currentpage is :%d",self.currentImageId);
+//            NSLog(@"self.ispagechanged:%d",self.ispagechanged);
+//            NSLog(@"scrollViewDidEndDecelerating");
+//            NSLog(@"currentpage is :%d",self.currentImageId);
 //            [self rollTothePage:[self currentImageId] AnimeOrNot:YES];
             
 //            UIScrollView *s = [self.photolist objectAtIndex:(self.currentImageId)];
